@@ -8,3 +8,24 @@ export const getAllUsers =
       db.query(sql, callback);
    };
 
+   export const createUser=(data,callback)=>{
+    const sql=`
+    INSERT INTO user
+    (user_name , age , email , password , role)
+    VALUES (? , ? , ? , ? , ?)`;
+
+    db.query(sql,[
+        data.user_name,
+        data.age,
+        data.email,
+        data.password,
+        data.role
+    ], callback);
+   };
+
+
+   export const getUserById =(id,callback)=>{
+    const sql = "SELECT * FROM user WHERE id=?";
+
+    db.query(sql,[id],callback);
+   };
