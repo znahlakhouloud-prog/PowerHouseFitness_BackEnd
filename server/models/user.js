@@ -51,3 +51,11 @@ export const getAllUsers =
       );
 
    };
+
+   export const deleteUser = (id,callback)=>{
+      const sql = `
+      DELETE FROM user
+      WHERE id=?`;
+      db.query(sql,[id],callback);
+
+   };

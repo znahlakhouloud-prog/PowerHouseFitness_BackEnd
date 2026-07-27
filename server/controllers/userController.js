@@ -1,4 +1,4 @@
-import {getAllUsers,createUser,getUserById,updateUser} from "../models/user.js";
+import {getAllUsers,createUser,getUserById,updateUser,deleteUser} from "../models/user.js";
 
 
 export const fetchUsers = (req,res)=>{
@@ -60,3 +60,20 @@ export const editUser=(req,res)=>{
     });
 };
 
+export const removeUser =(req,res)=>{
+    const id=req.params.id;
+
+    deleteUser(id,(err,result)=>{
+        if (err){
+             return res.status(500).json(err);
+        }
+         if(result.affectedRows===0){
+            return res.status(404).json({
+                message:"User not found"
+            });
+        };
+        res.json({
+            message:"User deleted successfully"
+    });
+});
+};
