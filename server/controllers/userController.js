@@ -11,17 +11,28 @@ export const fetchUsers = (req,res)=>{
     });
 };
 
-export const addUser =(req,res)=>{
-    createUser(req.body,(err,result)=>{
-        if(err){
-            return
-            res.status(500).json(err);
+export const addUser = (req, res) => {
+
+    createUser(req.body, (err, result) => {
+
+        if (err) {
+
+            if (err.code === "ER_DUP_ENTRY") {
+                return res.status(409).json({
+                    message: "Email already exists"
+                });
+            }
+
+            return res.status(500).json(err);
         }
+
         res.status(201).json({
-            message:"User created successfully",
-            id:result.insertId
+            message: "User created successfully",
+            id: result.insertId
         });
+
     });
+
 };
 
 export const fetchUserById = (req,res)=>{
