@@ -1,5 +1,5 @@
 import {getAllUsers,createUser,getUserById,updateUser,deleteUser} from "../models/user.js";
-
+import bcrypt from "bcrypt";
 
 export const fetchUsers = (req,res)=>{
     getAllUsers((err,results)=>{
@@ -11,9 +11,16 @@ export const fetchUsers = (req,res)=>{
     });
 };
 
-export const addUser = (req, res) => {
+export const addUser = async(req, res) => {
+    try{
+        const hashedPassword = await bcrypt.hash(req.body.password,10);
 
-    createUser(req.body, (err, result) => {
+        const newUser = {
+            ...req.body,
+            password : hashedPassword
+        };
+
+    createUser(newUser, (err, result) => {
 
         if (err) {
 
@@ -33,6 +40,11 @@ export const addUser = (req, res) => {
 
     });
 
+} catch (error){
+    res.status(500).json({
+        message : "Failed to hash password"
+    });
+}
 };
 
 export const fetchUserById = (req,res)=>{
