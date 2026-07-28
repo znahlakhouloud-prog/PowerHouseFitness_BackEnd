@@ -3,7 +3,13 @@ import db from "../config/database.js";
 
 export const getAllUsers = 
    (callback)=>{
-      const sql = "SELECT * from user";
+      const sql = `SELECT 
+                        id,
+                        user_name,
+                        age,
+                        email,
+                        role
+                   FROM user`;
       
       db.query(sql, callback);
    };
@@ -25,7 +31,14 @@ export const getAllUsers =
 
 
    export const getUserById =(id,callback)=>{
-    const sql = "SELECT * FROM user WHERE id=?";
+    const sql = `SELECT 
+                        id,
+                        user_name,
+                        age,
+                        email,
+                        role
+                   FROM user
+                   WHERE id=?`;
 
     db.query(sql,[id],callback);
    };
