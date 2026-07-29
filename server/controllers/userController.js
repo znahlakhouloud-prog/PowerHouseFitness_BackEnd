@@ -1,14 +1,20 @@
 import {getAllUsers,createUser,getUserById,updateUser,deleteUser} from "../models/user.js";
 import bcrypt from "bcrypt";
 
-export const fetchUsers = (req,res)=>{
-    getAllUsers((err,results)=>{
-        if(err) {
-            return
-            res.status(500).json(err);
-        }
-        res.json(results);
-    });
+export const fetchUsers = async (req, res) => {
+
+    try {
+
+        const users = await getAllUsers();
+
+        res.json(users);
+
+    } catch (error) {
+
+        res.status(500).json(error);
+
+    }
+
 };
 
 export const addUser = async(req, res) => {

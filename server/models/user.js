@@ -1,18 +1,22 @@
 import db from "../config/database.js";
 
 
-export const getAllUsers = 
-   (callback)=>{
-      const sql = `SELECT 
-                        id,
-                        user_name,
-                        age,
-                        email,
-                        role
-                   FROM user`;
-      
-      db.query(sql, callback);
-   };
+export const getAllUsers = async () => {
+
+    const sql = `
+        SELECT
+            id,
+            user_name,
+            age,
+            email,
+            role
+        FROM user
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};
 
    export const createUser=(data,callback)=>{
     const sql=`
