@@ -44,7 +44,6 @@ export const addUser = async(req, res) => {
             id: result.insertId
         });
 
-    });
 
 } catch (error){
     res.status(500).json({
