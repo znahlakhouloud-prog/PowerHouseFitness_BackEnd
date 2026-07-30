@@ -83,3 +83,16 @@ export const getAllUsers = async () => {
       return result;
 
    };
+
+
+   export const getUserByEmail = async(email)=>{
+
+    const sql=`
+    SELECT *
+    FROM user
+    WHERE email=? `;
+
+    const [rows]= await db.query(sql,[email]);
+
+    return rows;
+   };
