@@ -18,23 +18,26 @@ export const getAllUsers = async () => {
     return rows;
 };
 
-   export const createUser=(data,callback)=>{
-    const sql=`
+   export const createUser=async(data)=>{
+ const sql=`
     INSERT INTO user
     (user_name , age , email , password , role)
     VALUES (? , ? , ? , ? , ?)`;
 
-    db.query(sql,[
+    const [result]= await db.query(sql,[
         data.user_name,
         data.age,
         data.email,
         data.password,
         data.role
-    ], callback);
+    ]);
+
+     return result;
+  
    };
 
 
-   export const getUserById =(id,callback)=>{
+   export const getUserById =async(id)=>{
     const sql = `SELECT 
                         id,
                         user_name,
@@ -44,10 +47,12 @@ export const getAllUsers = async () => {
                    FROM user
                    WHERE id=?`;
 
-    db.query(sql,[id],callback);
+    const [rows]= await db.query(sql,[id]);
+
+    return rows;
    };
 
-   export const updateUser = (id,data,callback)=>{
+   export const updateUser = async(id,data)=>{
       const sql=`
       UPDATE user
       SET 
@@ -57,22 +62,24 @@ export const getAllUsers = async () => {
           password=?,
           role=?
       WHERE id=?`;
-      db.query(sql,[
+      const [result] = await db.query(sql,[
          data.user_name,
         data.age,
         data.email,
         data.password,
         data.role,
         id
-      ],callback
+      ]
       );
+      return result;
 
    };
 
-   export const deleteUser = (id,callback)=>{
+   export const deleteUser = async(id)=>{
       const sql = `
       DELETE FROM user
       WHERE id=?`;
-      db.query(sql,[id],callback);
+      const [result] = await db.query(sql,[id]);
+      return result;
 
    };

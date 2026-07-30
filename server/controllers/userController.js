@@ -26,76 +26,88 @@ export const addUser = async(req, res) => {
             password : hashedPassword
         };
 
-    createUser(newUser, (err, result) => {
-
-        if (err) {
-
-            if (err.code === "ER_DUP_ENTRY") {
-                return res.status(409).json({
-                    message: "Email already exists"
-                });
-            }
-
-            return res.status(500).json(err);
-        }
+        const result = await createUser(newUser);
 
         res.status(201).json({
-            message: "User created successfully",
-            id: result.insertId
+             message: "User created successfully",
+             id: result.insertId
         });
-
+    
 
 } catch (error){
-    res.status(500).json({
-        message : "Failed to hash password"
-    });
+    if(error.code==="ER_DUP_ENTRY"){
+        return res.status(409).json({
+            message : "Email already exists"
+        });
+    }
+    res.status(500).json(error);
+    
 }
 };
 
-export const fetchUserById = (req,res)=>{
+export const fetchUserById =async (req,res)=>{
 
+    try{
     const id= req.params.id;
 
-    getUserById(id,(err,results)=>{
-        if(err) {
-            return
-            res.status(500).json(err);
+    const users = await getUserById(id);
+        
+        if (users.length===0){
+            return  res.status(404).json({
+                message:"User not found"
+            });
         }
-        if (results.length===0){
-            return
-            res.status(404).json({
-                message:"User not found"
-            });
-        };
-})};
+        res.json (users[0]);
+} catch (error) {
 
-
-export const editUser=(req,res)=>{
-    const id = req.params.id;
-
-    updateUser(id,req.body,(err,result)=>{
-        if(err){
-            return res.status(500).json(err);
-        };
-        if(result.affectedRows===0){
-            return res.status(404).json({
-                message:"User not found"
-            });
-        };
-        res.json({
-            message:"User updated successfully"
-        });
-    });
+    res.status(500).json(error);
+}
 };
 
-export const removeUser =(req,res)=>{
+
+export const editUser = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
+
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        const updatedUser = {
+            ...req.body,
+            password: hashedPassword
+        };
+
+        const result = await updateUser(id, updatedUser);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.json({
+            message: "User updated successfully"
+        });
+
+    } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+        message: error.message,
+        stack: error.stack
+    });
+}
+
+};
+
+export const removeUser =async(req,res)=>{
+    try{
     const id=req.params.id;
 
-    deleteUser(id,(err,result)=>{
-        if (err){
-             return res.status(500).json(err);
-        }
-         if(result.affectedRows===0){
+    const result = await deleteUser(id);
+        
+         if(result.affectedRows=== 0){
             return res.status(404).json({
                 message:"User not found"
             });
@@ -103,5 +115,7 @@ export const removeUser =(req,res)=>{
         res.json({
             message:"User deleted successfully"
     });
-});
+} catch (error) {
+    res.status(500).json(error);
+}
 };
