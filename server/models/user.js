@@ -96,3 +96,14 @@ export const getAllUsers = async () => {
 
     return rows;
    };
+
+   export const userExists = async(id)=>{
+     const sql = `
+        SELECT id
+        FROM user
+        WHERE id = ? `;
+    
+    const [rows]= await db.query(sql,[id]);
+
+    return rows.length > 0;
+   };

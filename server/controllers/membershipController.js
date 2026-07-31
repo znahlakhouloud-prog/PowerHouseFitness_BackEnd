@@ -1,4 +1,7 @@
 import {getAllMemberships,getMembershipById,createMembership,getActiveMembershipByUserId} from "../models/membership.js";
+import {userExists} from "../models/user.js";
+
+
 
 
 export const fetchMemberships = async (req,res)=>{
@@ -30,6 +33,13 @@ export const fetchMembershipById = async(req,res)=>{
 
 export const addMembership = async(req,res)=>{
     try{
+        const exists = await userExists(req.body.id_user);
+
+          if(!exists){
+            return res.status(404).json({
+                message: "User not found"
+            });
+          }
         const activeMembership = await getActiveMembershipByUserId(req.body.id_user);
 
            if(activeMembership.length > 0){
@@ -37,7 +47,7 @@ export const addMembership = async(req,res)=>{
                 message: "User already has an active membership"
               });
            }
-           
+
         const result = await createMembership(req.body);
 
         res.status(201).json({
