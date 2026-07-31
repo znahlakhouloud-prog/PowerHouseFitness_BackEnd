@@ -3,9 +3,14 @@ import db from "../config/database.js";
 export const getAllPayments = async () => {
 
     const sql = `
-        SELECT *
-        FROM payment
-        ORDER BY id DESC
+       SELECT
+            p.*,
+            u.user_name,
+            m.name AS membership_name
+       FROM payment p
+       JOIN membership m ON p.id_membership = m.id
+       JOIN user u ON m.id_user = u.id
+       ORDER BY p.id DESC;
     `;
 
     const [rows] = await db.query(sql);
@@ -16,9 +21,14 @@ export const getAllPayments = async () => {
 export const getPaymentById = async (id) => {
 
     const sql = `
-        SELECT *
-        FROM payment
-        WHERE id = ?
+       SELECT
+            p.*,
+            u.user_name,
+            m.name AS membership_name
+       FROM payment p
+       JOIN membership m ON p.id_membership = m.id
+       JOIN user u ON m.id_user = u.id
+       ORDER BY p.id DESC;
     `;
 
     const [rows] = await db.query(sql, [id]);
@@ -29,10 +39,14 @@ export const getPaymentById = async (id) => {
 export const getPaymentsByMembership = async (id_membership) => {
 
     const sql = `
-        SELECT *
-        FROM payment
-        WHERE id_membership = ?
-        ORDER BY p_date DESC
+       SELECT
+            p.*,
+            u.user_name,
+            m.name AS membership_name
+       FROM payment p
+       JOIN membership m ON p.id_membership = m.id
+       JOIN user u ON m.id_user = u.id
+       ORDER BY p.id DESC;
     `;
 
     const [rows] = await db.query(sql, [id_membership]);
@@ -60,6 +74,20 @@ export const createPayment = async (paymentData) => {
 
     return result;
 };
+
+export const getTotalPaidByMembership = async (id_membership) => {
+
+    const sql = `
+        SELECT COALESCE(SUM(amount), 0) AS total_paid
+        FROM payment
+        WHERE id_membership = ?
+    `;
+
+    const [rows] = await db.query(sql, [id_membership]);
+
+    return rows[0].total_paid;
+};
+
 
 
 

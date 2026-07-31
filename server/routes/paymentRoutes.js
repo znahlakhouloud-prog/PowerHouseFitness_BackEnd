@@ -5,6 +5,7 @@ import {
     fetchPaymentById,
     fetchPaymentsByMembership,
     addPayment } from "../controllers/paymentController.js";
+import { validatePayment } from "../middleware/validatePayment.js";
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.get("/membership/:id_membership", fetchPaymentsByMembership);
 
 router.get("/:id", fetchPaymentById);
 
-router.post("/", addPayment);
+router.post("/",validatePayment, addPayment);
 
 export default router;
 

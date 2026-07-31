@@ -4,6 +4,7 @@ import {
     getPaymentsByMembership,
     createPayment
 } from "../models/payment.js";
+import { createPaymentService } from "../services/paymentServices.js";
 
 
 export const fetchPayments = async (req, res) => {
@@ -56,9 +57,9 @@ export const fetchPaymentsByMembership = async (req, res) => {
 };
 
 export const addPayment = async (req, res) => {
-     try {
+    try {
 
-        const result = await createPayment(req.body);
+        const result = await createPaymentService(req.body);
 
         res.status(201).json({
             message: "Payment created successfully",
@@ -67,6 +68,9 @@ export const addPayment = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
     }
 };
