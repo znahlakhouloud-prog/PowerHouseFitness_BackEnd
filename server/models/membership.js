@@ -10,6 +10,8 @@ export const getAllMemberships = async()=>{
         name,
         duration,
         price,
+        start_date,
+        end_date,
         state,
         duration_promo,
         type
@@ -28,6 +30,8 @@ export const getMembershipById = async (id)=>{
             name,
             duration,
             price,
+            start_date,
+            end_date,
             state,
             duration_promo,
             type
@@ -46,17 +50,21 @@ export const createMembership = async(data)=>{
             name,
             duration,
             price,
+            start_date,
+            end_date,
             state,
             duration_promo,
             type
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?) `;
+        VALUES (?, ?, ?, ?, ?, ?, ?,?,?) `;
 
         const[result]= await db.query(sql,[
              data.id_user,
              data.name,
              data.duration,
              data.price,
+            data.start_date,
+            data.end_date,
              data.state,
              data.duration_promo,
              data.type

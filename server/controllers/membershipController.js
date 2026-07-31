@@ -48,7 +48,18 @@ export const addMembership = async(req,res)=>{
               });
            }
 
-        const result = await createMembership(req.body);
+
+        const startDate = new Date (req.body.start_date);
+        const endDate = new Date (startDate);
+        
+        endDate.setDate(endDate.getDate() + req.body.duration);
+
+        const membershipData ={
+            ...req.body,
+            end_date:endDate.toISOString().split("T")[0]
+        };
+
+        const result = await createMembership(membershipData);
 
         res.status(201).json({
             message:"Membership created successfully",
