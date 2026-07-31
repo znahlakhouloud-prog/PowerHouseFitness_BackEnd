@@ -88,7 +88,44 @@ export const getTotalPaidByMembership = async (id_membership) => {
     return rows[0].total_paid;
 };
 
+export const updatePayment = async (id, paymentData) => {
 
+    const sql = `
+        UPDATE payment
+        SET
+            id_membership = ?,
+            p_date = ?,
+            amount = ?,
+            type = ?,
+            rest = ?
+        WHERE id = ?
+    `;
+
+    const values = [
+        paymentData.id_membership,
+        paymentData.p_date,
+        paymentData.amount,
+        paymentData.type,
+        paymentData.rest,
+        id
+    ];
+
+    const [result] = await db.query(sql, values);
+
+    return result;
+};
+
+export const deletePayment = async (id) => {
+
+    const sql = `
+        DELETE FROM payment
+        WHERE id = ?
+    `;
+
+    const [result] = await db.query(sql, [id]);
+
+    return result;
+};
 
 
 

@@ -42,3 +42,12 @@ export const createPaymentService = async (data) => {
 
     return await createPayment(paymentData);
 };
+
+export const updatePaymentService = async (id, data) => {
+
+    // For now, reuse the same business rules as create.
+    // Later we can improve this to exclude the current payment
+    // from the total calculation.
+
+    return await createPaymentService(data);
+};
