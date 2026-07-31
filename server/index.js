@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import membershipRoutes from "./routes/membershipRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import coachRoutes from "./routes/coachRoutes.js";
 const app = express();
 
 
@@ -14,7 +15,8 @@ app.use(express.json());
 app.use("/users",userRoutes);
 app.use("/auth",authRoutes);
 app.use("/memberships",membershipRoutes);
-app.use("/payments",paymentRoutes)
+app.use("/payments",paymentRoutes);
+app.use("/coaches", coachRoutes);
 
 const PORT = process.env.PORT || 3000;
 
