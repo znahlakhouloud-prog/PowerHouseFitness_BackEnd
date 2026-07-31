@@ -6,7 +6,7 @@ import db from "./config/database.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import membershipRoutes from "./routes/membershipRoutes.js";
-
+import paymentRoutes from "./routes/paymentRoutes.js";
 const app = express();
 
 
@@ -14,6 +14,7 @@ app.use(express.json());
 app.use("/users",userRoutes);
 app.use("/auth",authRoutes);
 app.use("/memberships",membershipRoutes);
+app.use("/payments",paymentRoutes)
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,7 +1,7 @@
 import {
     createMembership,
     getActiveMembershipByUserId,
-    updateExpiredMemberships} from "../models/membershipModel.js";
+    updateExpiredMemberships} from "../models/membership.js";
 
 import { userExists } from "../models/user.js";
 
