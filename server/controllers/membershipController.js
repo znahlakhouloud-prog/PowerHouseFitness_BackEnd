@@ -77,3 +77,29 @@ export const addMembership = async(req,res)=>{
         res.status(500).json(error);
     }
 };
+
+export const checkMembershipAccess = async (req,res)=>{
+    try{
+        // first update expired memberships
+        await updateExpiredMemberships();
+
+        const memberships = await getActiveMembershipByUserId(req.params.id_user);
+
+         if(memberships.length===0){
+            return res.status(404).json ({
+                allowed: false,
+                message: "No active membership found"
+            });
+         }
+         res.json({
+            allowed: true,
+            message:"Access granted",
+            membership:memberships[0]
+         });
+    } catch (error){
+        res.status(500).json(error);
+        console.log(error);
+
+    }
+    
+};

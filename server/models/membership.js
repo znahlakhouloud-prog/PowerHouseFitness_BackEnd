@@ -76,7 +76,7 @@ export const createMembership = async(data)=>{
 
 export const getActiveMembershipByUserId = async (id_user)=>{
     const sql = `
-        SELECT id
+        SELECT *
         FROM membership
         WHERE id_user = ?
         AND state = 'active' `;
