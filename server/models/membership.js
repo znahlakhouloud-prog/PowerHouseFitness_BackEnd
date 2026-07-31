@@ -85,3 +85,14 @@ export const getActiveMembershipByUserId = async (id_user)=>{
 
     return rows;
 };
+
+export const updateExpiredMemberships = async()=>{
+
+    const sql=  `
+    UPDATE membership
+    SET state ='expired'
+    WHERE end_date < CURDATE()
+    AND state = 'active'  `;
+
+    await db.query(sql);
+};

@@ -1,4 +1,8 @@
-import {getAllMemberships,getMembershipById,createMembership,getActiveMembershipByUserId} from "../models/membership.js";
+import {getAllMemberships,
+        getMembershipById,
+        createMembership,
+        getActiveMembershipByUserId,
+        updateExpiredMemberships} from "../models/membership.js";
 import {userExists} from "../models/user.js";
 
 
@@ -6,7 +10,10 @@ import {userExists} from "../models/user.js";
 
 export const fetchMemberships = async (req,res)=>{
     try{
+        // update expired memberships first
+        await updateExpiredMemberships();
 
+        // then fetch all memberships
         const memberships = await getAllMemberships();
 
         res.json(memberships);
@@ -17,6 +24,7 @@ export const fetchMemberships = async (req,res)=>{
 
 export const fetchMembershipById = async(req,res)=>{
     try{
+        await updateExpiredMemberships();
         const id=req.params.id;
         const memberships= await getMembershipById(id);
         
