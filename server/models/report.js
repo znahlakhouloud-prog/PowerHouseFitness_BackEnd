@@ -119,3 +119,17 @@ export const getTopMembership = async () => {
 
     return rows.length ? rows[0].name : "None";
 };
+
+export const getAttendanceCount = async () => {
+
+    const sql = `
+        SELECT COUNT(*) AS total
+        FROM attendance
+        WHERE MONTH(attendance_date) = MONTH(CURDATE())
+        AND YEAR(attendance_date) = YEAR(CURDATE())
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows[0].total;
+};

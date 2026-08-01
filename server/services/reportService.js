@@ -2,7 +2,8 @@ import {createReport,
         getTotalIncome,
         getNewMembers,
         getExpiredMemberships,
-        getTopMembership } from "../models/report.js";
+        getTopMembership,
+        getAttendanceCount } from "../models/report.js";
 
 export const generateReportService = async ()=>{
 
@@ -16,7 +17,7 @@ export const generateReportService = async ()=>{
 
         top_membership:await getTopMembership(),
 
-        nbr_attendance:0
+        nbr_attendance:await getAttendanceCount()
 
     };
 
