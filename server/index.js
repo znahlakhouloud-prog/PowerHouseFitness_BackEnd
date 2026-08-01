@@ -10,7 +10,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import coachRoutes from "./routes/coachRoutes.js";
 import equipementRoutes from "./routes/equipmentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
-
+import reportRoutes from "./routes/reportRoutes.js";
 
 const app = express();
 
@@ -23,6 +23,7 @@ app.use("/payments",paymentRoutes);
 app.use("/coaches", coachRoutes);
 app.use("/equipments", equipementRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/reports", reportRoutes);
 
 const PORT = process.env.PORT || 3000;
 
