@@ -21,19 +21,20 @@ export const getAllUsers = async () => {
    export const createUser=async(data)=>{
  const sql=`
     INSERT INTO user
-    (user_name , age , email , password , role)
-    VALUES (? , ? , ? , ? , ?)`;
+    (user_name , age , email , password , role ,  must_change_password)
+    VALUES (? , ? , ? , ? , ? , 1)`;
 
     const [result]= await db.query(sql,[
         data.user_name,
         data.age,
         data.email,
         data.password,
-        data.role
+        data.role,
+        data.must_change_password
     ]);
 
      return result;
-  
+
    };
 
 
