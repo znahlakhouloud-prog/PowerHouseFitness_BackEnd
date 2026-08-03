@@ -29,8 +29,7 @@ export const getAllUsers = async () => {
         data.age,
         data.email,
         data.password,
-        data.role,
-        data.must_change_password
+        data.role
     ]);
 
      return result;
