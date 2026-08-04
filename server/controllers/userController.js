@@ -1,5 +1,5 @@
-import {getAllUsers,createUser,getUserById,updateUser,deleteUser} from "../models/user.js";
 import bcrypt from "bcrypt";
+import {getAllUsers,createUser,getUserById,updateUser,deleteUser} from "../models/user.js";
 
 export const fetchUsers = async (req, res) => {
 
@@ -17,33 +17,6 @@ export const fetchUsers = async (req, res) => {
 
 };
 
-export const addUser = async(req, res) => {
-    try{
-        const hashedPassword = await bcrypt.hash(req.body.password,10);
-
-        const newUser = {
-            ...req.body,
-            password : hashedPassword
-        };
-
-        const result = await createUser(newUser);
-
-        res.status(201).json({
-             message: "User created successfully",
-             id: result.insertId
-        });
-    
-
-} catch (error){
-    if(error.code==="ER_DUP_ENTRY"){
-        return res.status(409).json({
-            message : "Email already exists"
-        });
-    }
-    res.status(500).json(error);
-    
-}
-};
 
 export const fetchUserById =async (req,res)=>{
 
@@ -71,20 +44,21 @@ export const editUser = async (req, res) => {
 
         const id = req.params.id;
 
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const currentUser = await getUserById(id);
+
+        if (currentUser.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
         const updatedUser = {
+            ...currentUser[0],
             ...req.body,
-            password: hashedPassword
+            password: req.body.password
+                ? await bcrypt.hash(req.body.password, 10)
+                : currentUser[0].password
         };
 
         const result = await updateUser(id, updatedUser);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                message: "User not found"
-            });
-        }
 
         res.json({
             message: "User updated successfully"
@@ -92,11 +66,7 @@ export const editUser = async (req, res) => {
 
     } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-        message: error.message,
-        stack: error.stack
-    });
+    res.status(500).json({ message: "Unable to update user" });
 }
 
 };

@@ -1,4 +1,4 @@
-import { createPayment, getTotalPaidByMembership } from "../models/payment.js";
+import { createPayment, getPaymentById, getTotalPaidByMembership, updatePayment } from "../models/payment.js";
 import { getMembershipById } from "../models/membership.js";
 
 export const createPaymentService = async (data) => {
@@ -44,10 +44,34 @@ export const createPaymentService = async (data) => {
 };
 
 export const updatePaymentService = async (id, data) => {
+    const payments = await getPaymentById(id);
 
-    // For now, reuse the same business rules as create.
-    // Later we can improve this to exclude the current payment
-    // from the total calculation.
+    if (payments.length === 0) {
+        const error = new Error("Payment not found");
+        error.status = 404;
+        throw error;
+    }
 
-    return await createPaymentService(data);
+    const membership = await getMembershipById(data.id_membership);
+
+    if (membership.length === 0) {
+        const error = new Error("Membership not found");
+        error.status = 404;
+        throw error;
+    }
+
+    const membershipData = membership[0];
+    const totalPaid = await getTotalPaidByMembership(data.id_membership);
+    const totalExcludingCurrent = data.id_membership === payments[0].id_membership
+        ? totalPaid - payments[0].amount
+        : totalPaid;
+    const remaining = membershipData.price - totalExcludingCurrent;
+
+    if (data.amount > remaining) {
+        const error = new Error(`Payment exceeds remaining balance (${remaining})`);
+        error.status = 409;
+        throw error;
+    }
+
+    return updatePayment(id, { ...data, rest: remaining - data.amount });
 };

@@ -28,6 +28,7 @@ export const getPaymentById = async (id) => {
        FROM payment p
        JOIN membership m ON p.id_membership = m.id
        JOIN user u ON m.id_user = u.id
+       WHERE p.id = ?
        ORDER BY p.id DESC;
     `;
 
@@ -46,6 +47,7 @@ export const getPaymentsByMembership = async (id_membership) => {
        FROM payment p
        JOIN membership m ON p.id_membership = m.id
        JOIN user u ON m.id_user = u.id
+       WHERE p.id_membership = ?
        ORDER BY p.id DESC;
     `;
 

@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {getUserByEmail} from "../models/user.js";
-import { changePasswordService } from "../services/userService.js";
+import { changePasswordService} from "../services/userService.js";
+import { registerService} from "../services/authService.js";
 
 // export const login =(req,res)=>{
 
@@ -39,6 +40,30 @@ import { changePasswordService } from "../services/userService.js";
 //     });
 // };
 
+export const register = async (req, res) => {
+
+    try {
+
+        const result = await registerService(req.body);
+
+        res.status(201).json({
+            message: "User created successfully",
+            id: result.insertId
+        });
+
+    } catch (error) {
+
+        if (error.message === "EMAIL_ALREADY_EXISTS") {
+            return res.status(409).json({
+                message: "Email already exists"
+            });
+        }
+
+        res.status(500).json(error);
+
+    }
+
+};
 
 export const login = async(req,res) => {
      try{
