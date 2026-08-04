@@ -1,45 +1,13 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import {getUserByEmail} from "../models/user.js";
-import { changePasswordService} from "../services/userService.js";
-import { registerService} from "../services/authService.js";
+import {
+    registerService,
+    loginService
+} from "../services/authService.js";
 
-// export const login =(req,res)=>{
+import {
+    changePasswordService
+} from "../services/userService.js";
 
-//     const {email,password} = req.body;
-
-//     findUserByEmail(email,async(err,results)=>{
-//         if(err){
-//             return res.status(500).json(err);
-//         }
-//         if(results.length===0){
-//             return res.status(401).json({
-//                 message : "Invalid email or password"
-//             });
-//         }
-
-//         const user= results[0];
-        
-//         const isMatch= await bcrypt.compare(password,user.password);
-
-//         if(!isMatch){
-//             return res.status(401).json({
-//                 message : "Invalid email or password"
-//             });
-//         }
-
-//         res.status(200).json({
-//             message :"Login successful",
-//             user :{
-//                 id : user.id,
-//                 user_name : user.user_name,
-//                 email : user.email,
-//                 role : user.role
-//             }
-//         });
-//     });
-// };
-
+// REGISTER
 export const register = async (req, res) => {
 
     try {
@@ -59,64 +27,61 @@ export const register = async (req, res) => {
             });
         }
 
-        res.status(500).json(error);
+        res.status(500).json({
+            message: error.message
+        });
 
     }
 
 };
 
-export const login = async(req,res) => {
-     try{
-        const {email,password} = req.body;
-        const users = await getUserByEmail(email);
-        if (users.length===0){
+// LOGIN
+export const login = async (req, res) => {
+
+    try {
+
+        const { email, password } = req.body;
+
+        const result = await loginService(
+            email,
+            password
+        );
+
+        res.status(200).json({
+            message: "Login successful",
+            token: result.token,
+            user: result.user
+        });
+
+    } catch (error) {
+
+        if (error.message === "INVALID_CREDENTIALS") {
+
             return res.status(401).json({
                 message: "Invalid email or password"
             });
-        }
-        const user = users[0];
 
-        const isMatch = await bcrypt.compare(password,user.password);
-
-        if(!isMatch){
-            return res.status(401).json({
-                message : "Invalid email or password"
-            });
         }
 
-        const token= jwt.sign({
-            id: user.id,
-            role: user.role
-        },
-    process.env.JWT_SECRET,
-{
-    expiresIn: "1h"
-}
-);
-return res.status(200).json({
-    message : "Login successful",
-    token,
-    user:{
-        id: user.id,
-        user_name: user.user_name,
-        email: user.email,
-        role: user.role,
-         must_change_password: user.must_change_password
+        res.status(500).json({
+            message: error.message
+        });
+
     }
-});
-     } catch (error){
-            res.status(500).json(error);
-        }
-     };
 
+};
 
+// CHANGE PASSWORD
 export const changePassword = async (req, res) => {
 
     try {
 
-        const id = req.user.id; // obtained from JWT
+        const id = req.user.id;
 
-        const { oldPassword, newPassword } = req.body;
+        const {
+            oldPassword,
+            newPassword
+        } = req.body;
 
         await changePasswordService(
             id,
@@ -131,18 +96,32 @@ export const changePassword = async (req, res) => {
     } catch (error) {
 
         if (error.message === "USER_NOT_FOUND") {
+
             return res.status(404).json({
                 message: "User not found"
             });
+
         }
 
         if (error.message === "INVALID_PASSWORD") {
+
             return res.status(401).json({
                 message: "Old password is incorrect"
             });
+
         }
 
-        res.status(500).json(error);
+        if (error.message === "SAME_PASSWORD") {
+
+            return res.status(400).json({
+                message: "New password must be different from the old password"
+            });
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
 
     }
 

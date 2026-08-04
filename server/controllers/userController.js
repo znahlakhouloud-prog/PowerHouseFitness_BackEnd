@@ -1,91 +1,125 @@
-import bcrypt from "bcrypt";
-import {getAllUsers,createUser,getUserById,updateUser,deleteUser} from "../models/user.js";
+import {
+    fetchUsersService,
+    fetchUserByIdService,
+    updateUserService,
+    deleteUserService
+} from "../services/userService.js";
 
+// GET ALL USERS
 export const fetchUsers = async (req, res) => {
 
     try {
 
-        const users = await getAllUsers();
+        const users = await fetchUsersService();
 
-        res.json(users);
+        res.status(200).json(users);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// GET USER BY ID
+export const fetchUserById = async (req, res) => {
 
-export const fetchUserById =async (req,res)=>{
+    try {
 
-    try{
-    const id= req.params.id;
+        const user = await fetchUserByIdService(
+            req.params.id
+        );
 
-    const users = await getUserById(id);
-        
-        if (users.length===0){
-            return  res.status(404).json({
-                message:"User not found"
+        res.status(200).json(user);
+
+    } catch (error) {
+
+        if (error.message === "USER_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "User not found"
             });
-        }
-        res.json (users[0]);
-} catch (error) {
 
-    res.status(500).json(error);
-}
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+
 };
 
-
+// UPDATE USER
 export const editUser = async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        await updateUserService(
+            req.params.id,
+            req.body
+        );
 
-        const currentUser = await getUserById(id);
-
-        if (currentUser.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const updatedUser = {
-            ...currentUser[0],
-            ...req.body,
-            password: req.body.password
-                ? await bcrypt.hash(req.body.password, 10)
-                : currentUser[0].password
-        };
-
-        const result = await updateUser(id, updatedUser);
-
-        res.json({
+        res.status(200).json({
             message: "User updated successfully"
         });
 
     } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Unable to update user" });
-}
+
+        if (error.message === "USER_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "User not found"
+            });
+
+        }
+
+        if (error.message === "EMAIL_ALREADY_EXISTS") {
+
+            return res.status(409).json({
+                message: "Email already exists"
+            });
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
 
 };
 
-export const removeUser =async(req,res)=>{
-    try{
-    const id=req.params.id;
+// DELETE USER
+export const removeUser = async (req, res) => {
 
-    const result = await deleteUser(id);
-        
-         if(result.affectedRows=== 0){
+    try {
+
+        await deleteUserService(
+            req.params.id
+        );
+
+        res.status(200).json({
+            message: "User deleted successfully"
+        });
+
+    } catch (error) {
+
+        if (error.message === "USER_NOT_FOUND") {
+
             return res.status(404).json({
-                message:"User not found"
+                message: "User not found"
             });
-        };
-        res.json({
-            message:"User deleted successfully"
-    });
-} catch (error) {
-    res.status(500).json(error);
-}
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+
 };

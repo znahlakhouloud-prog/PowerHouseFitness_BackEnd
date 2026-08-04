@@ -3,12 +3,27 @@ import {fetchUsers,fetchUserById,editUser,removeUser} from "../controllers/userC
 import {validateUser} from "../middleware/validateUser.js";
 import {authenticateToken} from "../middleware/authMiddleware.js";
 import {authorizeRoles} from "../middleware/roleMiddleware.js";
+import { validateUpdateUser } from "../middleware/validateUpdateUser.js";
+
 const router = express.Router();
 
-router.get("/",authenticateToken,fetchUsers);
-// router.post("/",validateUser,addUser);
-router.get("/:id",fetchUserById);
-router.put("/:id",editUser);
-router.delete("/:id",authenticateToken,authorizeRoles("admin"),removeUser);
+router.get("/", authenticateToken, authorizeRoles("admin"), fetchUsers);
+
+router.get("/:id", authenticateToken, fetchUserById);
+
+router.put(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    validateUpdateUser,
+    editUser
+);
+
+router.delete(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    removeUser
+);
 
 export default router;
