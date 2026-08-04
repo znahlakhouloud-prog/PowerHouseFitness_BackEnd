@@ -38,14 +38,16 @@ export const getAllUsers = async () => {
 
 
    export const getUserById =async(id)=>{
-    const sql = `SELECT 
-                        id,
-                        user_name,
-                        age,
-                        email,
-                        role
-                   FROM user
-                   WHERE id=?`;
+    const sql = `SELECT
+    id,
+    user_name,
+    age,
+    email,
+    password,
+    role,
+    must_change_password
+FROM user
+WHERE id = ?`;
 
     const [rows]= await db.query(sql,[id]);
 
@@ -107,3 +109,22 @@ export const getAllUsers = async () => {
 
     return rows.length > 0;
    };
+
+  export const changePassword = async (id, hashedPassword) => {
+
+    const sql = `
+        UPDATE user
+        SET
+            password = ?,
+            must_change_password = 0
+        WHERE id = ?
+    `;
+
+    const [result] = await db.query(sql, [
+        hashedPassword,
+        id
+    ]);
+
+    return result;
+
+};

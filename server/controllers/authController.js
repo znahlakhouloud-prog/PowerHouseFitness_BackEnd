@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
-// import { findUserByEmail } from "../models/authModel.js";
-import {getUserByEmail} from "../models/user.js";
 import jwt from "jsonwebtoken";
+import {getUserByEmail} from "../models/user.js";
+import { changePasswordService } from "../services/userService.js";
 
 // export const login =(req,res)=>{
 
@@ -49,8 +49,9 @@ export const login = async(req,res) => {
                 message: "Invalid email or password"
             });
         }
+        const user = users[0];
 
-        const isMatch = await bcrypt.compare(password,users[0].password);
+        const isMatch = await bcrypt.compare(password,user.password);
 
         if(!isMatch){
             return res.status(401).json({
@@ -59,19 +60,65 @@ export const login = async(req,res) => {
         }
 
         const token= jwt.sign({
-            id: users[0].id,
-            role: users[0].role
+            id: user.id,
+            role: user.role
         },
     process.env.JWT_SECRET,
 {
     expiresIn: "1h"
 }
 );
-return res.json({
+return res.status(200).json({
     message : "Login successful",
-    token
+    token,
+    user:{
+        id: user.id,
+        user_name: user.user_name,
+        email: user.email,
+        role: user.role,
+         must_change_password: user.must_change_password
+    }
 });
      } catch (error){
             res.status(500).json(error);
         }
      };
+
+
+export const changePassword = async (req, res) => {
+
+    try {
+
+        const id = req.user.id; // obtained from JWT
+
+        const { oldPassword, newPassword } = req.body;
+
+        await changePasswordService(
+            id,
+            oldPassword,
+            newPassword
+        );
+
+        res.status(200).json({
+            message: "Password changed successfully"
+        });
+
+    } catch (error) {
+
+        if (error.message === "USER_NOT_FOUND") {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        if (error.message === "INVALID_PASSWORD") {
+            return res.status(401).json({
+                message: "Old password is incorrect"
+            });
+        }
+
+        res.status(500).json(error);
+
+    }
+
+};
