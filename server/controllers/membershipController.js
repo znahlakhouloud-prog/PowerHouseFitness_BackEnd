@@ -1,43 +1,62 @@
-import {getAllMemberships,
-        getMembershipById,
-        getActiveMembershipByUserId,
-        updateExpiredMemberships} from "../models/membership.js";
-import { createMembershipService } from "../services/membershipService.js";
+import {
+    fetchMembershipsService,
+    fetchMembershipByIdService,
+    createMembershipService,
+    checkMembershipAccessService,
+    renewMembershipService
+} from "../services/membershipService.js";
 
+// GET ALL MEMBERSHIPS
+export const fetchMemberships = async (req, res) => {
 
+    try {
 
+        const memberships =
+            await fetchMembershipsService();
 
-export const fetchMemberships = async (req,res)=>{
-    try{
-        // update expired memberships first
-        await updateExpiredMemberships();
+        res.status(200).json(memberships);
 
-        // then fetch all memberships
-        const memberships = await getAllMemberships();
+    } catch (error) {
 
-        res.json(memberships);
-    }catch (error){
-        res.status(500).json(error);
+        res.status(500).json({
+            message: error.message
+        });
+
     }
+
 };
 
-export const fetchMembershipById = async(req,res)=>{
-    try{
-        await updateExpiredMemberships();
-        const id=req.params.id;
-        const memberships= await getMembershipById(id);
-        
-           if(memberships.length===0){
+// GET MEMBERSHIP BY ID
+export const fetchMembershipById = async (req, res) => {
+
+    try {
+
+        const membership =
+            await fetchMembershipByIdService(
+                req.params.id
+            );
+
+        res.status(200).json(membership);
+
+    } catch (error) {
+
+        if (error.message === "MEMBERSHIP_NOT_FOUND") {
+
             return res.status(404).json({
                 message: "Membership not found"
             });
-           }
-           res.json(memberships[0]);
-    } catch(error){
-        res.status(500).json(error);
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
     }
+
 };
 
+// CREATE MEMBERSHIP
 export const addMembership = async (req, res) => {
 
     try {
@@ -52,45 +71,72 @@ export const addMembership = async (req, res) => {
 
     } catch (error) {
 
-       res.status(error.status || 500).json({
-        message: error.message
-    });
+        if (error.message === "USER_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "User not found"
+            });
+
+        }
+
+        if (error.message === "ACTIVE_MEMBERSHIP_EXISTS") {
+
+            return res.status(409).json({
+                message: "User already has an active membership"
+            });
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
     }
 
 };
 
-export const checkMembershipAccess = async (req,res)=>{
-    try{
-        // first update expired memberships
-        await updateExpiredMemberships();
+// CHECK MEMBERSHIP ACCESS
+export const checkMembershipAccess = async (req, res) => {
 
-        const memberships = await getActiveMembershipByUserId(req.params.id_user);
+    try {
 
-         if(memberships.length===0){
-            return res.status(404).json ({
+        const membership =
+            await checkMembershipAccessService(
+                req.params.id_user
+            );
+
+        res.status(200).json({
+            allowed: true,
+            message: "Access granted",
+            membership
+        });
+
+    } catch (error) {
+
+        if (error.message === "NO_ACTIVE_MEMBERSHIP") {
+
+            return res.status(404).json({
                 allowed: false,
                 message: "No active membership found"
             });
-         }
-         res.json({
-            allowed: true,
-            message:"Access granted",
-            membership:memberships[0]
-         });
-    } catch (error){
-        res.status(500).json(error);
-        console.log(error);
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
 
     }
-    
+
 };
 
+// RENEW MEMBERSHIP
 export const renewMembership = async (req, res) => {
 
     try {
 
         const result =
-            await createMembershipService(req.body);
+            await renewMembershipService(req.body);
 
         res.status(201).json({
             message: "Membership renewed successfully",
@@ -99,9 +145,26 @@ export const renewMembership = async (req, res) => {
 
     } catch (error) {
 
-        res.status(error.status || 500).json({
-        message: error.message
-    });
+        if (error.message === "USER_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "User not found"
+            });
+
+        }
+
+        if (error.message === "ACTIVE_MEMBERSHIP_EXISTS") {
+
+            return res.status(409).json({
+                message: "User already has an active membership"
+            });
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
     }
 
 };

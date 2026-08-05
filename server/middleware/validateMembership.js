@@ -20,9 +20,10 @@ export const validateMembership =[
         .isISO8601()
         .withMessage("Invalid start date"),
 
-    body("state")
-        .isIn(["active", "expired"])
-        .withMessage("Invalid membership state"),
+    body("duration_promo")
+       .optional()
+       .isInt({ min: 0 })
+       .withMessage("Promotion duration must be 0 or greater"),
 
     body("type")
         .notEmpty()
