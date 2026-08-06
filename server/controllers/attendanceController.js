@@ -1,54 +1,56 @@
 import {
-    getAllAttendances,
-    getAttendanceById } from "../models/attendance.js";
+    fetchAttendancesService,
+    fetchAttendanceByIdService,
+    createAttendanceService
+} from "../services/attendanceService.js";
 
-import { createAttendanceService } from "../services/attendanceService.js";
-
+// GET ALL ATTENDANCES
 export const fetchAttendances = async (req, res) => {
 
     try {
 
-        const attendances = await getAllAttendances();
+        const attendances =
+            await fetchAttendancesService();
 
         res.json(attendances);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// GET ATTENDANCE BY ID
 export const fetchAttendanceById = async (req, res) => {
 
     try {
 
-        const attendance = await getAttendanceById(req.params.id);
+        const attendance =
+            await fetchAttendanceByIdService(req.params.id);
 
-        if (attendance.length === 0) {
-
-            return res.status(404).json({
-                message: "Attendance not found"
-            });
-
-        }
-
-        res.json(attendance[0]);
+        res.json(attendance);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// MEMBER CHECK-IN
 export const checkIn = async (req, res) => {
 
     try {
 
-        const result = await createAttendanceService(req.body);
+        const result =
+            await createAttendanceService(req.body);
 
         res.status(201).json({
             message: "Check-in successful",

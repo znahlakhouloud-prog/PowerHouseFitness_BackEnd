@@ -1,14 +1,43 @@
 import {
-    createAttendance,
-    getAttendanceToday } from "../models/attendance.js";
+    getAllAttendances,
+    getAttendanceById,
+    getAttendanceToday,
+    createAttendance
+} from "../models/attendance.js";
 
 import { getUserById } from "../models/user.js";
+import { getActiveMembershipByUserId,updateExpiredMemberships } from "../models/membership.js";
 
-import { getActiveMembershipByUserId } from "../models/membership.js";
+// GET ALL ATTENDANCES
+export const fetchAttendancesService = async () => {
 
+    return await getAllAttendances();
+
+};
+
+// GET ATTENDANCE BY ID
+export const fetchAttendanceByIdService = async (id) => {
+
+    const attendances = await getAttendanceById(id);
+
+    if (attendances.length === 0) {
+
+        const error = new Error("Attendance not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    return attendances[0];
+
+};
+
+// CREATE ATTENDANCE (CHECK-IN)
 export const createAttendanceService = async (data) => {
+    //1. Update expired memberships first
+    await updateExpiredMemberships();
 
-    // 1. User exists
+    //2. Check user exists
     const user = await getUserById(data.id_user);
 
     if (user.length === 0) {
@@ -19,7 +48,7 @@ export const createAttendanceService = async (data) => {
 
     }
 
-    // 2. Active membership
+    //3. Check active membership
     const membership =
         await getActiveMembershipByUserId(data.id_user);
 
@@ -31,11 +60,11 @@ export const createAttendanceService = async (data) => {
 
     }
 
-    // 3. Already checked in today?
-    const today =
+    // 4. Already checked in today?
+    const attendanceToday =
         await getAttendanceToday(data.id_user);
 
-    if (today.length > 0) {
+    if (attendanceToday.length > 0) {
 
         const error = new Error("Member already checked in today");
         error.status = 409;
@@ -43,16 +72,17 @@ export const createAttendanceService = async (data) => {
 
     }
 
-    // 4. Create attendance
+    // 5. Create attendance
+    const now = new Date();
+
     const attendance = {
 
         id_user: data.id_user,
 
         attendance_date:
-            new Date().toISOString().split("T")[0],
+            now.toISOString().split("T")[0],
 
-        check_in:
-            new Date()
+        check_in: now
 
     };
 
