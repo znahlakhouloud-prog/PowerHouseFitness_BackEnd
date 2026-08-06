@@ -7,12 +7,18 @@ export const validateCoach = [
         .withMessage("Valid user ID is required"),
 
     body("state")
-        .notEmpty()
-        .withMessage("State is required"),
+        .isIn([
+            "available",
+            "busy",
+            "vacation"
+        ])
+        .withMessage(
+            "State must be available, busy or vacation"
+        ),
 
     body("nbr_hr")
         .isInt({ min: 0 })
-        .withMessage("Number of hours must be positive"),
+        .withMessage("Number of hours must be greater than or equal to 0"),
 
     (req, res, next) => {
 

@@ -1,10 +1,14 @@
 import db from "../config/database.js";
 
+// GET ALL COACHES
 export const getAllCoaches = async () => {
 
     const sql = `
         SELECT
-            c.*,
+            c.id,
+            c.id_user,
+            c.state,
+            c.nbr_hr,
             u.user_name,
             u.email
         FROM coach c
@@ -18,11 +22,15 @@ export const getAllCoaches = async () => {
     return rows;
 };
 
+// GET COACH BY ID
 export const getCoachById = async (id) => {
 
     const sql = `
         SELECT
-            c.*,
+            c.id,
+            c.id_user,
+            c.state,
+            c.nbr_hr,
             u.user_name,
             u.email
         FROM coach c
@@ -31,30 +39,40 @@ export const getCoachById = async (id) => {
         WHERE c.id = ?
     `;
 
-    const [rows] = await db.query(sql,[id]);
+    const [rows] = await db.query(sql, [id]);
 
     return rows;
 };
 
+// GET COACH BY USER ID
 export const getCoachByUserId = async (id_user) => {
 
     const sql = `
-        SELECT *
+        SELECT
+            id,
+            id_user,
+            state,
+            nbr_hr
         FROM coach
         WHERE id_user = ?
     `;
 
-    const [rows] = await db.query(sql,[id_user]);
+    const [rows] = await db.query(sql, [id_user]);
 
     return rows;
 };
 
+// CREATE COACH
 export const createCoach = async (coachData) => {
 
     const sql = `
         INSERT INTO coach
-        (id_user,state,nbr_hr)
-        VALUES (?,?,?)
+        (
+            id_user,
+            state,
+            nbr_hr
+        )
+        VALUES (?, ?, ?)
     `;
 
     const values = [
@@ -63,11 +81,12 @@ export const createCoach = async (coachData) => {
         coachData.nbr_hr
     ];
 
-    const [result] = await db.query(sql,values);
+    const [result] = await db.query(sql, values);
 
     return result;
 };
 
+// UPDATE COACH
 export const updateCoach = async (id, coachData) => {
 
     const sql = `
@@ -84,11 +103,12 @@ export const updateCoach = async (id, coachData) => {
         id
     ];
 
-    const [result] = await db.query(sql,values);
+    const [result] = await db.query(sql, values);
 
     return result;
 };
 
+// DELETE COACH
 export const deleteCoach = async (id) => {
 
     const sql = `
@@ -96,7 +116,7 @@ export const deleteCoach = async (id) => {
         WHERE id = ?
     `;
 
-    const [result] = await db.query(sql,[id]);
+    const [result] = await db.query(sql, [id]);
 
     return result;
 };

@@ -9,17 +9,51 @@ import {
 } from "../controllers/coachController.js";
 
 import { validateCoach } from "../middleware/validateCoach.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", fetchCoaches);
+// GET ALL COACHES
+router.get(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchCoaches
+);
 
-router.get("/:id", fetchCoachById);
+// GET COACH BY ID
+router.get(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchCoachById
+);
 
-router.post("/", validateCoach, addCoach);
+// CREATE COACH
+router.post(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin"),
+    validateCoach,
+    addCoach
+);
 
-router.put("/:id", validateCoach, editCoach);
+// UPDATE COACH
+router.put(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    validateCoach,
+    editCoach
+);
 
-router.delete("/:id", removeCoach);
+// DELETE COACH
+router.delete(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    removeCoach
+);
 
 export default router;
