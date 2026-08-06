@@ -5,26 +5,64 @@ import {
     fetchPaymentById,
     fetchPaymentsByMembership,
     addPayment,
-    updatePayment,
-    removePayment } from "../controllers/paymentController.js";
+    editPayment,
+    removePayment
+} from "../controllers/paymentController.js";
+
 import { validatePayment } from "../middleware/validatePayment.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", fetchPayments);
+// GET ALL PAYMENTS
+router.get(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchPayments
+);
 
-router.get("/membership/:id_membership", fetchPaymentsByMembership);
+// GET PAYMENT BY ID
+router.get(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchPaymentById
+);
 
-router.get("/:id", fetchPaymentById);
+// GET PAYMENTS OF A MEMBERSHIP
+router.get(
+    "/membership/:id_membership",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchPaymentsByMembership
+);
 
-router.post("/",validatePayment, addPayment);
+// CREATE PAYMENT
+router.post(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    validatePayment,
+    addPayment
+);
 
-router.put("/:id", validatePayment, updatePayment);
+// UPDATE PAYMENT
+router.put(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    validatePayment,
+    editPayment
+);
 
-router.delete("/:id", removePayment);
+// DELETE PAYMENT
+router.delete(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    removePayment
+);
 
 export default router;
-
-
-
-

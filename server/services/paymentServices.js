@@ -1,77 +1,189 @@
-import { createPayment, getPaymentById, getTotalPaidByMembership, updatePayment } from "../models/payment.js";
-import { getMembershipById } from "../models/membership.js";
+import {
+    getAllPayments,
+    getPaymentById,
+    getPaymentsByMembership,
+    createPayment,
+    updatePayment,
+    deletePayment,
+    getTotalPaidByMembership
+} from "../models/payment.js";
 
-export const createPaymentService = async (data) => {
+import {
+    getMembershipById
+} from "../models/membership.js";
 
-    const membership = await getMembershipById(data.id_membership);
 
-    if (membership.length === 0) {
-        const error = new Error("Membership not found");
-        error.status = 404;
-        throw error;
-    }
+// GET ALL PAYMENTS
+export const fetchPaymentsService = async () => {
 
-    const membershipData = membership[0];
+    return await getAllPayments();
 
-    if (membershipData.state === "expired") {
-        const error = new Error("Membership is expired");
-        error.status = 409;
-        throw error;
-    }
-
-    const totalPaid = await getTotalPaidByMembership(data.id_membership);
-
-    const remaining = membershipData.price - totalPaid;
-
-    if (remaining <= 0) {
-        const error = new Error("Membership already fully paid");
-        error.status = 409;
-        throw error;
-    }
-
-    if (data.amount > remaining) {
-        const error = new Error(`Payment exceeds remaining balance (${remaining})`);
-        error.status = 409;
-        throw error;
-    }
-
-    const paymentData = {
-        ...data,
-        rest: remaining - data.amount
-    };
-
-    return await createPayment(paymentData);
 };
 
-export const updatePaymentService = async (id, data) => {
+// GET PAYMENT BY ID
+export const fetchPaymentByIdService = async (id) => {
+
     const payments = await getPaymentById(id);
 
     if (payments.length === 0) {
+
         const error = new Error("Payment not found");
         error.status = 404;
         throw error;
+
     }
 
-    const membership = await getMembershipById(data.id_membership);
+    return payments[0];
 
-    if (membership.length === 0) {
+};
+
+// GET PAYMENTS BY MEMBERSHIP
+export const fetchPaymentsByMembershipService = async (id_membership) => {
+
+    return await getPaymentsByMembership(id_membership);
+
+};
+
+// CREATE PAYMENT
+export const createPaymentService = async (data) => {
+
+    // Check membership exists
+    const memberships = await getMembershipById(data.id_membership);
+
+    if (memberships.length === 0) {
+
         const error = new Error("Membership not found");
         error.status = 404;
         throw error;
+
     }
 
-    const membershipData = membership[0];
-    const totalPaid = await getTotalPaidByMembership(data.id_membership);
-    const totalExcludingCurrent = data.id_membership === payments[0].id_membership
-        ? totalPaid - payments[0].amount
-        : totalPaid;
-    const remaining = membershipData.price - totalExcludingCurrent;
+    const membership = memberships[0];
 
-    if (data.amount > remaining) {
-        const error = new Error(`Payment exceeds remaining balance (${remaining})`);
+    // Remaining amount
+    const totalPaid =
+        await getTotalPaidByMembership(data.id_membership);
+
+    const remaining =
+        membership.price - totalPaid;
+
+    if (remaining <= 0) {
+
+        const error = new Error("Membership already fully paid");
         error.status = 409;
         throw error;
+
     }
 
-    return updatePayment(id, { ...data, rest: remaining - data.amount });
+    if (Number(data.amount) > remaining) {
+
+        const error = new Error(
+            `Payment exceeds remaining balance (${remaining})`
+        );
+
+        error.status = 409;
+        throw error;
+
+    }
+
+    const paymentData = {
+
+        id_membership: data.id_membership,
+        p_date: data.p_date,
+        amount: Number(data.amount),
+        type: data.type,
+        rest: remaining - Number(data.amount)
+
+    };
+
+    return await createPayment(paymentData);
+
+};
+
+// UPDATE PAYMENT
+export const updatePaymentService = async (id, data) => {
+
+    const payments = await getPaymentById(id);
+
+    if (payments.length === 0) {
+
+        const error = new Error("Payment not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    const currentPayment = payments[0];
+
+    const memberships =
+        await getMembershipById(data.id_membership);
+
+    if (memberships.length === 0) {
+
+        const error = new Error("Membership not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    const membership = memberships[0];
+
+    const totalPaid =
+        await getTotalPaidByMembership(data.id_membership);
+
+    let totalWithoutCurrent = totalPaid;
+
+    if (
+        currentPayment.id_membership ===
+        data.id_membership
+    ) {
+
+        totalWithoutCurrent =
+            totalPaid - currentPayment.amount;
+
+    }
+
+    const remaining =
+        membership.price - totalWithoutCurrent;
+
+    if (Number(data.amount) > remaining) {
+
+        const error = new Error(
+            `Payment exceeds remaining balance (${remaining})`
+        );
+
+        error.status = 409;
+        throw error;
+
+    }
+
+    const paymentData = {
+
+        id_membership: data.id_membership,
+        p_date: data.p_date,
+        amount: Number(data.amount),
+        type: data.type,
+        rest: remaining - Number(data.amount)
+
+    };
+
+    return await updatePayment(id, paymentData);
+
+};
+
+// DELETE PAYMENT
+export const deletePaymentService = async (id) => {
+
+    const payments = await getPaymentById(id);
+
+    if (payments.length === 0) {
+
+        const error = new Error("Payment not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    return await deletePayment(id);
+
 };

@@ -1,69 +1,88 @@
 import {
-    getAllPayments,
-    getPaymentById,
-    getPaymentsByMembership,
-    createPayment,
-    deletePayment  } from "../models/payment.js";
-import { createPaymentService,
-         updatePaymentService } from "../services/paymentServices.js";
 
+    fetchPaymentsService,
+    fetchPaymentByIdService,
+    fetchPaymentsByMembershipService,
+    createPaymentService,
+    updatePaymentService,
+    deletePaymentService
+
+} from "../services/paymentServices.js";
+
+// GET ALL PAYMENTS
 export const fetchPayments = async (req, res) => {
-     try {
 
-        const payments = await getAllPayments();
+    try {
+
+        const payments = await fetchPaymentsService();
 
         res.json(payments);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(500).json({
+            message: error.message
+        });
 
     }
+
 };
 
+// GET PAYMENT BY ID
 export const fetchPaymentById = async (req, res) => {
-     try {
 
-        const payments = await getPaymentById(req.params.id);
+    try {
 
-        if (payments.length === 0) {
-            return res.status(404).json({
-                message: "Payment not found"
-            });
-        }
+        const payment =
+            await fetchPaymentByIdService(req.params.id);
 
-        res.json(payments[0]);
+        res.json(payment);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
+
 };
 
+// GET PAYMENTS BY MEMBERSHIP
 export const fetchPaymentsByMembership = async (req, res) => {
+
     try {
 
         const payments =
-            await getPaymentsByMembership(req.params.id_membership);
+            await fetchPaymentsByMembershipService(
+                req.params.id_membership
+            );
 
         res.json(payments);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
+
 };
 
+// CREATE PAYMENT
 export const addPayment = async (req, res) => {
+
     try {
 
-        const result = await createPaymentService(req.body);
+        const result =
+            await createPaymentService(req.body);
 
         res.status(201).json({
+
             message: "Payment created successfully",
             id: result.insertId
+
         });
 
     } catch (error) {
@@ -73,16 +92,23 @@ export const addPayment = async (req, res) => {
         });
 
     }
+
 };
 
-export const updatePayment = async (req, res) => {
+// UPDATE PAYMENT
+export const editPayment = async (req, res) => {
 
     try {
 
-        await updatePaymentService(req.params.id, req.body);
+        await updatePaymentService(
+            req.params.id,
+            req.body
+        );
 
         res.json({
+
             message: "Payment updated successfully"
+
         });
 
     } catch (error) {
@@ -95,25 +121,24 @@ export const updatePayment = async (req, res) => {
 
 };
 
+// DELETE PAYMENT
 export const removePayment = async (req, res) => {
 
     try {
 
-        const result = await deletePayment(req.params.id);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                message: "Payment not found"
-            });
-        }
+        await deletePaymentService(req.params.id);
 
         res.json({
+
             message: "Payment deleted successfully"
+
         });
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 

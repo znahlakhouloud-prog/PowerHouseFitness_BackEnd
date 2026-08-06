@@ -1,16 +1,24 @@
 import db from "../config/database.js";
 
+// GET ALL PAYMENTS
 export const getAllPayments = async () => {
 
     const sql = `
-       SELECT
-            p.*,
+        SELECT
+            p.id,
+            p.id_membership,
+            p.p_date,
+            p.amount,
+            p.type,
+            p.rest,
             u.user_name,
             m.name AS membership_name
-       FROM payment p
-       JOIN membership m ON p.id_membership = m.id
-       JOIN user u ON m.id_user = u.id
-       ORDER BY p.id DESC;
+        FROM payment p
+        JOIN membership m
+            ON p.id_membership = m.id
+        JOIN user u
+            ON m.id_user = u.id
+        ORDER BY p.id DESC
     `;
 
     const [rows] = await db.query(sql);
@@ -18,18 +26,25 @@ export const getAllPayments = async () => {
     return rows;
 };
 
+// GET PAYMENT BY ID
 export const getPaymentById = async (id) => {
 
     const sql = `
-       SELECT
-            p.*,
+        SELECT
+            p.id,
+            p.id_membership,
+            p.p_date,
+            p.amount,
+            p.type,
+            p.rest,
             u.user_name,
             m.name AS membership_name
-       FROM payment p
-       JOIN membership m ON p.id_membership = m.id
-       JOIN user u ON m.id_user = u.id
-       WHERE p.id = ?
-       ORDER BY p.id DESC;
+        FROM payment p
+        JOIN membership m
+            ON p.id_membership = m.id
+        JOIN user u
+            ON m.id_user = u.id
+        WHERE p.id = ?
     `;
 
     const [rows] = await db.query(sql, [id]);
@@ -37,18 +52,26 @@ export const getPaymentById = async (id) => {
     return rows;
 };
 
+// GET PAYMENTS BY MEMBERSHIP
 export const getPaymentsByMembership = async (id_membership) => {
 
     const sql = `
-       SELECT
-            p.*,
+        SELECT
+            p.id,
+            p.id_membership,
+            p.p_date,
+            p.amount,
+            p.type,
+            p.rest,
             u.user_name,
             m.name AS membership_name
-       FROM payment p
-       JOIN membership m ON p.id_membership = m.id
-       JOIN user u ON m.id_user = u.id
-       WHERE p.id_membership = ?
-       ORDER BY p.id DESC;
+        FROM payment p
+        JOIN membership m
+            ON p.id_membership = m.id
+        JOIN user u
+            ON m.id_user = u.id
+        WHERE p.id_membership = ?
+        ORDER BY p.p_date ASC, p.id ASC
     `;
 
     const [rows] = await db.query(sql, [id_membership]);
@@ -56,11 +79,18 @@ export const getPaymentsByMembership = async (id_membership) => {
     return rows;
 };
 
+// CREATE PAYMENT
 export const createPayment = async (paymentData) => {
 
     const sql = `
         INSERT INTO payment
-        (id_membership, p_date, amount, type, rest)
+        (
+            id_membership,
+            p_date,
+            amount,
+            type,
+            rest
+        )
         VALUES (?, ?, ?, ?, ?)
     `;
 
@@ -77,10 +107,12 @@ export const createPayment = async (paymentData) => {
     return result;
 };
 
+// GET TOTAL PAID
 export const getTotalPaidByMembership = async (id_membership) => {
 
     const sql = `
-        SELECT COALESCE(SUM(amount), 0) AS total_paid
+        SELECT
+            COALESCE(SUM(amount),0) AS total_paid
         FROM payment
         WHERE id_membership = ?
     `;
@@ -90,6 +122,7 @@ export const getTotalPaidByMembership = async (id_membership) => {
     return rows[0].total_paid;
 };
 
+// UPDATE PAYMENT
 export const updatePayment = async (id, paymentData) => {
 
     const sql = `
@@ -117,6 +150,7 @@ export const updatePayment = async (id, paymentData) => {
     return result;
 };
 
+// DELETE PAYMENT
 export const deletePayment = async (id) => {
 
     const sql = `
@@ -129,5 +163,21 @@ export const deletePayment = async (id) => {
     return result;
 };
 
+// PAYMENT HISTORY
+export const getPaymentHistoryByMembership = async (id_membership) => {
 
+    const sql = `
+        SELECT
+            id,
+            amount,
+            p_date,
+            rest
+        FROM payment
+        WHERE id_membership = ?
+        ORDER BY p_date ASC, id ASC
+    `;
 
+    const [rows] = await db.query(sql, [id_membership]);
+
+    return rows;
+};

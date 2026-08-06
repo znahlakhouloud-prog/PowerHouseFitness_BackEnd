@@ -12,22 +12,32 @@ export const validatePayment = [
 
     body("p_date")
         .isISO8601()
-        .withMessage("Invalid payment date"),
+        .withMessage("Valid payment date is required"),
 
     body("type")
-        .notEmpty()
-        .withMessage("Payment type is required"),
+        .isIn([
+            "cash",
+            "card",
+            "transfer"
+        ])
+        .withMessage(
+            "Payment type must be cash, card or transfer"
+        ),
 
     (req, res, next) => {
 
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
+
             return res.status(400).json({
                 errors: errors.array()
             });
+
         }
 
         next();
+
     }
+
 ];
