@@ -7,16 +7,29 @@ export const validateNotification = [
         .withMessage("Valid user ID is required"),
 
     body("title")
+        .trim()
         .notEmpty()
-        .withMessage("Title is required"),
+        .withMessage("Title is required")
+        .isLength({ max: 45 })
+        .withMessage("Title must not exceed 45 characters"),
 
     body("descrip")
+        .trim()
         .notEmpty()
-        .withMessage("Description is required"),
+        .withMessage("Description is required")
+        .isLength({ max: 225 })
+        .withMessage("Description must not exceed 225 characters"),
 
     body("type")
-        .notEmpty()
-        .withMessage("Type is required"),
+        .isIn([
+            "membership",
+            "payment",
+            "attendance",
+            "general"
+        ])
+        .withMessage(
+            "Type must be membership, payment, attendance or general"
+        ),
 
     (req, res, next) => {
 

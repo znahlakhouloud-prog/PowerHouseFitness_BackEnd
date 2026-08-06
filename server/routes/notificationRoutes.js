@@ -6,23 +6,69 @@ import {
     fetchNotificationsByUserId,
     addNotification,
     editNotification,
-    removeNotification
+    removeNotification,
+    readNotification
 } from "../controllers/notificationController.js";
 
 import { validateNotification } from "../middleware/validateNotification.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", fetchNotifications);
+// GET ALL NOTIFICATIONS
+router.get(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchNotifications
+);
 
-router.get("/user/:id_user", fetchNotificationsByUserId);
+// GET USER NOTIFICATIONS
+router.get(
+    "/user/:id_user",
+    authenticateToken,
+    fetchNotificationsByUserId
+);
 
-router.get("/:id", fetchNotificationById);
+// GET NOTIFICATION BY ID
+router.get(
+    "/:id",
+    authenticateToken,
+    fetchNotificationById
+);
 
-router.post("/", validateNotification, addNotification);
+// CREATE NOTIFICATION
+router.post(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    validateNotification,
+    addNotification
+);
 
-router.put("/:id", validateNotification, editNotification);
+// UPDATE NOTIFICATION
+router.put(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    validateNotification,
+    editNotification
+);
 
-router.delete("/:id", removeNotification);
+// MARK AS READ
+router.patch(
+    "/:id/read",
+    authenticateToken,
+    readNotification
+);
+
+// DELETE NOTIFICATION
+router.delete(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    removeNotification
+);
 
 export default router;

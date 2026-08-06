@@ -1,69 +1,74 @@
 import {
-    getAllNotifications,
-    getNotificationById,
-    getNotificationsByUserId,
-    updateNotification,
-    deleteNotification } from "../models/notification.js";
+    fetchNotificationsService,
+    fetchNotificationByIdService,
+    fetchNotificationsByUserIdService,
+    createNotificationService,
+    updateNotificationService,
+    deleteNotificationService,
+    markNotificationAsReadService
+} from "../services/notificationService.js";
 
-import { createNotificationService } from "../services/notificationService.js";
-
+// GET ALL NOTIFICATIONS
 export const fetchNotifications = async (req, res) => {
 
     try {
 
-        const notifications = await getAllNotifications();
+        const notifications =
+            await fetchNotificationsService();
 
         res.json(notifications);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// GET NOTIFICATION BY ID
 export const fetchNotificationById = async (req, res) => {
 
     try {
 
-        const notification = await getNotificationById(req.params.id);
+        const notification =
+            await fetchNotificationByIdService(req.params.id);
 
-        if (notification.length === 0) {
-
-            return res.status(404).json({
-                message: "Notification not found"
-            });
-
-        }
-
-        res.json(notification[0]);
+        res.json(notification);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// GET USER NOTIFICATIONS
 export const fetchNotificationsByUserId = async (req, res) => {
 
     try {
 
         const notifications =
-            await getNotificationsByUserId(req.params.id_user);
+            await fetchNotificationsByUserIdService(req.params.id_user);
 
         res.json(notifications);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// CREATE NOTIFICATION
 export const addNotification = async (req, res) => {
 
     try {
@@ -86,20 +91,15 @@ export const addNotification = async (req, res) => {
 
 };
 
+// UPDATE NOTIFICATION
 export const editNotification = async (req, res) => {
 
     try {
 
-        const result =
-            await updateNotification(req.params.id, req.body);
-
-        if (result.affectedRows === 0) {
-
-            return res.status(404).json({
-                message: "Notification not found"
-            });
-
-        }
+        await updateNotificationService(
+            req.params.id,
+            req.body
+        );
 
         res.json({
             message: "Notification updated successfully"
@@ -107,26 +107,20 @@ export const editNotification = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// DELETE NOTIFICATION
 export const removeNotification = async (req, res) => {
 
     try {
 
-        const result =
-            await deleteNotification(req.params.id);
-
-        if (result.affectedRows === 0) {
-
-            return res.status(404).json({
-                message: "Notification not found"
-            });
-
-        }
+        await deleteNotificationService(req.params.id);
 
         res.json({
             message: "Notification deleted successfully"
@@ -134,7 +128,30 @@ export const removeNotification = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// MARK AS READ
+export const readNotification = async (req, res) => {
+
+    try {
+
+        await markNotificationAsReadService(req.params.id);
+
+        res.json({
+            message: "Notification marked as read"
+        });
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
