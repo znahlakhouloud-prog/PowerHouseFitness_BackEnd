@@ -1,47 +1,126 @@
 import {
+    getAllEquipments,
+    getEquipmentById,
     createEquipment,
-    updateEquipment } from "../models/equipment.js";
+    updateEquipment,
+    deleteEquipment
+} from "../models/equipment.js";
 
+const allowedStates = [
+    "available",
+    "maintenance",
+    "broken"
+];
+
+// GET ALL EQUIPMENTS
+export const fetchEquipmentsService = async () => {
+
+    return await getAllEquipments();
+
+};
+
+// GET EQUIPMENT BY ID
+export const fetchEquipmentByIdService = async (id) => {
+
+    const equipments = await getEquipmentById(id);
+
+    if (equipments.length === 0) {
+
+        const error = new Error("Equipment not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    return equipments[0];
+
+};
+
+// CREATE EQUIPMENT
 export const createEquipmentService = async (data) => {
-
-    const allowedStates = [
-        "available",
-        "maintenance",
-        "broken"
-    ];
 
     if (!allowedStates.includes(data.state)) {
 
-        const error = new Error(
-            "Invalid equipment state"
-        );
-
+        const error = new Error("Invalid equipment state");
         error.status = 400;
-
         throw error;
+
+    }
+
+    const maintDate = new Date(data.maint_date);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    maintDate.setHours(0, 0, 0, 0);
+
+    if (maintDate > today) {
+
+        const error = new Error(
+            "Last maintenance date cannot be in the future"
+        );
+        error.status = 400;
+        throw error;
+
     }
 
     return await createEquipment(data);
+
 };
 
+// UPDATE EQUIPMENT
 export const updateEquipmentService = async (id, data) => {
 
-    const allowedStates = [
-        "available",
-        "maintenance",
-        "broken"
-    ];
+    const equipments = await getEquipmentById(id);
+
+    if (equipments.length === 0) {
+
+        const error = new Error("Equipment not found");
+        error.status = 404;
+        throw error;
+
+    }
 
     if (!allowedStates.includes(data.state)) {
 
-        const error = new Error(
-            "Invalid equipment state"
-        );
-
+        const error = new Error("Invalid equipment state");
         error.status = 400;
-
         throw error;
+
+    }
+
+    const maintDate = new Date(data.maint_date);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+    maintDate.setHours(0, 0, 0, 0);
+
+    if (maintDate > today) {
+
+        const error = new Error(
+            "Last maintenance date cannot be in the future"
+        );
+        error.status = 400;
+        throw error;
+
     }
 
     return await updateEquipment(id, data);
+
+};
+
+// DELETE EQUIPMENT
+export const deleteEquipmentService = async (id) => {
+
+    const equipments = await getEquipmentById(id);
+
+    if (equipments.length === 0) {
+
+        const error = new Error("Equipment not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    return await deleteEquipment(id);
+
 };

@@ -1,55 +1,58 @@
 import {
-    getAllEquipments,
-    getEquipmentById,
-    updateEquipment,
-    deleteEquipment } from "../models/equipment.js";
+    fetchEquipmentsService,
+    fetchEquipmentByIdService,
+    createEquipmentService,
+    updateEquipmentService,
+    deleteEquipmentService
+} from "../services/equipmentService.js";
 
-import { createEquipmentService,
-         updateEquipmentService} from "../services/equipmentService.js";
-
+// GET ALL EQUIPMENTS
 export const fetchEquipments = async (req, res) => {
 
     try {
 
-        const equipments = await getAllEquipments();
+        const equipments =
+            await fetchEquipmentsService();
 
         res.json(equipments);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// GET EQUIPMENT BY ID
 export const fetchEquipmentById = async (req, res) => {
 
     try {
 
-        const equipment = await getEquipmentById(req.params.id);
+        const equipment =
+            await fetchEquipmentByIdService(req.params.id);
 
-        if (equipment.length === 0) {
-            return res.status(404).json({
-                message: "Equipment not found"
-            });
-        }
-
-        res.json(equipment[0]);
+        res.json(equipment);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// CREATE EQUIPMENT
 export const addEquipment = async (req, res) => {
 
     try {
 
-        const result = await createEquipmentService(req.body);
+        const result =
+            await createEquipmentService(req.body);
 
         res.status(201).json({
             message: "Equipment created successfully",
@@ -66,17 +69,15 @@ export const addEquipment = async (req, res) => {
 
 };
 
+// UPDATE EQUIPMENT
 export const editEquipment = async (req, res) => {
 
     try {
 
-        const result = await updateEquipment(req.params.id, req.body);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                message: "Equipment not found"
-            });
-        }
+        await updateEquipmentService(
+            req.params.id,
+            req.body
+        );
 
         res.json({
             message: "Equipment updated successfully"
@@ -84,23 +85,20 @@ export const editEquipment = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+// DELETE EQUIPMENT
 export const removeEquipment = async (req, res) => {
 
     try {
 
-        const result = await deleteEquipment(req.params.id);
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                message: "Equipment not found"
-            });
-        }
+        await deleteEquipmentService(req.params.id);
 
         res.json({
             message: "Equipment deleted successfully"
@@ -108,7 +106,9 @@ export const removeEquipment = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json(error);
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 

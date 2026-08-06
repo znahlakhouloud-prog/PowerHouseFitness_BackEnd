@@ -1,9 +1,13 @@
 import db from "../config/database.js";
 
+// GET ALL EQUIPMENTS
 export const getAllEquipments = async () => {
 
     const sql = `
-        SELECT *
+        SELECT
+            id,
+            maint_date,
+            state
         FROM equipment
         ORDER BY id DESC
     `;
@@ -13,10 +17,14 @@ export const getAllEquipments = async () => {
     return rows;
 };
 
+// GET EQUIPMENT BY ID
 export const getEquipmentById = async (id) => {
 
     const sql = `
-        SELECT *
+        SELECT
+            id,
+            maint_date,
+            state
         FROM equipment
         WHERE id = ?
     `;
@@ -26,11 +34,15 @@ export const getEquipmentById = async (id) => {
     return rows;
 };
 
+// CREATE EQUIPMENT
 export const createEquipment = async (equipmentData) => {
 
     const sql = `
         INSERT INTO equipment
-        (maint_date, state)
+        (
+            maint_date,
+            state
+        )
         VALUES (?, ?)
     `;
 
@@ -44,6 +56,7 @@ export const createEquipment = async (equipmentData) => {
     return result;
 };
 
+// UPDATE EQUIPMENT
 export const updateEquipment = async (id, equipmentData) => {
 
     const sql = `
@@ -65,6 +78,7 @@ export const updateEquipment = async (id, equipmentData) => {
     return result;
 };
 
+// DELETE EQUIPMENT
 export const deleteEquipment = async (id) => {
 
     const sql = `

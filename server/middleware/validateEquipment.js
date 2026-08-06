@@ -4,22 +4,26 @@ export const validateEquipment = [
 
     body("maint_date")
         .isISO8601()
-        .withMessage("Maintenance date is required"),
+        .withMessage("Valid maintenance date is required"),
 
     body("state")
-        .notEmpty()
-        .withMessage("State is required"),
+        .isIn([
+            "available",
+            "maintenance",
+            "broken"
+        ])
+        .withMessage(
+            "State must be available, maintenance or broken"
+        ),
 
     (req, res, next) => {
 
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-
             return res.status(400).json({
                 errors: errors.array()
             });
-
         }
 
         next();

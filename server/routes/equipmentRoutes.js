@@ -5,20 +5,52 @@ import {
     fetchEquipmentById,
     addEquipment,
     editEquipment,
-    removeEquipment } from "../controllers/equipmentController.js";
+    removeEquipment
+} from "../controllers/equipmentController.js";
 
 import { validateEquipment } from "../middleware/validateEquipment.js";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", fetchEquipments);
+// Everyone authenticated can view equipments
+router.get(
+    "/",
+    authenticateToken,
+    fetchEquipments
+);
 
-router.get("/:id", fetchEquipmentById);
+router.get(
+    "/:id",
+    authenticateToken,
+    fetchEquipmentById
+);
 
-router.post("/", validateEquipment, addEquipment);
+// Only admin can create
+router.post(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin"),
+    validateEquipment,
+    addEquipment
+);
 
-router.put("/:id", validateEquipment, editEquipment);
+// Only admin can update
+router.put(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    validateEquipment,
+    editEquipment
+);
 
-router.delete("/:id", removeEquipment);
+// Only admin can delete
+router.delete(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin"),
+    removeEquipment
+);
 
 export default router;
