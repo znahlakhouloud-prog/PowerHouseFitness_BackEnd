@@ -1,26 +1,89 @@
-import {createReport,
-        getTotalIncome,
-        getNewMembers,
-        getExpiredMemberships,
-        getTopMembership,
-        getAttendanceCount } from "../models/report.js";
+import {
+    getAllReports,
+    getReportById,
+    createReport,
+    deleteReport,
+    getTotalIncome,
+    getNewMembers,
+    getExpiredMemberships,
+    getTopMembership,
+    getAttendanceCount
+} from "../models/report.js";
 
-export const generateReportService = async ()=>{
+//    GET ALL REPORTS
+export const getAllReportsService = async () => {
 
-    const report ={
+    return await getAllReports();
 
-        income:await getTotalIncome(),
+};
 
-        nbr_new_member:await getNewMembers(),
+//    GET REPORT BY ID
+export const getReportByIdService = async (id) => {
 
-        nbr_expired_membership:await getExpiredMemberships(),
+    const reports = await getReportById(id);
 
-        top_membership:await getTopMembership(),
+    if (reports.length === 0) {
 
-        nbr_attendance:await getAttendanceCount()
+        const error = new Error("Report not found");
+        error.status = 404;
+
+        throw error;
+
+    }
+
+    return reports[0];
+
+};
+
+//    GENERATE REPORT
+export const generateReportService = async () => {
+
+    const income = await getTotalIncome();
+
+    const nbrNewMember = await getNewMembers();
+
+    const nbrExpiredMembership =
+        await getExpiredMemberships();
+
+    const topMembership =
+        await getTopMembership();
+
+    const nbrAttendance =
+        await getAttendanceCount();
+
+    const reportData = {
+
+        income,
+
+        nbr_new_member: nbrNewMember,
+
+        nbr_expired_membership:
+            nbrExpiredMembership,
+
+        top_membership: topMembership,
+
+        nbr_attendance: nbrAttendance
 
     };
 
-    return await createReport(report);
+    return await createReport(reportData);
+
+};
+
+//    DELETE REPORT
+export const deleteReportService = async (id) => {
+
+    const result = await deleteReport(id);
+
+    if (result.affectedRows === 0) {
+
+        const error = new Error("Report not found");
+        error.status = 404;
+
+        throw error;
+
+    }
+
+    return result;
 
 };

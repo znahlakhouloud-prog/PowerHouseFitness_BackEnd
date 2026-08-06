@@ -1,9 +1,17 @@
 import db from "../config/database.js";
 
+//    GET ALL REPORTS
 export const getAllReports = async () => {
 
     const sql = `
-        SELECT *
+        SELECT
+            id,
+            created_at,
+            income,
+            nbr_new_member,
+            nbr_expired_membership,
+            top_membership,
+            nbr_attendance
         FROM report
         ORDER BY created_at DESC
     `;
@@ -11,21 +19,32 @@ export const getAllReports = async () => {
     const [rows] = await db.query(sql);
 
     return rows;
+
 };
 
+//    GET REPORT BY ID
 export const getReportById = async (id) => {
 
     const sql = `
-        SELECT *
+        SELECT
+            id,
+            created_at,
+            income,
+            nbr_new_member,
+            nbr_expired_membership,
+            top_membership,
+            nbr_attendance
         FROM report
         WHERE id = ?
     `;
 
-    const [rows] = await db.query(sql,[id]);
+    const [rows] = await db.query(sql, [id]);
 
     return rows;
+
 };
 
+//    CREATE REPORT
 export const createReport = async (reportData) => {
 
     const sql = `
@@ -37,7 +56,7 @@ export const createReport = async (reportData) => {
             top_membership,
             nbr_attendance
         )
-        VALUES (?,?,?,?,?)
+        VALUES (?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -50,39 +69,47 @@ export const createReport = async (reportData) => {
 
     ];
 
-    const [result] = await db.query(sql,values);
+    const [result] = await db.query(sql, values);
 
     return result;
+
 };
 
-export const deleteReport = async (id)=>{
+//    DELETE REPORT
+export const deleteReport = async (id) => {
 
     const sql = `
         DELETE FROM report
-        WHERE id=?
+        WHERE id = ?
     `;
 
-    const [result]=await db.query(sql,[id]);
+    const [result] = await db.query(sql, [id]);
 
     return result;
+
 };
 
+//    TOTAL INCOME
 export const getTotalIncome = async () => {
 
     const sql = `
-        SELECT IFNULL(SUM(amount),0) AS income
+        SELECT
+            COALESCE(SUM(amount), 0) AS income
         FROM payment
     `;
 
     const [rows] = await db.query(sql);
 
     return rows[0].income;
+
 };
 
+//    NEW MEMBERS TODAY
 export const getNewMembers = async () => {
 
     const sql = `
-        SELECT COUNT(*) AS total
+        SELECT
+            COUNT(*) AS total
         FROM membership
         WHERE start_date = CURDATE()
     `;
@@ -90,40 +117,52 @@ export const getNewMembers = async () => {
     const [rows] = await db.query(sql);
 
     return rows[0].total;
+
 };
 
+//    EXPIRED MEMBERSHIPS
 export const getExpiredMemberships = async () => {
 
     const sql = `
-        SELECT COUNT(*) AS total
+        SELECT
+            COUNT(*) AS total
         FROM membership
-        WHERE state='expired'
+        WHERE state = 'expired'
     `;
 
     const [rows] = await db.query(sql);
 
     return rows[0].total;
+
 };
 
+//    MOST POPULAR MEMBERSHIP
 export const getTopMembership = async () => {
 
     const sql = `
-        SELECT name
+        SELECT
+            name,
+            COUNT(*) AS total
         FROM membership
         GROUP BY name
-        ORDER BY COUNT(*) DESC
+        ORDER BY total DESC
         LIMIT 1
     `;
 
     const [rows] = await db.query(sql);
 
-    return rows.length ? rows[0].name : "None";
+    return rows.length > 0
+        ? rows[0].name
+        : null;
+
 };
 
+//    MONTHLY ATTENDANCE
 export const getAttendanceCount = async () => {
 
     const sql = `
-        SELECT COUNT(*) AS total
+        SELECT
+            COUNT(*) AS total
         FROM attendance
         WHERE MONTH(attendance_date) = MONTH(CURDATE())
         AND YEAR(attendance_date) = YEAR(CURDATE())
@@ -132,4 +171,5 @@ export const getAttendanceCount = async () => {
     const [rows] = await db.query(sql);
 
     return rows[0].total;
+
 };

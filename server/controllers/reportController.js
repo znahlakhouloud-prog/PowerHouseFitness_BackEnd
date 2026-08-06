@@ -1,82 +1,88 @@
 import {
-    getAllReports,
-    getReportById,
-    deleteReport } from "../models/report.js";
+    getAllReportsService,
+    getReportByIdService,
+    generateReportService,
+    deleteReportService
+} from "../services/reportService.js";
 
-import { generateReportService } from "../services/reportService.js";
-
+//    GET ALL REPORTS
 export const fetchReports = async (req, res) => {
 
     try {
 
-        const reports = await getAllReports();
+        const reports =
+            await getAllReportsService();
 
         res.json(reports);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        console.error(error);
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+//    GET REPORT BY ID
 export const fetchReportById = async (req, res) => {
 
     try {
 
-        const report = await getReportById(req.params.id);
+        const report =
+            await getReportByIdService(req.params.id);
 
-        if (report.length === 0) {
-
-            return res.status(404).json({
-                message: "Report not found"
-            });
-
-        }
-
-        res.json(report[0]);
+        res.json(report);
 
     } catch (error) {
 
-        res.status(500).json(error);
+        console.error(error);
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+//    GENERATE REPORT
 export const generateReport = async (req, res) => {
 
     try {
 
-        const result = await generateReportService();
+        const result =
+            await generateReportService();
 
         res.status(201).json({
+
             message: "Report generated successfully",
+
             id: result.insertId
+
         });
 
     } catch (error) {
 
-        res.status(500).json(error);
+        console.error(error);
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
 };
 
+//    DELETE REPORT
 export const removeReport = async (req, res) => {
 
     try {
 
-        const result = await deleteReport(req.params.id);
-
-        if (result.affectedRows === 0) {
-
-            return res.status(404).json({
-                message: "Report not found"
-            });
-
-        }
+        await deleteReportService(req.params.id);
 
         res.json({
             message: "Report deleted successfully"
@@ -84,7 +90,11 @@ export const removeReport = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json(error);
+        console.error(error);
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
 
     }
 
