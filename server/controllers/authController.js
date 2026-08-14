@@ -1,6 +1,8 @@
 import {
     registerService,
-    loginService
+    loginService,
+    forgotPasswordService,
+    resetPasswordService
 } from "../services/authService.js";
 
 import {
@@ -12,11 +14,12 @@ export const register = async (req, res) => {
 
     try {
 
-        const result = await registerService(req.body);
+        const { result, temporaryPassword } = await registerService(req.body, req.user.role);
 
         res.status(201).json({
             message: "User created successfully",
-            id: result.insertId
+            id: result.insertId,
+            temporaryPassword
         });
 
     } catch (error) {
@@ -24,6 +27,17 @@ export const register = async (req, res) => {
         if (error.message === "EMAIL_ALREADY_EXISTS") {
             return res.status(409).json({
                 message: "Email already exists"
+            });
+        }
+
+        if (
+            error.message ===
+            "REGISTRATION_NOT_ALLOWED"
+        ) {
+
+            return res.status(403).json({
+                message:
+                    "You are not allowed to create this role"
             });
         }
 
@@ -125,4 +139,87 @@ export const changePassword = async (req, res) => {
 
     }
 
+};
+
+// FORGOT PASSWORD
+export const forgotPassword = async (req, res) => {
+
+    try {
+
+        const { email } = req.body;
+
+        await forgotPasswordService(email);
+
+        return res.status(200).json({
+            message:
+                "If the email exists, a reset link has been sent"
+        });
+
+    } catch (error) {
+
+        console.error(
+            "FORGOT PASSWORD ERROR:",
+            error
+        );
+
+        return res.status(500).json({
+            message:
+                "Unable to process password reset request"
+        });
+
+    }
+};
+
+export const resetPassword = async (req, res) => {
+
+    try {
+
+        const {
+            token,
+            newPassword
+        } = req.body;
+
+
+        await resetPasswordService(
+            token,
+            newPassword
+        );
+
+
+        return res.status(200).json({
+
+            message:
+                "Password reset successfully"
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "RESET PASSWORD ERROR:",
+            error
+        );
+
+
+        if (
+            error.message ===
+            "INVALID_OR_EXPIRED_TOKEN"
+        ) {
+
+            return res.status(400).json({
+
+                message:
+                    "Invalid or expired reset token"
+
+            });
+        }
+
+
+        return res.status(500).json({
+
+            message:
+                "Unable to reset password"
+
+        });
+    }
 };

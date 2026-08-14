@@ -14,13 +14,14 @@ export const validateUser = [
         .isEmail()
         .withMessage("Invalid email address"),
 
-    body("password")
-        .isLength({ min: 6 })
-        .withMessage("Password must be at least 6 characters"),
-
     body("role")
-        .notEmpty()
-        .withMessage("Role is required"),
+        .isIn([
+            "receptionist",
+            "employee",
+            "coach",
+            "member"
+        ])
+        .withMessage("Invalid role"),
 
     (req, res, next) => {
 

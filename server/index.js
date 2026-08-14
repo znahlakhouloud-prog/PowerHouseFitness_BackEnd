@@ -1,7 +1,16 @@
 import dotenv from "dotenv";
 dotenv.config();
+console.log("SMTP_USER:", process.env.SMTP_USER);
+console.log(
+    "SMTP_PASS exists:",
+    !!process.env.SMTP_PASS
+);
 
 import express from "express";
+import cors from "cors";
+
+import "./config/email.js";
+
 import db from "./config/database.js";
 import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -17,6 +26,9 @@ import attendanceRoutes from "./routes/attendanceRoutes.js";
 const app = express();
 
 
+app.use(cors({
+    origin :"http://localhost:5173"
+}));
 app.use(express.json());
 app.use("/users",userRoutes);
 app.use("/auth",authRoutes);
