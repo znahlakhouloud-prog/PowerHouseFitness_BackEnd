@@ -7,7 +7,10 @@ import {
     getNewMembers,
     getExpiredMemberships,
     getTopMembership,
-    getAttendanceCount
+    getAttendanceCount,
+    getMonthlyIncome,
+    getMonthlyNewMembers,
+    getMonthlyAttendance
 } from "../models/report.js";
 
 //    GET ALL REPORTS
@@ -85,5 +88,58 @@ export const deleteReportService = async (id) => {
     }
 
     return result;
+
+};
+
+// =========================================
+// DASHBOARD ANALYTICS
+// =========================================
+
+export const getDashboardAnalyticsService = async () => {
+
+    const income =
+        await getTotalIncome();
+
+    const newMembers =
+        await getNewMembers();
+
+    const expiredMemberships =
+        await getExpiredMemberships();
+
+    const topMembership =
+        await getTopMembership();
+
+    const attendance =
+        await getAttendanceCount();
+
+    const monthlyIncome =
+        await getMonthlyIncome();
+
+    const monthlyNewMembers =
+        await getMonthlyNewMembers();
+
+    const monthlyAttendance =
+        await getMonthlyAttendance();
+
+
+    return {
+
+        income,
+
+        newMembers,
+
+        expiredMemberships,
+
+        topMembership,
+
+        attendance,
+
+        monthlyIncome,
+
+        monthlyNewMembers,
+
+        monthlyAttendance
+
+    };
 
 };

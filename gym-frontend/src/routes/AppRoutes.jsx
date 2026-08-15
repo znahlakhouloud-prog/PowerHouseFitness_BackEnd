@@ -5,64 +5,16 @@ import {
 } from "react-router-dom";
 
 import Landing from "../landing/pages/Landing";
+
 import Login from "../auth/pages/Login";
-import Register from "../auth/pages/Register";
 import ChangePassword from "../auth/pages/ChangePassword";
 import ForgotPassword from "../auth/pages/ForgotPassword";
 import ResetPassword from "../auth/pages/ResetPassword";
 
 import ProtectedRoute from "./ProtectedRoute";
-import RoleRoute from "./RoleRoute";
 
-import LogoutButton from "../components/LogoutButton";
-
-function AdminPage() {
-
-    return (
-        <div>
-            <h1>Admin Dashboard</h1>
-            <LogoutButton />
-        </div>
-    );
-}
-
-function EmployeePage() {
-    return (
-        <div>
-            <h1>Employee Dashboard</h1>
-            <LogoutButton />
-        </div>
-    );
-}
-
-function CoachPage() {
-    return (
-        <div>
-            <h1>Coach Dashboard</h1>
-            <LogoutButton />
-        </div>
-    );
-}
-
-function MemberPage() {
-
-    return (
-        <div>
-            <h1>Member Dashboard</h1>
-            <LogoutButton />
-        </div>
-    );
-}
-
-function ReceptionistPage() {
-
-    return (
-        <div>
-            <h1>Receptionist Dashboard</h1>
-            <LogoutButton />
-        </div>
-    );
-}
+import AdminLayout from "../admin/components/AdminLayout";
+import AdminDashboard from "../admin/pages/AdminDashboard";
 
 
 function AppRoutes() {
@@ -73,7 +25,10 @@ function AppRoutes() {
 
             <Routes>
 
-                {/* {PUBLIC ROUTES */}
+                {/* =========================
+                    PUBLIC
+                ========================= */}
+
                 <Route
                     path="/"
                     element={<Landing />}
@@ -84,10 +39,7 @@ function AppRoutes() {
                     element={<Login />}
                 />
 
-                <Route
-                    path="/register"
-                    element={<Register />}
-                />
+                
 
                 <Route
                     path="/forgot-password"
@@ -100,10 +52,24 @@ function AppRoutes() {
                 />
 
 
-                {/* {AUTHENTICATION */}
+                {/* =========================
+                    AUTHENTICATED
+                ========================= */}
+
                 <Route
-                    element={<ProtectedRoute />}
+                    element={
+                        <ProtectedRoute
+                            allowedRoles={[
+                                "admin",
+                                "employee",
+                                "receptionist",
+                                "coach",
+                                "member"
+                            ]}
+                        />
+                    }
                 >
+
                     <Route
                         path="/change-password"
                         element={<ChangePassword />}
@@ -112,10 +78,13 @@ function AppRoutes() {
                 </Route>
 
 
-                 {/* ADMIN */}
+                {/* =========================
+                    ADMIN
+                ========================= */}
+
                 <Route
                     element={
-                        <RoleRoute
+                        <ProtectedRoute
                             allowedRoles={["admin"]}
                         />
                     }
@@ -123,33 +92,28 @@ function AppRoutes() {
 
                     <Route
                         path="/admin"
-                        element={<AdminPage />}
-                    />
+                        element={<AdminLayout />}
+                    >
 
-                </Route>
-
-
-                {/* {RECEPTIONIST */}
-                <Route
-                    element={
-                        <RoleRoute
-                            allowedRoles={["receptionist"]}
+                        <Route
+                            index
+                            element={
+                                <AdminDashboard />
+                            }
                         />
-                    }
-                >
 
-                    <Route
-                        path="/receptionist"
-                        element={<ReceptionistPage />}
-                    />
+                    </Route>
 
                 </Route>
 
 
-                {/* {EMPLOYEE */}
+                {/* =========================
+                    EMPLOYEE
+                ========================= */}
+
                 <Route
                     element={
-                        <RoleRoute
+                        <ProtectedRoute
                             allowedRoles={["employee"]}
                         />
                     }
@@ -157,16 +121,47 @@ function AppRoutes() {
 
                     <Route
                         path="/employee"
-                        element={<EmployeePage />}
+                        element={
+                            <h1>
+                                Employee Dashboard
+                            </h1>
+                        }
                     />
 
                 </Route>
 
 
-                {/* {COACH */}
+                {/* =========================
+                    RECEPTIONIST
+                ========================= */}
+
                 <Route
                     element={
-                        <RoleRoute
+                        <ProtectedRoute
+                            allowedRoles={["receptionist"]}
+                        />
+                    }
+                >
+
+                    <Route
+                        path="/receptionist"
+                        element={
+                            <h1>
+                                Receptionist Dashboard
+                            </h1>
+                        }
+                    />
+
+                </Route>
+
+
+                {/* =========================
+                    COACH
+                ========================= */}
+
+                <Route
+                    element={
+                        <ProtectedRoute
                             allowedRoles={["coach"]}
                         />
                     }
@@ -174,16 +169,23 @@ function AppRoutes() {
 
                     <Route
                         path="/coach"
-                        element={<CoachPage />}
+                        element={
+                            <h1>
+                                Coach Dashboard
+                            </h1>
+                        }
                     />
 
                 </Route>
 
 
-                {/* {MEMBER */}
+                {/* =========================
+                    MEMBER
+                ========================= */}
+
                 <Route
                     element={
-                        <RoleRoute
+                        <ProtectedRoute
                             allowedRoles={["member"]}
                         />
                     }
@@ -191,7 +193,11 @@ function AppRoutes() {
 
                     <Route
                         path="/member"
-                        element={<MemberPage />}
+                        element={
+                            <h1>
+                                Member Dashboard
+                            </h1>
+                        }
                     />
 
                 </Route>

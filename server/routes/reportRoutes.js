@@ -4,7 +4,8 @@ import {
     fetchReports,
     fetchReportById,
     generateReport,
-    removeReport
+    removeReport,
+    getDashboardAnalytics
 } from "../controllers/reportController.js";
 
 import { authenticateToken } from "../middleware/authMiddleware.js";
@@ -18,10 +19,14 @@ router.use(authorizeRoles("admin"));
 
 router.get("/", fetchReports);
 
+router.get("/analytics",getDashboardAnalytics);
+
 router.get("/:id", fetchReportById);
 
 router.post("/generate", generateReport);
 
 router.delete("/:id", removeReport);
+
+
 
 export default router;

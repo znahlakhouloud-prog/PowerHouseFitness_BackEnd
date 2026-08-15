@@ -173,3 +173,71 @@ export const getAttendanceCount = async () => {
     return rows[0].total;
 
 };
+
+// =========================================
+// MONTHLY INCOME
+// =========================================
+
+export const getMonthlyIncome = async () => {
+
+    const sql = `
+        SELECT
+            DATE_FORMAT(p_date, '%Y-%m') AS month,
+            COALESCE(SUM(amount), 0) AS income
+        FROM payment
+        WHERE p_date >= DATE_SUB(
+            CURDATE(),
+            INTERVAL 11 MONTH
+        )
+        GROUP BY DATE_FORMAT(p_date, '%Y-%m')
+        ORDER BY month ASC
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};
+
+// =========================================
+// MONTHLY ATTENDANCE
+// =========================================
+
+export const getMonthlyAttendance = async () => {
+
+    const sql = `
+        SELECT
+            DATE_FORMAT(attendance_date, '%Y-%m') AS month,
+            COUNT(*) AS total
+        FROM attendance
+        WHERE attendance_date >= DATE_SUB(
+            CURDATE(),
+            INTERVAL 11 MONTH
+        )
+        GROUP BY DATE_FORMAT(attendance_date, '%Y-%m')
+        ORDER BY month ASC
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};
+
+export const getMonthlyNewMembers = async () => {
+
+    const sql = `
+        SELECT
+            DATE_FORMAT(start_date, '%Y-%m') AS month,
+            COUNT(*) AS total
+        FROM membership
+        WHERE start_date >= DATE_SUB(
+            CURDATE(),
+            INTERVAL 11 MONTH
+        )
+        GROUP BY DATE_FORMAT(start_date, '%Y-%m')
+        ORDER BY month ASC
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};

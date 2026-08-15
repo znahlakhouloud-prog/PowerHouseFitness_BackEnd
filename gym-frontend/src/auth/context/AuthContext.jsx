@@ -2,19 +2,49 @@ import { useState } from "react";
 
 import { AuthContext } from "./authContext.js";
 
+
+const isTokenExpired = (token) => {
+
+    if (!token) {
+        return true;
+    }
+
+    try {
+
+        const payload = JSON.parse(atob(token.split(".")[1]));
+
+        return !payload.exp || payload.exp * 1000 < Date.now();
+
+    } catch {
+
+        return true;
+
+    }
+};
+
+const getStoredAuth = () => {
+
+    const savedToken = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+
+    if (!savedToken || !savedUser || isTokenExpired(savedToken)) {
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        return { token: null, user: null };
+    }
+
+    return { token: savedToken, user: JSON.parse(savedUser) };
+};
+
 export const AuthProvider = ({ children }) => {
 
-    const [user, setUser] = useState(() => {
-
-        const savedUser =
-            localStorage.getItem("user");
-
-        return savedUser
-            ? JSON.parse(savedUser)
-            : null;
-    });
+    const [user, setUser] = useState(
+        () => getStoredAuth().user
+    );
     const [token, setToken] = useState(
-        localStorage.getItem("token")
+        () => getStoredAuth().token
     );
 
     //  Login

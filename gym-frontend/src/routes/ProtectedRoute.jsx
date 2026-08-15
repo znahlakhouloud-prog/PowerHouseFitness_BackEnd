@@ -1,24 +1,22 @@
 import {
     Navigate,
-    Outlet,
-    useLocation
+    Outlet
 } from "react-router-dom";
 
 import { useContext } from "react";
 
-import { AuthContext } from "../auth/context/authContext.js";
+import { AuthContext } from "../auth/context/authContext";
 
 
-function ProtectedRoute() {
+function ProtectedRoute({ allowedRoles }) {
 
     const {
-        token,
-        user
+        user,
+        token
     } = useContext(AuthContext);
 
-    const location = useLocation();
 
-    // Not logged in
+    // No authentication
     if (!token || !user) {
 
         return (
@@ -27,23 +25,28 @@ function ProtectedRoute() {
                 replace
             />
         );
+
     }
 
-    // User must change temporary password
+
+    // Role not allowed
     if (
-        user.must_change_password === 1 &&
-        location.pathname !== "/change-password"
+        allowedRoles &&
+        !allowedRoles.includes(user.role)
     ) {
 
         return (
             <Navigate
-                to="/change-password"
+                to="/"
                 replace
             />
         );
+
     }
+
 
     return <Outlet />;
 }
+
 
 export default ProtectedRoute;

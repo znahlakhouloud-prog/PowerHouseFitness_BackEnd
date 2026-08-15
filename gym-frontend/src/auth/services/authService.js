@@ -1,12 +1,14 @@
-import axios from "axios";
+import api from "../../services/api";
 
-const API_URL = "http://localhost:3000";
 
-// Login
-export const loginUser = async (email, password) => {
+// LOGIN
+export const loginUser = async (
+    email,
+    password
+) => {
 
-    const response = await axios.post(
-        `${API_URL}/auth/login`,
+    const response = await api.post(
+        "/auth/login",
         {
             email,
             password
@@ -16,65 +18,63 @@ export const loginUser = async (email, password) => {
     return response.data;
 };
 
-// Change password
+
+// CHANGE PASSWORD
 export const changePassword = async (
     oldPassword,
-    newPassword,
-    token
+    newPassword
 ) => {
 
-    const response = await axios.patch(
-        `${API_URL}/auth/change-password`,
+    const response = await api.patch(
+        "/auth/change-password",
         {
             oldPassword,
             newPassword
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
         }
     );
 
     return response.data;
 };
 
-// Register
-export const registerUser = async (userData) => {
 
-    const token = localStorage.getItem("token");
+// REGISTER
+export const registerUser = async (
+    userData
+) => {
 
-    const response = await axios.post(
-        `${API_URL}/auth/register`,
-        userData,
+    const response = await api.post(
+        "/auth/register",
+        userData
+    );
+
+    return response.data;
+};
+
+
+// FORGOT PASSWORD
+export const forgotPassword = async (
+    email
+) => {
+
+    const response = await api.post(
+        "/auth/forgot-password",
         {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            email
         }
     );
 
     return response.data;
 };
 
-// Forgot password
-export const forgotPassword = async (email) => {
 
-    const response = await axios.post(
-        `${API_URL}/auth/forgot-password`,
-        { email }
-    );
-
-    return response.data;
-};
-
+// RESET PASSWORD
 export const resetPassword = async (
     token,
     newPassword
 ) => {
 
-    const response = await axios.patch(
-        `${API_URL}/auth/reset-password`,
+    const response = await api.patch(
+        "/auth/reset-password",
         {
             token,
             newPassword

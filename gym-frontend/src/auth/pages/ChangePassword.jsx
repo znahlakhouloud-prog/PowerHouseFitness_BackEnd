@@ -11,7 +11,7 @@ function ChangePassword() {
 
     const {
         user,
-        token,
+        // token,
         updateUser
     } = useContext(AuthContext);
 
@@ -74,8 +74,8 @@ function ChangePassword() {
             // Change password in backend
             const data = await changePassword(
                 oldPassword,
-                newPassword,
-                token
+                newPassword
+                // token
             );
 
 

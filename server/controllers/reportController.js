@@ -2,7 +2,8 @@ import {
     getAllReportsService,
     getReportByIdService,
     generateReportService,
-    deleteReportService
+    deleteReportService,
+    getDashboardAnalyticsService
 } from "../services/reportService.js";
 
 //    GET ALL REPORTS
@@ -94,6 +95,41 @@ export const removeReport = async (req, res) => {
 
         res.status(error.status || 500).json({
             message: error.message
+        });
+
+    }
+
+};
+
+// =========================================
+// DASHBOARD ANALYTICS
+// =========================================
+
+export const getDashboardAnalytics = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const analytics =
+            await getDashboardAnalyticsService();
+
+        res.status(200).json(
+            analytics
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(
+            error.status || 500
+        ).json({
+
+            message:
+                error.message
+
         });
 
     }
