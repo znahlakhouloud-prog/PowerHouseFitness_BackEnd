@@ -18,6 +18,7 @@ import AdminLayout from "../admin/components/AdminLayout";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import UsersPage from "../admin/pages/UsersPage";
 import EquipmentPage from "../admin/pages/EquipmentPage";
+import PaymentsPage from "../admin/pages/PaymentsPage";
 
 
 function AppRoutes() {
@@ -123,6 +124,13 @@ function AppRoutes() {
                             path="equipment"
                             element={
                                 <EquipmentPage />
+                            }
+                        />
+
+                        <Route
+                            path="payments"
+                            element={
+                                <PaymentsPage />
                             }
                         />
 
