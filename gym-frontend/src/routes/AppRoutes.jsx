@@ -17,6 +17,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminLayout from "../admin/components/AdminLayout";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import UsersPage from "../admin/pages/UsersPage";
+import EquipmentPage from "../admin/pages/EquipmentPage";
 
 
 function AppRoutes() {
@@ -115,6 +116,13 @@ function AppRoutes() {
                             path="users/new"
                             element={
                                 <Register />
+                            }
+                        />
+
+                        <Route
+                            path="equipment"
+                            element={
+                                <EquipmentPage />
                             }
                         />
 
