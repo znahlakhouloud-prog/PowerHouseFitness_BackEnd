@@ -142,6 +142,8 @@
 // }
 
 // export default Sidebar;
+import { NavLink } from "react-router-dom";
+
 import {
     LayoutDashboard,
     Users,
@@ -151,6 +153,9 @@ import {
     BarChart3,
     X
 } from "lucide-react";
+
+const navLinkClass = ({ isActive }) =>
+    isActive ? "sidebar-link active" : "sidebar-link";
 
 const Sidebar = ({
     isOpen,
@@ -186,58 +191,59 @@ const Sidebar = ({
 
             <nav className="sidebar-nav">
 
-                <a
-                    href="/admin"
-                    className="sidebar-link active"
+                <NavLink
+                    to="/admin"
+                    end
+                    className={navLinkClass}
                 >
                     <LayoutDashboard size={20} />
                     <span>Dashboard</span>
-                </a>
+                </NavLink>
 
 
-                <a
-                    href="/admin/users"
-                    className="sidebar-link"
+                <NavLink
+                    to="/admin/users"
+                    className={navLinkClass}
                 >
                     <Users size={20} />
                     <span>Users</span>
-                </a>
+                </NavLink>
 
 
-                <a
-                    href="/admin/equipment"
-                    className="sidebar-link"
+                <NavLink
+                    to="/admin/equipment"
+                    className={navLinkClass}
                 >
                     <Dumbbell size={20} />
                     <span>Equipment</span>
-                </a>
+                </NavLink>
 
 
-                <a
-                    href="/admin/payments"
-                    className="sidebar-link"
+                <NavLink
+                    to="/admin/payments"
+                    className={navLinkClass}
                 >
                     <CreditCard size={20} />
                     <span>Payments</span>
-                </a>
+                </NavLink>
 
 
-                <a
-                    href="/admin/memberships"
-                    className="sidebar-link"
+                <NavLink
+                    to="/admin/memberships"
+                    className={navLinkClass}
                 >
                     <BadgeDollarSign size={20} />
                     <span>Memberships</span>
-                </a>
+                </NavLink>
 
 
-                <a
-                    href="/admin/reports"
-                    className="sidebar-link"
+                <NavLink
+                    to="/admin/reports"
+                    className={navLinkClass}
                 >
                     <BarChart3 size={20} />
                     <span>Reports & Analytics</span>
-                </a>
+                </NavLink>
 
             </nav>
 

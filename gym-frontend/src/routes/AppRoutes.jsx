@@ -7,6 +7,7 @@ import {
 import Landing from "../landing/pages/Landing";
 
 import Login from "../auth/pages/Login";
+import Register from "../auth/pages/Register";
 import ChangePassword from "../auth/pages/ChangePassword";
 import ForgotPassword from "../auth/pages/ForgotPassword";
 import ResetPassword from "../auth/pages/ResetPassword";
@@ -15,6 +16,7 @@ import ProtectedRoute from "./ProtectedRoute";
 
 import AdminLayout from "../admin/components/AdminLayout";
 import AdminDashboard from "../admin/pages/AdminDashboard";
+import UsersPage from "../admin/pages/UsersPage";
 
 
 function AppRoutes() {
@@ -99,6 +101,20 @@ function AppRoutes() {
                             index
                             element={
                                 <AdminDashboard />
+                            }
+                        />
+
+                        <Route
+                            path="users"
+                            element={
+                                <UsersPage />
+                            }
+                        />
+
+                        <Route
+                            path="users/new"
+                            element={
+                                <Register />
                             }
                         />
 

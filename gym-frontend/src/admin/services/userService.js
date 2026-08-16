@@ -1,10 +1,7 @@
 import api from "../../services/api";
 
 
-// ========================================
 // GET ALL USERS
-// ========================================
-
 export const getUsers = async () => {
 
     const response = await api.get(
@@ -15,43 +12,25 @@ export const getUsers = async () => {
 };
 
 
-// ========================================
-// GET USER BY ID
-// ========================================
-
-export const getUserById = async (id) => {
-
-    const response = await api.get(
-        `/users/${id}`
-    );
-
-    return response.data;
-};
-
-
-// ========================================
 // UPDATE USER
-// ========================================
-
 export const updateUser = async (
     id,
-    userData
+    data
 ) => {
 
-    const response = await api.patch(
+    const response = await api.put(
         `/users/${id}`,
-        userData
+        data
     );
 
     return response.data;
 };
 
 
-// ========================================
 // DELETE USER
-// ========================================
-
-export const deleteUser = async (id) => {
+export const deleteUser = async (
+    id
+) => {
 
     const response = await api.delete(
         `/users/${id}`
