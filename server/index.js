@@ -21,6 +21,7 @@ import equipementRoutes from "./routes/equipmentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
+import planRoutes from "./routes/planRoutes.js";
 
 
 const app = express();
@@ -39,6 +40,7 @@ app.use("/equipments", equipementRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/reports", reportRoutes);
 app.use("/attendance", attendanceRoutes);
+app.use("/plans", planRoutes);
 
 const PORT = process.env.PORT || 3000;
 

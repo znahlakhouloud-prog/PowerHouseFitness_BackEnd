@@ -2,6 +2,7 @@ import {
     getAllMemberships,
     getMembershipById,
     createMembership,
+    updateMembership,
     getActiveMembershipByUserId,
     updateExpiredMemberships
 } from "../models/membership.js";
@@ -72,6 +73,37 @@ export const createMembershipService = async (data) => {
 };
 
     return await createMembership(membershipData);
+
+};
+
+// UPDATE MEMBERSHIP
+export const updateMembershipService = async (id, data) => {
+
+    const memberships = await getMembershipById(id);
+
+    if (memberships.length === 0) {
+        throw new Error("MEMBERSHIP_NOT_FOUND");
+    }
+
+    const startDate = new Date(data.start_date);
+
+    const endDate = new Date(startDate);
+
+    endDate.setDate(
+        startDate.getDate() + Number(data.duration)
+    );
+
+    const membershipData = {
+        name: data.name,
+        duration: data.duration,
+        price: data.price,
+        start_date: data.start_date,
+        end_date: endDate.toISOString().split("T")[0],
+        duration_promo: data.duration_promo ?? 0,
+        type: data.type
+    };
+
+    return await updateMembership(id, membershipData);
 
 };
 

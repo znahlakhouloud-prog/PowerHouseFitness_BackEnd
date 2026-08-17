@@ -10,3 +10,32 @@ export const getMemberships = async () => {
 
     return response.data;
 };
+
+
+// CREATE MEMBERSHIP
+export const createMembership = async (
+    data
+) => {
+
+    const response = await api.post(
+        "/memberships",
+        data
+    );
+
+    return response.data;
+};
+
+
+// UPDATE MEMBERSHIP
+export const updateMembership = async (
+    id,
+    data
+) => {
+
+    const response = await api.put(
+        `/memberships/${id}`,
+        data
+    );
+
+    return response.data;
+};

@@ -81,6 +81,36 @@ export const createMembership = async (data) => {
     return result;
 };
 
+// UPDATE MEMBERSHIP
+export const updateMembership = async (id, data) => {
+
+    const sql = `
+        UPDATE membership
+        SET
+            name = ?,
+            duration = ?,
+            price = ?,
+            start_date = ?,
+            end_date = ?,
+            duration_promo = ?,
+            type = ?
+        WHERE id = ?
+    `;
+
+    const [result] = await db.query(sql, [
+        data.name,
+        data.duration,
+        data.price,
+        data.start_date,
+        data.end_date,
+        data.duration_promo,
+        data.type,
+        id
+    ]);
+
+    return result;
+};
+
 // GET ACTIVE MEMBERSHIP
 export const getActiveMembershipByUserId = async (id_user) => {
 
