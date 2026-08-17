@@ -8,6 +8,7 @@ export const getAllPlanRows = async () => {
             id,
             name,
             type,
+            duration_days,
             nbr_sessions,
             price
         FROM plan
@@ -27,6 +28,7 @@ export const getPlanRowById = async (id) => {
             id,
             name,
             type,
+            duration_days,
             nbr_sessions,
             price
         FROM plan
@@ -43,13 +45,14 @@ export const insertPlanRow = async (data) => {
 
     const sql = `
         INSERT INTO plan
-        (name, type, nbr_sessions, price)
-        VALUES (?, ?, ?, ?)
+        (name, type, duration_days, nbr_sessions, price)
+        VALUES (?, ?, ?, ?, ?)
     `;
 
     const [result] = await db.query(sql, [
         data.name,
         data.type,
+        data.duration_days,
         data.nbr_sessions,
         data.price
     ]);

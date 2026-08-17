@@ -266,6 +266,9 @@ function MembershipsPage() {
                                     <span className="status-badge status-type">
                                         {plan.type}
                                     </span>
+                                    <span className="plan-duration">
+                                        {plan.duration_days} days
+                                    </span>
                                 </div>
 
                                 <div className="plan-card-actions">

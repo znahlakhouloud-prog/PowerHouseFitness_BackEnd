@@ -11,6 +11,9 @@ function PlanModal({ plan, onClose, onSave }) {
 
     const [name, setName] = useState(plan?.name || "");
     const [type, setType] = useState(plan?.type || "");
+    const [durationDays, setDurationDays] = useState(
+        plan?.duration_days ?? ""
+    );
 
     const [options, setOptions] = useState(
         plan?.options?.length
@@ -65,7 +68,12 @@ function PlanModal({ plan, onClose, onSave }) {
 
             await onSave(
                 plan?.id,
-                { name, type, options }
+                {
+                    name,
+                    type,
+                    duration_days: durationDays,
+                    options
+                }
             );
 
         } catch (error) {
@@ -154,6 +162,23 @@ function PlanModal({ plan, onClose, onSave }) {
                                 setType(e.target.value)
                             }
                             placeholder="e.g. monthly, trimestry, annually"
+                            required
+                        />
+
+                    </div>
+
+                    <div className="form-field">
+
+                        <label>Duration (days)</label>
+
+                        <input
+                            type="number"
+                            min="1"
+                            value={durationDays}
+                            onChange={(e) =>
+                                setDurationDays(e.target.value)
+                            }
+                            placeholder="e.g. 30, 90, 365"
                             required
                         />
 

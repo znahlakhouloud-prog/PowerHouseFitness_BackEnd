@@ -25,6 +25,7 @@ const groupPlanRows = (rows) => {
                 id: row.id,
                 name: row.name,
                 type: row.type,
+                duration_days: row.duration_days,
                 options: []
             });
 
@@ -59,6 +60,7 @@ export const createPlanService = async (data) => {
         await insertPlanRow({
             name: data.name,
             type: data.type,
+            duration_days: Number(data.duration_days),
             nbr_sessions: Number(opt.nbr_sessions),
             price: Number(opt.price)
         });
@@ -98,6 +100,7 @@ export const updatePlanService = async (id, data) => {
         await insertPlanRow({
             name: data.name,
             type: data.type,
+            duration_days: Number(data.duration_days),
             nbr_sessions: Number(opt.nbr_sessions),
             price: Number(opt.price)
         });

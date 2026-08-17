@@ -10,6 +10,10 @@ export const validatePlan = [
         .notEmpty()
         .withMessage("Plan type is required"),
 
+    body("duration_days")
+        .isInt({ min: 1 })
+        .withMessage("Duration in days must be greater than 0"),
+
     body("options")
         .isArray({ min: 1 })
         .withMessage("At least one session/price option is required"),

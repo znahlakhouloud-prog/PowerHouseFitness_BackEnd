@@ -107,6 +107,14 @@
     font-size: 16px;
 }
 
+.plan-duration {
+    margin-left: 8px;
+
+    font-size: 12px;
+
+    color: #858d9b;
+}
+
 .plan-card-actions {
     display: flex;
 
