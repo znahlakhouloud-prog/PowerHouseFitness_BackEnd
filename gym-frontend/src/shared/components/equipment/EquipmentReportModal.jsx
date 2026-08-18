@@ -3,7 +3,7 @@ import { useState } from "react";
 const todayISO = () =>
     new Date().toISOString().split("T")[0];
 
-function BrokenEquipmentModal({ onClose, onSave }) {
+function EquipmentReportModal({ onClose, onSave }) {
 
     const [formData, setFormData] = useState({
         equipment_name: "",
@@ -100,7 +100,7 @@ function BrokenEquipmentModal({ onClose, onSave }) {
 
                     <div className="form-field">
 
-                        <label>Description</label>
+                        <label>State / Description</label>
 
                         <textarea
                             name="description"
@@ -152,6 +152,7 @@ function BrokenEquipmentModal({ onClose, onSave }) {
         </div>
 
     );
+
 }
 
-export default BrokenEquipmentModal;
+export default EquipmentReportModal;

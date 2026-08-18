@@ -41,6 +41,12 @@ import MemberPaymentsPage from "../member/pages/PaymentsPage";
 import MemberEquipmentPage from "../member/pages/EquipmentPage";
 import MemberProfilePage from "../member/pages/ProfilePage";
 
+import CoachLayout from "../coach/components/CoachLayout";
+import CoachDashboard from "../coach/pages/CoachDashboard";
+import CoachAttendancePage from "../coach/pages/AttendancePage";
+import CoachEquipmentPage from "../coach/pages/EquipmentPage";
+import CoachProfilePage from "../coach/pages/ProfilePage";
+
 
 function AppRoutes() {
 
@@ -297,12 +303,30 @@ function AppRoutes() {
 
                     <Route
                         path="/coach"
-                        element={
-                            <h1>
-                                Coach Dashboard
-                            </h1>
-                        }
-                    />
+                        element={<CoachLayout />}
+                    >
+
+                        <Route
+                            index
+                            element={<CoachDashboard />}
+                        />
+
+                        <Route
+                            path="attendance"
+                            element={<CoachAttendancePage />}
+                        />
+
+                        <Route
+                            path="equipment"
+                            element={<CoachEquipmentPage />}
+                        />
+
+                        <Route
+                            path="profile"
+                            element={<CoachProfilePage />}
+                        />
+
+                    </Route>
 
                 </Route>
 

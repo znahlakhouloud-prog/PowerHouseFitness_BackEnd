@@ -2,7 +2,7 @@
    LAYOUT
 ========================================= */
 
-.member-layout {
+.coach-layout {
     min-height: 100vh;
     background: #f5f7fa;
     color: #172033;
@@ -18,7 +18,7 @@
    NAVBAR
 ========================================= */
 
-.member-navbar {
+.coach-navbar {
     height: 72px;
     width: 100%;
     background: #ffffff;
@@ -168,13 +168,13 @@
    BODY / SIDEBAR / CONTENT
 ========================================= */
 
-.member-body {
+.coach-body {
     display: flex;
     padding-top: 72px;
     min-height: 100vh;
 }
 
-.member-sidebar {
+.coach-sidebar {
     width: 250px;
     background: #111827;
     color: white;
@@ -263,7 +263,7 @@
     color: #fca5a5;
 }
 
-.member-content {
+.coach-content {
     margin-left: 250px;
     width: calc(100% - 250px);
     min-height: calc(100vh - 72px);
@@ -271,7 +271,7 @@
     transition: margin-left 0.25s ease, width 0.25s ease;
 }
 
-.member-content.sidebar-closed {
+.coach-content.sidebar-closed {
     margin-left: 0;
     width: 100%;
 }
@@ -338,7 +338,7 @@
    KPI CARDS (KpiCard component, reused from admin/)
 ========================================= */
 
-.member-kpi-grid {
+.coach-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
@@ -424,18 +424,12 @@
     color: #b91c1c;
 }
 
-.no-membership {
-    color: #9aa1ad;
-    font-size: 12.5px;
-    font-style: italic;
-}
-
 
 /* =========================================
-   TABLE
+   TABLE (page-level, e.g. Attendance history)
 ========================================= */
 
-.member-table-card {
+.coach-table-card {
     background: white;
     border: 1px solid #e8ebef;
     border-radius: 12px;
@@ -443,13 +437,13 @@
     overflow-x: auto;
 }
 
-.member-table {
+.coach-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13.5px;
 }
 
-.member-table th {
+.coach-table th {
     text-align: left;
     padding: 14px 18px;
     background: #f9fafb;
@@ -462,14 +456,14 @@
     white-space: nowrap;
 }
 
-.member-table td {
+.coach-table td {
     padding: 14px 18px;
     border-bottom: 1px solid #f0f1f4;
     color: #172033;
     white-space: nowrap;
 }
 
-.member-table tr:last-child td {
+.coach-table tr:last-child td {
     border-bottom: none;
 }
 
@@ -478,8 +472,8 @@
    EMPTY / LOADING / ERROR
 ========================================= */
 
-.member-empty,
-.member-loading {
+.coach-empty,
+.coach-loading {
     background: white;
     border: 1px solid #e8ebef;
     border-radius: 12px;
@@ -489,7 +483,7 @@
     font-size: 14px;
 }
 
-.member-loading {
+.coach-loading {
     border: none;
     background: transparent;
     min-height: 300px;
@@ -597,7 +591,7 @@
 
 
 /* =========================================
-   TOOLBAR (tabs + search)
+   TOOLBAR (search)
 ========================================= */
 
 .members-toolbar {
@@ -609,32 +603,7 @@
     flex-wrap: wrap;
 }
 
-.members-tabs {
-    display: flex;
-    gap: 6px;
-    background: #eef0f3;
-    border-radius: 10px;
-    padding: 4px;
-}
-
-.members-tab {
-    border: none;
-    background: transparent;
-    padding: 8px 14px;
-    border-radius: 7px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #5b6270;
-    cursor: pointer;
-}
-
-.members-tab.active {
-    background: white;
-    color: #111827;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.member-search {
+.coach-search {
     width: 280px;
     height: 40px;
     padding: 0 14px;
@@ -646,7 +615,7 @@
     color: #9aa1ad;
 }
 
-.member-search input {
+.coach-search input {
     flex: 1;
     border: none;
     outline: none;
@@ -778,16 +747,102 @@
     border-color: #111827;
 }
 
-.form-hint {
-    margin: 6px 0 0;
+
+/* =========================================
+   PROFILE INFO (Profile page)
+========================================= */
+
+.member-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.member-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.member-info-item span {
+    color: #858d9b;
     font-size: 11.5px;
-    color: #9aa1ad;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.member-info-item strong {
+    font-size: 14.5px;
+}
+
+
+/* =========================================
+   QUICK ACTIONS (Dashboard)
+========================================= */
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.quick-action-card {
+    background: white;
+    border: 1px solid #e8ebef;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    text-decoration: none;
+    color: #172033;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.quick-action-card:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    border-color: #d7dbe2;
+}
+
+.quick-action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #111827;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-action-card strong {
+    font-size: 14px;
+}
+
+.quick-action-card span {
+    color: #858d9b;
+    font-size: 12px;
+}
+
+
+/* =========================================
+   SUMMARY GRID (Attendance page)
+========================================= */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
 
 /* =========================================
    SHARED EQUIPMENT COMPONENTS
-   (role-neutral classes - also defined in coach.css,
+   (role-neutral classes - also defined in member.css,
    since shared/components/equipment/* render under both)
 ========================================= */
 
@@ -894,297 +949,14 @@
 
 
 /* =========================================
-   MEMBERSHIP CARD (Dashboard / Membership page)
-========================================= */
-
-.member-membership-card {
-    background: white;
-    border: 1px solid #e8ebef;
-    border-radius: 12px;
-    padding: 22px;
-}
-
-.member-membership-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 18px;
-}
-
-.member-membership-card-header h3 {
-    margin: 0 0 4px;
-    font-size: 17px;
-}
-
-.member-membership-type {
-    color: #858d9b;
-    font-size: 12.5px;
-    text-transform: capitalize;
-}
-
-.member-membership-card-body {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-}
-
-.member-membership-detail {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.member-membership-detail span {
-    color: #858d9b;
-    font-size: 11.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-}
-
-.member-membership-detail strong {
-    font-size: 14.5px;
-}
-
-
-/* =========================================
-   MEMBER INFO (Profile page)
-========================================= */
-
-.profile-info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 22px;
-}
-
-.profile-info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.profile-info-item span {
-    color: #858d9b;
-    font-size: 11.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-}
-
-.profile-info-item strong {
-    font-size: 14.5px;
-}
-
-
-/* =========================================
-   QUICK ACTIONS (Dashboard)
-========================================= */
-
-.quick-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-}
-
-.quick-action-card {
-    background: white;
-    border: 1px solid #e8ebef;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    text-decoration: none;
-    color: #172033;
-    cursor: pointer;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.quick-action-card:hover {
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-    border-color: #d7dbe2;
-}
-
-.quick-action-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: #111827;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.quick-action-card strong {
-    font-size: 14px;
-}
-
-.quick-action-card span {
-    color: #858d9b;
-    font-size: 12px;
-}
-
-
-/* =========================================
-   PLAN CARDS (Membership Plans page)
-========================================= */
-
-.member-plans-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-}
-
-.member-plan-card {
-    background: white;
-    border: 1px solid #e8ebef;
-    border-radius: 12px;
-    padding: 22px;
-    display: flex;
-    flex-direction: column;
-}
-
-.member-plan-card h3 {
-    margin: 0 0 4px;
-    font-size: 17px;
-}
-
-.member-plan-card-type {
-    color: #858d9b;
-    font-size: 12px;
-    text-transform: capitalize;
-    margin-bottom: 16px;
-}
-
-.plan-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.plan-option {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #e8ebef;
-    border-radius: 9px;
-    padding: 10px 14px;
-    cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.plan-option:hover {
-    border-color: #111827;
-}
-
-.plan-option.selected {
-    border-color: #111827;
-    background: #f9fafb;
-}
-
-.plan-option-sessions {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.plan-option-price {
-    font-size: 13.5px;
-    font-weight: 700;
-    color: #111827;
-}
-
-.member-plan-card-footer {
-    margin-top: auto;
-}
-
-
-/* =========================================
-   PAYMENT METHOD PICKER
-========================================= */
-
-.payment-method-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 18px;
-}
-
-.payment-method-option {
-    border: 1px solid #e0e2e7;
-    border-radius: 10px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    background: white;
-    transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.payment-method-option:hover {
-    border-color: #111827;
-}
-
-.payment-method-option.selected {
-    border-color: #111827;
-    background: #f9fafb;
-}
-
-.payment-method-option span {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.receipt-upload {
-    border: 1px dashed #d7dbe2;
-    border-radius: 10px;
-    padding: 18px;
-    text-align: center;
-    color: #7c8594;
-    font-size: 12.5px;
-    cursor: pointer;
-}
-
-.receipt-upload input {
-    display: none;
-}
-
-.receipt-file-name {
-    margin-top: 8px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #172033;
-}
-
-
-/* =========================================
-   SUMMARY GRID (Payments / Attendance pages)
-========================================= */
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-
-/* =========================================
    RESPONSIVE
 ========================================= */
 
 @media (max-width: 1200px) {
 
-    .member-kpi-grid,
+    .coach-kpi-grid,
     .quick-actions-grid,
     .summary-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .member-plans-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -1196,15 +968,15 @@
         display: none;
     }
 
-    .member-sidebar {
+    .coach-sidebar {
         transform: translateX(-100%);
     }
 
-    .member-sidebar.open {
+    .coach-sidebar.open {
         transform: translateX(0);
     }
 
-    .member-content {
+    .coach-content {
         margin-left: 0;
         width: 100%;
         padding: 20px 14px;
@@ -1214,8 +986,7 @@
         display: block;
     }
 
-    .member-membership-card-body,
-    .profile-info-grid {
+    .member-info-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1223,11 +994,9 @@
 
 @media (max-width: 600px) {
 
-    .member-kpi-grid,
+    .coach-kpi-grid,
     .quick-actions-grid,
-    .summary-grid,
-    .member-plans-grid,
-    .payment-method-grid {
+    .summary-grid {
         grid-template-columns: 1fr;
     }
 

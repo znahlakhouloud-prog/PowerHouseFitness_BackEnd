@@ -10,7 +10,7 @@ import EquipmentTable from "../../shared/components/equipment/EquipmentTable";
 import EquipmentReportModal from "../../shared/components/equipment/EquipmentReportModal";
 import EquipmentReportTable from "../../shared/components/equipment/EquipmentReportTable";
 
-import "../style/member.css";
+import "../style/coach.css";
 
 function EquipmentPage() {
 
@@ -80,7 +80,7 @@ function EquipmentPage() {
     if (loading) {
 
         return (
-            <div className="member-loading">
+            <div className="coach-loading">
                 Loading equipment...
             </div>
         );
