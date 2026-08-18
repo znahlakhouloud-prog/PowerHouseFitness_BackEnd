@@ -20,6 +20,7 @@ import UsersPage from "../admin/pages/UsersPage";
 import EquipmentPage from "../admin/pages/EquipmentPage";
 import PaymentsPage from "../admin/pages/PaymentsPage";
 import MembershipsPage from "../admin/pages/MembershipsPage";
+import ReportsPage from "../admin/pages/ReportsPage";
 
 
 function AppRoutes() {
@@ -139,6 +140,13 @@ function AppRoutes() {
                             path="memberships"
                             element={
                                 <MembershipsPage />
+                            }
+                        />
+
+                        <Route
+                            path="reports"
+                            element={
+                                <ReportsPage />
                             }
                         />
 

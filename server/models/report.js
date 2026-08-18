@@ -241,3 +241,53 @@ export const getMonthlyNewMembers = async () => {
 
     return rows;
 };
+
+// =========================================
+// MONTHLY EXPIRED MEMBERSHIPS
+// =========================================
+
+export const getMonthlyExpiredMemberships = async () => {
+
+    const sql = `
+        SELECT
+            DATE_FORMAT(end_date, '%Y-%m') AS month,
+            COUNT(*) AS total
+        FROM membership
+        WHERE state = 'expired'
+        AND end_date >= DATE_SUB(
+            CURDATE(),
+            INTERVAL 11 MONTH
+        )
+        GROUP BY DATE_FORMAT(end_date, '%Y-%m')
+        ORDER BY month ASC
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};
+
+// =========================================
+// MONTHLY PAYMENTS BY TYPE
+// =========================================
+
+export const getMonthlyPaymentsByType = async () => {
+
+    const sql = `
+        SELECT
+            DATE_FORMAT(p_date, '%Y-%m') AS month,
+            type,
+            COALESCE(SUM(amount), 0) AS total
+        FROM payment
+        WHERE p_date >= DATE_SUB(
+            CURDATE(),
+            INTERVAL 11 MONTH
+        )
+        GROUP BY DATE_FORMAT(p_date, '%Y-%m'), type
+        ORDER BY month ASC
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};

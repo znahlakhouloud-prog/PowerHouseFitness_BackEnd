@@ -1,0 +1,121 @@
+/* =========================================
+   CHARTS (3-up instead of the dashboard's 2-up)
+========================================= */
+
+.reports-charts-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1100px) {
+
+    .reports-charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================
+   REPORT HISTORY
+========================================= */
+
+.report-history-card {
+    margin-top: 20px;
+}
+
+.reports-table-card {
+    background: white;
+
+    border: 1px solid #e8ebef;
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+.reports-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13.5px;
+}
+
+.reports-table th {
+    text-align: left;
+
+    padding: 14px 18px;
+
+    background: #f9fafb;
+
+    color: #7c8594;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    border-bottom: 1px solid #e8ebef;
+
+    white-space: nowrap;
+}
+
+.reports-table td {
+    padding: 14px 18px;
+
+    border-bottom: 1px solid #f0f1f4;
+
+    color: #172033;
+
+    white-space: nowrap;
+}
+
+.reports-table tr:last-child td {
+    border-bottom: none;
+}
+
+.reports-empty {
+    padding: 40px;
+
+    text-align: center;
+
+    color: #858d9b;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   BUTTONS (Delete link, shared with other pages)
+========================================= */
+
+.btn-link {
+    border: none;
+    background: transparent;
+
+    color: #111827;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    padding: 0;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+.btn-danger {
+    color: #dc2626;
+}
+
+
+@media (max-width: 700px) {
+
+    .reports-table-card {
+        overflow-x: auto;
+    }
+
+}

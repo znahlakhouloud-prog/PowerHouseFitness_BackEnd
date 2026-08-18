@@ -10,8 +10,37 @@ import {
     getAttendanceCount,
     getMonthlyIncome,
     getMonthlyNewMembers,
-    getMonthlyAttendance
+    getMonthlyAttendance,
+    getMonthlyExpiredMemberships,
+    getMonthlyPaymentsByType
 } from "../models/report.js";
+
+// Reshape flat {month, type, total} rows into one object per month:
+// [{month, cash, card, transfer}, ...] - what a stacked bar chart needs
+const groupPaymentsByMonth = (rows) => {
+
+    const monthsByKey = new Map();
+
+    for (const row of rows) {
+
+        if (!monthsByKey.has(row.month)) {
+
+            monthsByKey.set(row.month, {
+                month: row.month,
+                cash: 0,
+                card: 0,
+                transfer: 0
+            });
+
+        }
+
+        monthsByKey.get(row.month)[row.type] = Number(row.total);
+
+    }
+
+    return Array.from(monthsByKey.values());
+
+};
 
 //    GET ALL REPORTS
 export const getAllReportsService = async () => {
@@ -121,6 +150,15 @@ export const getDashboardAnalyticsService = async () => {
     const monthlyAttendance =
         await getMonthlyAttendance();
 
+    const monthlyExpiredMemberships =
+        await getMonthlyExpiredMemberships();
+
+    const monthlyPaymentsByTypeRows =
+        await getMonthlyPaymentsByType();
+
+    const monthlyPaymentsByType =
+        groupPaymentsByMonth(monthlyPaymentsByTypeRows);
+
 
     return {
 
@@ -138,7 +176,11 @@ export const getDashboardAnalyticsService = async () => {
 
         monthlyNewMembers,
 
-        monthlyAttendance
+        monthlyAttendance,
+
+        monthlyExpiredMemberships,
+
+        monthlyPaymentsByType
 
     };
 

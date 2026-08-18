@@ -6,11 +6,14 @@ import {
 
 import { AuthContext } from "../../auth/context/authContext";
 
-import { getReports } from "../services/reportService";
+import { getAnalytics } from "../services/reportService";
 
 import KPIcard from "../components/KpiCard";
 import AttendanceChart from "../components/AttendanceChart";
 import NewMembersChart from "../components/NewMembersChart";
+import IncomeChart from "../components/IncomeChart";
+import ExpiredMembershipsChart from "../components/ExpiredMembershipsChart";
+import PaymentTypeChart from "../components/PaymentTypeChart";
 
 import "../style/adminDashboard.css";
 
@@ -39,7 +42,7 @@ function AdminDashboard() {
                 setLoading(true);
                 setError("");
 
-                const data = await getReports(token);
+                const data = await getAnalytics(token);
 
                 if (!cancelled) {
                     setReport(data);
@@ -238,56 +241,63 @@ function AdminDashboard() {
 
                 </div>
 
-            </div>
 
+                <div className="dashboard-card">
 
-            {/* MONTHLY INCOME */}
+                    <div className="card-header">
 
-            <div className="dashboard-card income-card">
+                        <h2>
+                            Monthly Income
+                        </h2>
 
-                <div className="card-header">
+                    </div>
 
-                    <h2>
-                        Monthly Income
-                    </h2>
+                    <IncomeChart
+                        data={
+                            report.monthlyIncome ||
+                            []
+                        }
+                    />
 
                 </div>
 
-                <div className="income-list">
 
-                    {report.monthlyIncome?.length > 0 ? (
+                <div className="dashboard-card">
 
-                        report.monthlyIncome.map(
-                            (item) => (
+                    <div className="card-header">
 
-                                <div
-                                    className="income-row"
-                                    key={item.month}
-                                >
+                        <h2>
+                            Expired Memberships
+                        </h2>
 
-                                    <span>
-                                        {item.month}
-                                    </span>
+                    </div>
 
-                                    <strong>
-                                        {Number(
-                                            item.income
-                                        ).toLocaleString()}{" "}
-                                        DA
-                                    </strong>
+                    <ExpiredMembershipsChart
+                        data={
+                            report.monthlyExpiredMemberships ||
+                            []
+                        }
+                    />
 
-                                </div>
+                </div>
 
-                            )
-                        )
 
-                    ) : (
+                <div className="dashboard-card">
 
-                        <p>
-                            No income data available.
-                        </p>
+                    <div className="card-header">
 
-                    )}
+                        <h2>
+                            Revenue by Payment Type
+                        </h2>
+
+                    </div>
+
+                    <PaymentTypeChart
+                        data={
+                            report.monthlyPaymentsByType ||
+                            []
+                        }
+                    />
 
                 </div>
 

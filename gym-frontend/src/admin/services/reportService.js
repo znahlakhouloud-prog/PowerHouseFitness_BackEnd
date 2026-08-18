@@ -1,11 +1,22 @@
 import api from "../../services/api";
 
 
-// GET DASHBOARD REPORT
-export const getReports = async () => {
+// GET LIVE DASHBOARD ANALYTICS
+export const getAnalytics = async () => {
 
     const response = await api.get(
         "/reports/analytics"
+    );
+
+    return response.data;
+};
+
+
+// GET SAVED REPORT HISTORY
+export const getReportHistory = async () => {
+
+    const response = await api.get(
+        "/reports"
     );
 
     return response.data;
