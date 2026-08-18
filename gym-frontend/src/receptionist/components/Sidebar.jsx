@@ -77,6 +77,7 @@ const Sidebar = ({
 
                 <NavLink
                     to="/receptionist/members"
+                    end
                     className={navLinkClass}
                 >
                     <Users size={20} />
