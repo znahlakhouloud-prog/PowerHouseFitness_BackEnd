@@ -8,6 +8,8 @@ console.log(
 
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import "./config/email.js";
 
@@ -22,7 +24,10 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
+import equipmentReportRoutes from "./routes/equipmentReportRoutes.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -31,6 +36,7 @@ app.use(cors({
     origin :"http://localhost:5173"
 }));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/users",userRoutes);
 app.use("/auth",authRoutes);
 app.use("/memberships",membershipRoutes);
@@ -41,6 +47,7 @@ app.use("/notifications", notificationRoutes);
 app.use("/reports", reportRoutes);
 app.use("/attendance", attendanceRoutes);
 app.use("/plans", planRoutes);
+app.use("/equipment-reports", equipmentReportRoutes);
 
 const PORT = process.env.PORT || 3000;
 

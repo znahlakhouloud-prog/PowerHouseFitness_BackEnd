@@ -33,6 +33,14 @@ import ReceptionistEquipmentPage from "../receptionist/pages/EquipmentPage";
 import NotificationsPage from "../receptionist/pages/NotificationsPage";
 import ProfilePage from "../receptionist/pages/ProfilePage";
 
+import MemberLayout from "../member/components/MemberLayout";
+import MemberDashboard from "../member/pages/MemberDashboard";
+import MemberAttendancePage from "../member/pages/AttendancePage";
+import MembershipPlansPage from "../member/pages/MembershipPlansPage";
+import MemberPaymentsPage from "../member/pages/PaymentsPage";
+import MemberEquipmentPage from "../member/pages/EquipmentPage";
+import MemberProfilePage from "../member/pages/ProfilePage";
+
 
 function AppRoutes() {
 
@@ -313,12 +321,40 @@ function AppRoutes() {
 
                     <Route
                         path="/member"
-                        element={
-                            <h1>
-                                Member Dashboard
-                            </h1>
-                        }
-                    />
+                        element={<MemberLayout />}
+                    >
+
+                        <Route
+                            index
+                            element={<MemberDashboard />}
+                        />
+
+                        <Route
+                            path="attendance"
+                            element={<MemberAttendancePage />}
+                        />
+
+                        <Route
+                            path="plans"
+                            element={<MembershipPlansPage />}
+                        />
+
+                        <Route
+                            path="payments"
+                            element={<MemberPaymentsPage />}
+                        />
+
+                        <Route
+                            path="equipment"
+                            element={<MemberEquipmentPage />}
+                        />
+
+                        <Route
+                            path="profile"
+                            element={<MemberProfilePage />}
+                        />
+
+                    </Route>
 
                 </Route>
 

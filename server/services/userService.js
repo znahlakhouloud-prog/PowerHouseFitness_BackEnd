@@ -78,6 +78,34 @@ export const updateUserService = async (id, data) => {
 
 };
 
+// UPDATE OWN PROFILE (member self-service - role is never taken
+// from the request, only ever carried over from the existing record)
+export const updateOwnProfileService = async (id, data) => {
+
+    const users = await getUserById(id);
+
+    if (users.length === 0) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    const existingUsers = await getUserByEmail(data.email);
+
+    if (
+        existingUsers.length > 0 &&
+        existingUsers[0].id !== Number(id)
+    ) {
+        throw new Error("EMAIL_ALREADY_EXISTS");
+    }
+
+    await updateUser(id, {
+        user_name: data.user_name,
+        age: data.age,
+        email: data.email,
+        role: users[0].role
+    });
+
+};
+
 // DELETE USER
 export const deleteUserService = async (id) => {
 

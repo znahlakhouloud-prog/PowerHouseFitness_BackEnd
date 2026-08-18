@@ -4,6 +4,7 @@ import {
     fetchPaymentByIdService,
     fetchPaymentsByMembershipService,
     createPaymentService,
+    createMemberPaymentService,
     updatePaymentService,
     deletePaymentService
 
@@ -55,10 +56,39 @@ export const fetchPaymentsByMembership = async (req, res) => {
 
         const payments =
             await fetchPaymentsByMembershipService(
-                req.params.id_membership
+                req.params.id_membership,
+                req.user
             );
 
         res.json(payments);
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// CREATE PAYMENT (member self-service)
+export const addMyPayment = async (req, res) => {
+
+    try {
+
+        const result = await createMemberPaymentService(
+            req.user.id,
+            req.body,
+            req.file
+        );
+
+        res.status(201).json({
+
+            message: "Payment submitted successfully",
+            id: result.insertId
+
+        });
 
     } catch (error) {
 

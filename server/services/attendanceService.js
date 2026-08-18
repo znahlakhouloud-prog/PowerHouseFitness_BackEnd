@@ -1,6 +1,7 @@
 import {
     getAllAttendances,
     getAttendanceById,
+    getAttendanceByUserId,
     getAttendanceToday,
     createAttendance
 } from "../models/attendance.js";
@@ -29,6 +30,13 @@ export const fetchAttendanceByIdService = async (id) => {
     }
 
     return attendances[0];
+
+};
+
+// GET ATTENDANCE HISTORY FOR ONE USER
+export const fetchAttendanceByUserIdService = async (id_user) => {
+
+    return await getAttendanceByUserId(id_user);
 
 };
 

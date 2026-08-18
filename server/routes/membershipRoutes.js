@@ -12,7 +12,7 @@ import {
 import { validateMembership } from "../middleware/validateMembership.js";
 import { validateUpdateMembership } from "../middleware/validateUpdateMembership.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
-import { authorizeRoles } from "../middleware/roleMiddleware.js";
+import { authorizeRoles, authorizeOwnerOrRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
@@ -25,11 +25,12 @@ router.get(
     fetchMemberships
 );
 
-// CHECK MEMBER ACCESS
+// CHECK MEMBER ACCESS (also used by a member to fetch their own
+// current membership - hence the ownership check, not just roles)
 router.get(
     "/check/:id_user",
     authenticateToken,
-    authorizeRoles("admin", "receptionist", "coach"),
+    authorizeOwnerOrRoles("id_user", "admin", "receptionist", "coach"),
     checkMembershipAccess
 );
 
@@ -41,11 +42,13 @@ router.get(
     fetchMembershipById
 );
 
-// CREATE MEMBERSHIP
+// CREATE MEMBERSHIP (member allowed - self-service subscribe when
+// they don't already have an active one; id_user is forced to their
+// own id in the controller regardless of what's in the body)
 router.post(
     "/",
     authenticateToken,
-    authorizeRoles("admin", "receptionist"),
+    authorizeRoles("admin", "receptionist", "member"),
     validateMembership,
     addMembership
 );

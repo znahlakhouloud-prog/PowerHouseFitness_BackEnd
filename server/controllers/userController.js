@@ -2,6 +2,7 @@ import {
     fetchUsersService,
     fetchUserByIdService,
     updateUserService,
+    updateOwnProfileService,
     deleteUserService
 } from "../services/userService.js";
 
@@ -65,6 +66,46 @@ export const editUser = async (req, res) => {
 
         res.status(200).json({
             message: "User updated successfully"
+        });
+
+    } catch (error) {
+
+        if (error.message === "USER_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "User not found"
+            });
+
+        }
+
+        if (error.message === "EMAIL_ALREADY_EXISTS") {
+
+            return res.status(409).json({
+                message: "Email already exists"
+            });
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// UPDATE OWN PROFILE
+export const updateOwnProfile = async (req, res) => {
+
+    try {
+
+        await updateOwnProfileService(
+            req.user.id,
+            req.body
+        );
+
+        res.status(200).json({
+            message: "Profile updated successfully"
         });
 
     } catch (error) {

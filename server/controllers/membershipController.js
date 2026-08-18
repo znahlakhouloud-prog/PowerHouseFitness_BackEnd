@@ -62,8 +62,14 @@ export const addMembership = async (req, res) => {
 
     try {
 
+        // A member can only ever subscribe themselves - never trust
+        // an id_user from the request body for that role.
+        const data = req.user.role === "member"
+            ? { ...req.body, id_user: req.user.id }
+            : req.body;
+
         const result =
-            await createMembershipService(req.body);
+            await createMembershipService(data);
 
         res.status(201).json({
             message: "Membership created successfully",

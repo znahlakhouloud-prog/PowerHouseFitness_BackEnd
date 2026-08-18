@@ -1,6 +1,7 @@
 import {
     fetchAttendancesService,
     fetchAttendanceByIdService,
+    fetchAttendanceByUserIdService,
     createAttendanceService
 } from "../services/attendanceService.js";
 
@@ -33,6 +34,26 @@ export const fetchAttendanceById = async (req, res) => {
             await fetchAttendanceByIdService(req.params.id);
 
         res.json(attendance);
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// GET ATTENDANCE HISTORY FOR ONE USER
+export const fetchAttendanceByUserId = async (req, res) => {
+
+    try {
+
+        const attendances =
+            await fetchAttendanceByUserIdService(req.params.id_user);
+
+        res.json(attendances);
 
     } catch (error) {
 

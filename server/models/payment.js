@@ -11,6 +11,8 @@ export const getAllPayments = async () => {
             p.amount,
             p.type,
             p.rest,
+            p.status,
+            p.receipt_file,
             u.user_name,
             m.name AS membership_name
         FROM payment p
@@ -37,6 +39,8 @@ export const getPaymentById = async (id) => {
             p.amount,
             p.type,
             p.rest,
+            p.status,
+            p.receipt_file,
             u.user_name,
             m.name AS membership_name
         FROM payment p
@@ -63,6 +67,8 @@ export const getPaymentsByMembership = async (id_membership) => {
             p.amount,
             p.type,
             p.rest,
+            p.status,
+            p.receipt_file,
             u.user_name,
             m.name AS membership_name
         FROM payment p
@@ -89,9 +95,11 @@ export const createPayment = async (paymentData) => {
             p_date,
             amount,
             type,
-            rest
+            rest,
+            status,
+            receipt_file
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -99,7 +107,9 @@ export const createPayment = async (paymentData) => {
         paymentData.p_date,
         paymentData.amount,
         paymentData.type,
-        paymentData.rest
+        paymentData.rest,
+        paymentData.status,
+        paymentData.receipt_file ?? null
     ];
 
     const [result] = await db.query(sql, values);
@@ -107,7 +117,8 @@ export const createPayment = async (paymentData) => {
     return result;
 };
 
-// GET TOTAL PAID
+// GET TOTAL PAID (only payments actually confirmed - a pending
+// bank transfer must not reduce the balance until approved)
 export const getTotalPaidByMembership = async (id_membership) => {
 
     const sql = `
@@ -115,6 +126,7 @@ export const getTotalPaidByMembership = async (id_membership) => {
             COALESCE(SUM(amount),0) AS total_paid
         FROM payment
         WHERE id_membership = ?
+        AND status = 'approved'
     `;
 
     const [rows] = await db.query(sql, [id_membership]);
@@ -132,7 +144,8 @@ export const updatePayment = async (id, paymentData) => {
             p_date = ?,
             amount = ?,
             type = ?,
-            rest = ?
+            rest = ?,
+            status = ?
         WHERE id = ?
     `;
 
@@ -142,6 +155,7 @@ export const updatePayment = async (id, paymentData) => {
         paymentData.amount,
         paymentData.type,
         paymentData.rest,
+        paymentData.status,
         id
     ];
 

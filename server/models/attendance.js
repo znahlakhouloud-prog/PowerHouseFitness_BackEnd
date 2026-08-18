@@ -39,6 +39,25 @@ export const getAttendanceById = async (id) => {
     return rows;
 };
 
+// GET ATTENDANCE HISTORY FOR ONE USER
+export const getAttendanceByUserId = async (id_user) => {
+
+    const sql = `
+        SELECT
+            id,
+            id_user,
+            attendance_date,
+            check_in
+        FROM attendance
+        WHERE id_user = ?
+        ORDER BY check_in DESC
+    `;
+
+    const [rows] = await db.query(sql, [id_user]);
+
+    return rows;
+};
+
 // GET TODAY'S ATTENDANCE
 export const getAttendanceToday = async (id_user) => {
 

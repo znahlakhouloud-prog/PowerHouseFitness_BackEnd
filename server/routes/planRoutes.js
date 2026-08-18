@@ -15,11 +15,11 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-// Admin and receptionist can browse the catalog (e.g. to assign a
-// plan at registration); only admin can manage it.
+// Admin/receptionist browse the catalog to assign a plan; members
+// browse it to choose one themselves. Only admin can manage it.
 router.get(
     "/",
-    authorizeRoles("admin", "receptionist"),
+    authorizeRoles("admin", "receptionist", "member"),
     fetchPlans
 );
 
