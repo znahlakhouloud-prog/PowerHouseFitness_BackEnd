@@ -177,6 +177,7 @@ function EquipmentPage() {
         setActionError("");
 
         const payload = {
+            name: item.name,
             state: targetState,
             maint_date:
                 targetState === "available"
@@ -207,7 +208,7 @@ function EquipmentPage() {
     const handleDelete = async (item) => {
 
         const confirmed = window.confirm(
-            `Delete equipment #${item.id}? This cannot be undone.`
+            `Delete "${item.name}"? This cannot be undone.`
         );
 
         if (!confirmed) {
@@ -312,7 +313,7 @@ function EquipmentPage() {
                         <thead>
 
                             <tr>
-                                <th>ID</th>
+                                <th>Name</th>
                                 <th>Last Maintenance</th>
                                 <th>Status</th>
                                 <th></th>
@@ -326,7 +327,7 @@ function EquipmentPage() {
 
                                 <tr key={item.id}>
 
-                                    <td>#{item.id}</td>
+                                    <td>{item.name}</td>
 
                                     <td>
                                         {item.maint_date

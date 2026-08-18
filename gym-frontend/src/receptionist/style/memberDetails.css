@@ -1,0 +1,96 @@
+/* =========================================
+   PERSONAL INFO
+========================================= */
+
+.member-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.member-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.member-info-item span {
+    color: #858d9b;
+    font-size: 12px;
+}
+
+.member-info-item strong {
+    font-size: 14.5px;
+    color: #172033;
+    text-transform: capitalize;
+}
+
+.profile-change-password {
+    margin-top: 20px;
+}
+
+
+/* =========================================
+   MEMBERSHIP CARD
+========================================= */
+
+.membership-card {
+    background: #f9fafb;
+    border: 1px solid #eef0f3;
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.membership-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.membership-card-header h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+}
+
+.membership-type {
+    color: #858d9b;
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
+.membership-card-body {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.membership-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.membership-detail span {
+    color: #858d9b;
+    font-size: 12px;
+}
+
+.membership-detail strong {
+    font-size: 14px;
+    color: #172033;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .member-info-grid,
+    .membership-card-body {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}

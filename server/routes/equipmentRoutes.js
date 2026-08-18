@@ -5,6 +5,7 @@ import {
     fetchEquipmentById,
     addEquipment,
     editEquipment,
+    reportBroken,
     removeEquipment
 } from "../controllers/equipmentController.js";
 
@@ -43,6 +44,15 @@ router.put(
     authorizeRoles("admin"),
     validateEquipment,
     editEquipment
+);
+
+// Admin and receptionist can report equipment broken (narrow -
+// only flips state to "broken", not full edit rights)
+router.patch(
+    "/:id/report-broken",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    reportBroken
 );
 
 // Only admin can delete

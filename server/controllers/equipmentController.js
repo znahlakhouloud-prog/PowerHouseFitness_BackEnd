@@ -3,6 +3,7 @@ import {
     fetchEquipmentByIdService,
     createEquipmentService,
     updateEquipmentService,
+    reportEquipmentBrokenService,
     deleteEquipmentService
 } from "../services/equipmentService.js";
 
@@ -81,6 +82,27 @@ export const editEquipment = async (req, res) => {
 
         res.json({
             message: "Equipment updated successfully"
+        });
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// REPORT EQUIPMENT BROKEN
+export const reportBroken = async (req, res) => {
+
+    try {
+
+        await reportEquipmentBrokenService(req.params.id);
+
+        res.json({
+            message: "Equipment reported as broken"
         });
 
     } catch (error) {

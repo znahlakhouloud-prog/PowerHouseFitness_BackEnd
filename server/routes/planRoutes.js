@@ -13,16 +13,34 @@ import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-// Admin-only catalog of membership plans
 router.use(authenticateToken);
-router.use(authorizeRoles("admin"));
 
-router.get("/", fetchPlans);
+// Admin and receptionist can browse the catalog (e.g. to assign a
+// plan at registration); only admin can manage it.
+router.get(
+    "/",
+    authorizeRoles("admin", "receptionist"),
+    fetchPlans
+);
 
-router.post("/", validatePlan, addPlan);
+router.post(
+    "/",
+    authorizeRoles("admin"),
+    validatePlan,
+    addPlan
+);
 
-router.put("/:id", validatePlan, editPlan);
+router.put(
+    "/:id",
+    authorizeRoles("admin"),
+    validatePlan,
+    editPlan
+);
 
-router.delete("/:id", removePlan);
+router.delete(
+    "/:id",
+    authorizeRoles("admin"),
+    removePlan
+);
 
 export default router;

@@ -2,6 +2,10 @@ import { body, validationResult } from "express-validator";
 
 export const validateEquipment = [
 
+    body("name")
+        .notEmpty()
+        .withMessage("Equipment name is required"),
+
     body("maint_date")
         .isISO8601()
         .withMessage("Valid maintenance date is required"),

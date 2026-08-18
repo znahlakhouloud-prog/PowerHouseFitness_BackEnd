@@ -3,6 +3,7 @@ import {
     getEquipmentById,
     createEquipment,
     updateEquipment,
+    reportEquipmentBroken,
     deleteEquipment
 } from "../models/equipment.js";
 
@@ -105,6 +106,23 @@ export const updateEquipmentService = async (id, data) => {
     }
 
     return await updateEquipment(id, data);
+
+};
+
+// REPORT EQUIPMENT BROKEN
+export const reportEquipmentBrokenService = async (id) => {
+
+    const equipments = await getEquipmentById(id);
+
+    if (equipments.length === 0) {
+
+        const error = new Error("Equipment not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    return await reportEquipmentBroken(id);
 
 };
 

@@ -10,7 +10,7 @@ export const fetchUsers = async (req, res) => {
 
     try {
 
-        const users = await fetchUsersService();
+        const users = await fetchUsersService(req.user.role);
 
         res.status(200).json(users);
 

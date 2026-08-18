@@ -7,7 +7,7 @@ import { validateUpdateUser } from "../middleware/validateUpdateUser.js";
 
 const router = express.Router();
 
-router.get("/", authenticateToken, authorizeRoles("admin"), fetchUsers);
+router.get("/", authenticateToken, authorizeRoles("admin", "receptionist"), fetchUsers);
 
 router.get("/:id", authenticateToken, fetchUserById);
 

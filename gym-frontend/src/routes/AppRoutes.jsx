@@ -22,6 +22,17 @@ import PaymentsPage from "../admin/pages/PaymentsPage";
 import MembershipsPage from "../admin/pages/MembershipsPage";
 import ReportsPage from "../admin/pages/ReportsPage";
 
+import ReceptionistLayout from "../receptionist/components/ReceptionistLayout";
+import ReceptionistDashboard from "../receptionist/pages/ReceptionistDashboard";
+import MembersPage from "../receptionist/pages/MembersPage";
+import RegisterMemberPage from "../receptionist/pages/RegisterMemberPage";
+import MemberDetailsPage from "../receptionist/pages/MemberDetailsPage";
+import ReceptionistMembershipsPage from "../receptionist/pages/MembershipsPage";
+import AttendancePage from "../receptionist/pages/AttendancePage";
+import ReceptionistEquipmentPage from "../receptionist/pages/EquipmentPage";
+import NotificationsPage from "../receptionist/pages/NotificationsPage";
+import ProfilePage from "../receptionist/pages/ProfilePage";
+
 
 function AppRoutes() {
 
@@ -193,12 +204,73 @@ function AppRoutes() {
 
                     <Route
                         path="/receptionist"
-                        element={
-                            <h1>
-                                Receptionist Dashboard
-                            </h1>
-                        }
-                    />
+                        element={<ReceptionistLayout />}
+                    >
+
+                        <Route
+                            index
+                            element={
+                                <ReceptionistDashboard />
+                            }
+                        />
+
+                        <Route
+                            path="members"
+                            element={
+                                <MembersPage />
+                            }
+                        />
+
+                        <Route
+                            path="members/new"
+                            element={
+                                <RegisterMemberPage />
+                            }
+                        />
+
+                        <Route
+                            path="members/:id"
+                            element={
+                                <MemberDetailsPage />
+                            }
+                        />
+
+                        <Route
+                            path="memberships"
+                            element={
+                                <ReceptionistMembershipsPage />
+                            }
+                        />
+
+                        <Route
+                            path="attendance"
+                            element={
+                                <AttendancePage />
+                            }
+                        />
+
+                        <Route
+                            path="equipment"
+                            element={
+                                <ReceptionistEquipmentPage />
+                            }
+                        />
+
+                        <Route
+                            path="notifications"
+                            element={
+                                <NotificationsPage />
+                            }
+                        />
+
+                        <Route
+                            path="profile"
+                            element={
+                                <ProfilePage />
+                            }
+                        />
+
+                    </Route>
 
                 </Route>
 

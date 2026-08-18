@@ -6,6 +6,7 @@ export const getAllEquipments = async () => {
     const sql = `
         SELECT
             id,
+            name,
             maint_date,
             state
         FROM equipment
@@ -23,6 +24,7 @@ export const getEquipmentById = async (id) => {
     const sql = `
         SELECT
             id,
+            name,
             maint_date,
             state
         FROM equipment
@@ -40,13 +42,15 @@ export const createEquipment = async (equipmentData) => {
     const sql = `
         INSERT INTO equipment
         (
+            name,
             maint_date,
             state
         )
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
     `;
 
     const values = [
+        equipmentData.name,
         equipmentData.maint_date,
         equipmentData.state
     ];
@@ -62,18 +66,34 @@ export const updateEquipment = async (id, equipmentData) => {
     const sql = `
         UPDATE equipment
         SET
+            name = ?,
             maint_date = ?,
             state = ?
         WHERE id = ?
     `;
 
     const values = [
+        equipmentData.name,
         equipmentData.maint_date,
         equipmentData.state,
         id
     ];
 
     const [result] = await db.query(sql, values);
+
+    return result;
+};
+
+// REPORT EQUIPMENT BROKEN (narrow - state only, no maint_date change)
+export const reportEquipmentBroken = async (id) => {
+
+    const sql = `
+        UPDATE equipment
+        SET state = 'broken'
+        WHERE id = ?
+    `;
+
+    const [result] = await db.query(sql, [id]);
 
     return result;
 };

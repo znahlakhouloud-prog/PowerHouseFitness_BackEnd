@@ -10,9 +10,22 @@ import {
 } from "../models/user.js";
 
 // GET ALL USERS
-export const fetchUsersService = async () => {
+export const fetchUsersService = async (requesterRole) => {
 
-    return await getAllUsers();
+    const users = await getAllUsers();
+
+    // Receptionists only ever see member accounts - enforced
+    // here, not just hidden in the UI, since this list can also
+    // include admins/coaches/employees.
+    if (requesterRole === "receptionist") {
+
+        return users.filter(
+            (user) => user.role === "member"
+        );
+
+    }
+
+    return users;
 
 };
 

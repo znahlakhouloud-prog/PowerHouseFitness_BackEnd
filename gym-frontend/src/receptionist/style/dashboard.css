@@ -1,0 +1,7 @@
+/* Dashboard-specific tweaks (most styling is shared via receptionist.css) */
+
+.receptionist-dashboard .card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}

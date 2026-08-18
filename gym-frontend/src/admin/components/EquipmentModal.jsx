@@ -14,6 +14,7 @@ function EquipmentModal({ equipment, onClose, onSave }) {
     const isEdit = Boolean(equipment);
 
     const [formData, setFormData] = useState({
+        name: equipment?.name || "",
         maint_date: equipment?.maint_date
             ? String(equipment.maint_date).split("T")[0]
             : todayISO(),
@@ -104,6 +105,21 @@ function EquipmentModal({ equipment, onClose, onSave }) {
                 )}
 
                 <form onSubmit={handleSubmit}>
+
+                    <div className="form-field">
+
+                        <label>Name</label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder="e.g. Treadmill 3"
+                            required
+                        />
+
+                    </div>
 
                     <div className="form-field">
 
