@@ -5,10 +5,12 @@ import {
     createNotification,
     updateNotification,
     deleteNotification,
-    markNotificationAsRead
+    markNotificationAsRead,
+    getUnreadCountByUserId,
+    markAllAsReadByUserId
 } from "../models/notification.js";
 
-import { getUserById } from "../models/user.js";
+import { getUserById, getAdminUserIds } from "../models/user.js";
 
 
 // GET ALL NOTIFICATIONS
@@ -125,5 +127,39 @@ export const markNotificationAsReadService = async (id) => {
     }
 
     return await markNotificationAsRead(id);
+
+};
+
+// UNREAD COUNT
+export const fetchUnreadCountService = async (id_user) => {
+
+    return await getUnreadCountByUserId(id_user);
+
+};
+
+// MARK ALL AS READ
+export const markAllAsReadService = async (id_user) => {
+
+    return await markAllAsReadByUserId(id_user);
+
+};
+
+// NOTIFY ALL ADMINS (fan-out - one row per admin, so each admin's
+// read state is independent rather than sharing a single row)
+export const notifyAdmins = async ({ title, descrip, type }) => {
+
+    const adminIds = await getAdminUserIds();
+
+    for (const id_user of adminIds) {
+
+        await createNotification({
+            id_user,
+            title,
+            descrip,
+            is_read: false,
+            type
+        });
+
+    }
 
 };

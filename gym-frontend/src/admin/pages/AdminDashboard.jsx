@@ -4,27 +4,73 @@ import {
     useState
 } from "react";
 
+import {
+    Wallet,
+    UserPlus,
+    UserX,
+    Trophy,
+    CalendarCheck,
+    Users,
+    CalendarClock,
+    Clock,
+    Wrench
+} from "lucide-react";
+
 import { AuthContext } from "../../auth/context/authContext";
 
 import { getAnalytics } from "../services/reportService";
 
-import KPIcard from "../components/KpiCard";
+import KpiCard from "../components/KpiCard";
+import PeriodSelector from "../components/PeriodSelector";
 import AttendanceChart from "../components/AttendanceChart";
 import NewMembersChart from "../components/NewMembersChart";
 import IncomeChart from "../components/IncomeChart";
 import ExpiredMembershipsChart from "../components/ExpiredMembershipsChart";
 import PaymentTypeChart from "../components/PaymentTypeChart";
+import MembershipStatusChart from "../components/MembershipStatusChart";
 
 import "../style/adminDashboard.css";
 
 
 function AdminDashboard() {
 
-    const { token } = useContext(AuthContext);
+    const { token, user } = useContext(AuthContext);
 
     const [report, setReport] = useState(null);
+
+    const [period, setPeriod] = useState("year");
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+
+    const loadDashboard = async () => {
+
+        try {
+
+            setLoading(true);
+            setError("");
+
+            const analyticsData = await getAnalytics(period);
+
+            setReport(analyticsData);
+
+        } catch (err) {
+
+            console.error("LOAD DASHBOARD ERROR:", err);
+
+            setError(
+                err.response?.data?.message ||
+                "Unable to load dashboard data."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
 
 
     useEffect(() => {
@@ -33,54 +79,10 @@ function AdminDashboard() {
             return;
         }
 
-        let cancelled = false;
+        loadDashboard();
 
-        const loadReports = async () => {
-
-            try {
-
-                setLoading(true);
-                setError("");
-
-                const data = await getAnalytics(token);
-
-                if (!cancelled) {
-                    setReport(data);
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "LOAD REPORT ERROR:",
-                    error
-                );
-
-                if (!cancelled) {
-
-                    setError(
-                        error.response?.data?.message ||
-                        "Failed to load dashboard data"
-                    );
-
-                }
-
-            } finally {
-
-                if (!cancelled) {
-                    setLoading(false);
-                }
-
-            }
-
-        };
-
-        loadReports();
-
-        return () => {
-            cancelled = true;
-        };
-
-    }, [token]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token, period]);
 
 
     // =========================
@@ -106,7 +108,16 @@ function AdminDashboard() {
 
         return (
             <div className="admin-dashboard-error">
-                {error}
+
+                <p>{error}</p>
+
+                <button
+                    className="dashboard-action-button"
+                    onClick={loadDashboard}
+                >
+                    Try Again
+                </button>
+
             </div>
         );
 
@@ -147,10 +158,15 @@ function AdminDashboard() {
                     </h1>
 
                     <p>
-                        Welcome back, Admin
+                        Welcome back, {user?.user_name || "Admin"}
                     </p>
 
                 </div>
+
+                <PeriodSelector
+                    value={period}
+                    onChange={setPeriod}
+                />
 
             </div>
 
@@ -159,40 +175,58 @@ function AdminDashboard() {
 
             <div className="kpi-grid">
 
-                <KPIcard
+                <KpiCard
                     title="Total Income"
-                    value={`${Number(
-                        report.income || 0
-                    ).toLocaleString()} DA`}
+                    value={`${Number(report.income || 0).toLocaleString()} DA`}
+                    icon={<Wallet size={18} />}
                 />
 
-                <KPIcard
-                    title="New Members"
-                    value={
-                        report.newMembers || 0
-                    }
+                <KpiCard
+                    title="Active Members"
+                    value={report.activeMembers || 0}
+                    icon={<Users size={18} />}
                 />
 
-                <KPIcard
+                <KpiCard
                     title="Expired Memberships"
-                    value={
-                        report.expiredMemberships || 0
-                    }
+                    value={report.expiredMemberships || 0}
+                    icon={<UserX size={18} />}
                 />
 
-                <KPIcard
+                <KpiCard
+                    title="New Members Today"
+                    value={report.newMembers || 0}
+                    icon={<UserPlus size={18} />}
+                />
+
+                <KpiCard
+                    title="Attendance Today"
+                    value={report.attendanceToday || 0}
+                    icon={<CalendarClock size={18} />}
+                />
+
+                <KpiCard
+                    title="Attendance This Month"
+                    value={report.attendance || 0}
+                    icon={<CalendarCheck size={18} />}
+                />
+
+                <KpiCard
+                    title="Pending Payments"
+                    value={report.pendingPayments || 0}
+                    icon={<Clock size={18} />}
+                />
+
+                <KpiCard
+                    title="Equipment Issues"
+                    value={report.equipmentIssues || 0}
+                    icon={<Wrench size={18} />}
+                />
+
+                <KpiCard
                     title="Top Membership"
-                    value={
-                        report.topMembership ||
-                        "N/A"
-                    }
-                />
-
-                <KPIcard
-                    title="Attendance"
-                    value={
-                        report.attendance || 0
-                    }
+                    value={report.topMembership || "N/A"}
+                    icon={<Trophy size={18} />}
                 />
 
             </div>
@@ -202,104 +236,17 @@ function AdminDashboard() {
 
             <div className="charts-grid">
 
-                <div className="dashboard-card">
+                <IncomeChart data={report.incomeTrend} />
 
-                    <div className="card-header">
+                <AttendanceChart data={report.attendanceTrend} />
 
-                        <h2>
-                            Monthly Attendance
-                        </h2>
+                <NewMembersChart data={report.newMembersTrend} />
 
-                    </div>
+                <ExpiredMembershipsChart data={report.expiredMembershipsTrend} />
 
-                    <AttendanceChart
-                        data={
-                            report.monthlyAttendance ||
-                            []
-                        }
-                    />
+                <PaymentTypeChart data={report.paymentsByTypeTrend} />
 
-                </div>
-
-
-                <div className="dashboard-card">
-
-                    <div className="card-header">
-
-                        <h2>
-                            New Members
-                        </h2>
-
-                    </div>
-
-                    <NewMembersChart
-                        data={
-                            report.monthlyNewMembers ||
-                            []
-                        }
-                    />
-
-                </div>
-
-
-                <div className="dashboard-card">
-
-                    <div className="card-header">
-
-                        <h2>
-                            Monthly Income
-                        </h2>
-
-                    </div>
-
-                    <IncomeChart
-                        data={
-                            report.monthlyIncome ||
-                            []
-                        }
-                    />
-
-                </div>
-
-
-                <div className="dashboard-card">
-
-                    <div className="card-header">
-
-                        <h2>
-                            Expired Memberships
-                        </h2>
-
-                    </div>
-
-                    <ExpiredMembershipsChart
-                        data={
-                            report.monthlyExpiredMemberships ||
-                            []
-                        }
-                    />
-
-                </div>
-
-
-                <div className="dashboard-card">
-
-                    <div className="card-header">
-
-                        <h2>
-                            Revenue by Payment Type
-                        </h2>
-
-                    </div>
-
-                    <PaymentTypeChart
-                        data={
-                            report.monthlyPaymentsByType ||
-                            []
-                        }
-                    />
-
-                </div>
+                <MembershipStatusChart data={report.membershipStatus} />
 
             </div>
 

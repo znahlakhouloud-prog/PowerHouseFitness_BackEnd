@@ -167,6 +167,42 @@
 
 
 /* =========================================
+   MEMBERSHIP STATUS BADGES
+========================================= */
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-expiring {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-expired {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.no-membership {
+    color: #9aa1ad;
+    font-size: 12.5px;
+    font-style: italic;
+}
+
+
+/* =========================================
    BUTTONS
 ========================================= */
 

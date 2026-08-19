@@ -167,6 +167,24 @@ export const deleteUser = async (id) => {
 
 
 // ============================================
+// GET ADMIN USER IDS (for fanning out admin-facing notifications)
+// ============================================
+
+export const getAdminUserIds = async () => {
+
+    const sql = `
+        SELECT id
+        FROM user
+        WHERE role = 'admin'
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows.map((row) => row.id);
+};
+
+
+// ============================================
 // CHECK USER EXISTS
 // ============================================
 

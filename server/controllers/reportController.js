@@ -3,7 +3,8 @@ import {
     getReportByIdService,
     generateReportService,
     deleteReportService,
-    getDashboardAnalyticsService
+    getDashboardAnalyticsService,
+    getRecentActivityService
 } from "../services/reportService.js";
 
 //    GET ALL REPORTS
@@ -113,7 +114,7 @@ export const getDashboardAnalytics = async (
     try {
 
         const analytics =
-            await getDashboardAnalyticsService();
+            await getDashboardAnalyticsService(req.query.period);
 
         res.status(200).json(
             analytics
@@ -130,6 +131,30 @@ export const getDashboardAnalytics = async (
             message:
                 error.message
 
+        });
+
+    }
+
+};
+
+// =========================================
+// RECENT ACTIVITY
+// =========================================
+
+export const getRecentActivity = async (req, res) => {
+
+    try {
+
+        const activity = await getRecentActivityService();
+
+        res.status(200).json(activity);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(error.status || 500).json({
+            message: error.message
         });
 
     }

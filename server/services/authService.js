@@ -14,6 +14,8 @@ import {
     sendPasswordResetEmail
 } from "./emailService.js";
 
+import { notifyAdmins } from "./notificationService.js";
+
 // REGISTER
 export const registerService = async (userData,creatorRole) => {
 
@@ -75,7 +77,23 @@ export const registerService = async (userData,creatorRole) => {
     };
     const result = await createUser(newUser);
 
-     // 6. Return result + temporary password
+    // 6. Notify admins - non-fatal, registration must still succeed
+    // even if this fails for some reason
+    try {
+
+        await notifyAdmins({
+            title: "New User Registered",
+            descrip: `${userData.user_name} joined as ${userData.role}`,
+            type: "registration"
+        });
+
+    } catch (notifyError) {
+
+        console.error("NOTIFY ADMINS ERROR (registration):", notifyError);
+
+    }
+
+     // 7. Return result + temporary password
     return {
         result,
         temporaryPassword

@@ -3,6 +3,10 @@ import {
     useState
 } from "react";
 
+import { Link } from "react-router-dom";
+
+import { Wallet, UserPlus, UserX, Trophy, CalendarCheck } from "lucide-react";
+
 import {
     getAnalytics,
     getReportHistory,
@@ -11,11 +15,6 @@ import {
 } from "../services/reportService";
 
 import KpiCard from "../components/KpiCard";
-import AttendanceChart from "../components/AttendanceChart";
-import NewMembersChart from "../components/NewMembersChart";
-import IncomeChart from "../components/IncomeChart";
-import ExpiredMembershipsChart from "../components/ExpiredMembershipsChart";
-import PaymentTypeChart from "../components/PaymentTypeChart";
 
 import "../style/adminDashboard.css";
 import "../style/reportsPage.css";
@@ -166,7 +165,7 @@ function ReportsPage() {
 
                 <div>
                     <h1>Reports &amp; Analytics</h1>
-                    <p>Follow income, membership and attendance trends</p>
+                    <p>Save point-in-time snapshots of the gym's numbers</p>
                 </div>
 
                 <button
@@ -187,107 +186,48 @@ function ReportsPage() {
 
             {analytics && (
 
-                <>
+                <div className="kpi-grid">
 
-                    <div className="kpi-grid">
+                    <KpiCard
+                        title="Total Income"
+                        value={`${Number(
+                            analytics.income || 0
+                        ).toLocaleString()} DA`}
+                        icon={<Wallet size={18} />}
+                    />
 
-                        <KpiCard
-                            title="Total Income"
-                            value={`${Number(
-                                analytics.income || 0
-                            ).toLocaleString()} DA`}
-                        />
+                    <KpiCard
+                        title="New Members Today"
+                        value={analytics.newMembers || 0}
+                        icon={<UserPlus size={18} />}
+                    />
 
-                        <KpiCard
-                            title="New Members"
-                            value={analytics.newMembers || 0}
-                        />
+                    <KpiCard
+                        title="Expired Memberships"
+                        value={analytics.expiredMemberships || 0}
+                        icon={<UserX size={18} />}
+                    />
 
-                        <KpiCard
-                            title="Expired Memberships"
-                            value={analytics.expiredMemberships || 0}
-                        />
+                    <KpiCard
+                        title="Top Membership"
+                        value={analytics.topMembership || "N/A"}
+                        icon={<Trophy size={18} />}
+                    />
 
-                        <KpiCard
-                            title="Top Membership"
-                            value={analytics.topMembership || "N/A"}
-                        />
+                    <KpiCard
+                        title="Attendance This Month"
+                        value={analytics.attendance || 0}
+                        icon={<CalendarCheck size={18} />}
+                    />
 
-                        <KpiCard
-                            title="Attendance"
-                            value={analytics.attendance || 0}
-                        />
-
-                    </div>
-
-
-                    <div className="charts-grid reports-charts-grid">
-
-                        <div className="dashboard-card">
-
-                            <div className="card-header">
-                                <h2>Monthly Attendance</h2>
-                            </div>
-
-                            <AttendanceChart
-                                data={analytics.monthlyAttendance || []}
-                            />
-
-                        </div>
-
-                        <div className="dashboard-card">
-
-                            <div className="card-header">
-                                <h2>New Members</h2>
-                            </div>
-
-                            <NewMembersChart
-                                data={analytics.monthlyNewMembers || []}
-                            />
-
-                        </div>
-
-                        <div className="dashboard-card">
-
-                            <div className="card-header">
-                                <h2>Monthly Income</h2>
-                            </div>
-
-                            <IncomeChart
-                                data={analytics.monthlyIncome || []}
-                            />
-
-                        </div>
-
-                        <div className="dashboard-card">
-
-                            <div className="card-header">
-                                <h2>Expired Memberships</h2>
-                            </div>
-
-                            <ExpiredMembershipsChart
-                                data={analytics.monthlyExpiredMemberships || []}
-                            />
-
-                        </div>
-
-                        <div className="dashboard-card">
-
-                            <div className="card-header">
-                                <h2>Revenue by Payment Type</h2>
-                            </div>
-
-                            <PaymentTypeChart
-                                data={analytics.monthlyPaymentsByType || []}
-                            />
-
-                        </div>
-
-                    </div>
-
-                </>
+                </div>
 
             )}
+
+            <p className="reports-dashboard-hint">
+                Looking for charts and trends? The full breakdown now lives
+                on the <Link to="/admin">Dashboard</Link>.
+            </p>
 
 
             <div className="dashboard-card report-history-card">

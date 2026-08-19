@@ -25,6 +25,29 @@ export const createEquipmentReport = async (data) => {
     return result;
 };
 
+// GET ALL EQUIPMENT REPORTS (admin/receptionist review list)
+export const getAllEquipmentReports = async () => {
+
+    const sql = `
+        SELECT
+            er.id,
+            er.id_user,
+            er.equipment_name,
+            er.description,
+            er.status,
+            er.created_at,
+            u.user_name AS reported_by,
+            u.role AS reported_by_role
+        FROM equipment_report er
+        JOIN user u ON er.id_user = u.id
+        ORDER BY er.created_at DESC
+    `;
+
+    const [rows] = await db.query(sql);
+
+    return rows;
+};
+
 // GET EQUIPMENT REPORTS FOR ONE USER
 export const getEquipmentReportsByUser = async (id_user) => {
 

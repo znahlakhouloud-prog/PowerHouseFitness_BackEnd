@@ -4,16 +4,48 @@ import {
     createMembership,
     updateMembership,
     getActiveMembershipByUserId,
-    updateExpiredMemberships
+    updateExpiredMemberships as updateExpiredMembershipsModel
 } from "../models/membership.js";
 
 import { userExists } from "../models/user.js";
+import { notifyAdmins } from "./notificationService.js";
+
+
+// Runs the expiry check and notifies admins about any membership
+// that just transitioned to expired in this call - not on every
+// subsequent check, since the model only ever returns rows that are
+// still "active" at query time.
+export const checkExpiredMemberships = async () => {
+
+    const newlyExpired = await updateExpiredMembershipsModel();
+
+    for (const membership of newlyExpired) {
+
+        try {
+
+            await notifyAdmins({
+                title: "Membership Expired",
+                descrip: `${membership.user_name}'s ${membership.name} membership expired`,
+                type: "membership"
+            });
+
+        } catch (notifyError) {
+
+            console.error("NOTIFY ADMINS ERROR (membership expired):", notifyError);
+
+        }
+
+    }
+
+    return newlyExpired;
+
+};
 
 
 // GET ALL MEMBERSHIPS
 export const fetchMembershipsService = async () => {
 
-    await updateExpiredMemberships();
+    await checkExpiredMemberships();
 
     return await getAllMemberships();
 
@@ -22,7 +54,7 @@ export const fetchMembershipsService = async () => {
 // GET MEMBERSHIP BY ID
 export const fetchMembershipByIdService = async (id) => {
 
-    await updateExpiredMemberships();
+    await checkExpiredMemberships();
 
     const memberships = await getMembershipById(id);
 
@@ -37,7 +69,7 @@ export const fetchMembershipByIdService = async (id) => {
 // CREATE MEMBERSHIP
 export const createMembershipService = async (data) => {
 
-    await updateExpiredMemberships();
+    await checkExpiredMemberships();
 
     const exists = await userExists(data.id_user);
 
@@ -110,7 +142,7 @@ export const updateMembershipService = async (id, data) => {
 // CHECK MEMBERSHIP ACCESS
 export const checkMembershipAccessService = async (id_user) => {
 
-    await updateExpiredMemberships();
+    await checkExpiredMemberships();
 
     const memberships =
         await getActiveMembershipByUserId(id_user);

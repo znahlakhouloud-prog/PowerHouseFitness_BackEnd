@@ -7,12 +7,14 @@ import {
     addNotification,
     editNotification,
     removeNotification,
-    readNotification
+    readNotification,
+    fetchUnreadCount,
+    readAllNotifications
 } from "../controllers/notificationController.js";
 
 import { validateNotification } from "../middleware/validateNotification.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
-import { authorizeRoles } from "../middleware/roleMiddleware.js";
+import { authorizeRoles, authorizeOwnerOrRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
@@ -24,11 +26,27 @@ router.get(
     fetchNotifications
 );
 
-// GET USER NOTIFICATIONS
+// GET USER NOTIFICATIONS (own only, unless admin/receptionist - same
+// ownership pattern used for /users/:id)
 router.get(
     "/user/:id_user",
     authenticateToken,
+    authorizeOwnerOrRoles("id_user", "admin", "receptionist"),
     fetchNotificationsByUserId
+);
+
+// GET MY UNREAD COUNT
+router.get(
+    "/unread-count",
+    authenticateToken,
+    fetchUnreadCount
+);
+
+// MARK ALL MY NOTIFICATIONS AS READ
+router.patch(
+    "/read-all",
+    authenticateToken,
+    readAllNotifications
 );
 
 // GET NOTIFICATION BY ID

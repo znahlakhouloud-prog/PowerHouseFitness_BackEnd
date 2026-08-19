@@ -8,7 +8,11 @@ import {
     Tooltip
 } from "recharts";
 
+import { formatTrendData } from "../utils/chartFormat";
+
 const IncomeChart = ({ data }) => {
+
+    const chartData = formatTrendData(data);
 
     return (
 
@@ -17,8 +21,8 @@ const IncomeChart = ({ data }) => {
             <div className="chart-header">
 
                 <div>
-                    <h3>Income Overview</h3>
-                    <p>Monthly income performance</p>
+                    <h3>Revenue Over Time</h3>
+                    <p>Approved payments only</p>
                 </div>
 
             </div>
@@ -26,33 +30,52 @@ const IncomeChart = ({ data }) => {
 
             <div className="chart-container">
 
-                <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                >
+                {chartData.length === 0 ? (
 
-                    <LineChart data={data}>
+                    <div className="chart-empty">
+                        No revenue data available for this period.
+                    </div>
 
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                        />
+                ) : (
 
-                        <XAxis dataKey="month" />
+                    <ResponsiveContainer width="100%" height="100%">
 
-                        <YAxis />
+                        <LineChart data={chartData}>
 
-                        <Tooltip />
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                vertical={false}
+                            />
 
-                        <Line
-                            type="monotone"
-                            dataKey="income"
-                            strokeWidth={3}
-                            dot={{ r: 4 }}
-                        />
+                            <XAxis
+                                dataKey="period_label"
+                                tick={{ fontSize: 12 }}
+                            />
 
-                    </LineChart>
+                            <YAxis
+                                tick={{ fontSize: 12 }}
+                                width={60}
+                            />
 
-                </ResponsiveContainer>
+                            <Tooltip
+                                formatter={(value) =>
+                                    [`${Number(value).toLocaleString()} DA`, "Income"]
+                                }
+                            />
+
+                            <Line
+                                type="monotone"
+                                dataKey="income"
+                                stroke="#111827"
+                                strokeWidth={3}
+                                dot={{ r: 4, fill: "#111827" }}
+                            />
+
+                        </LineChart>
+
+                    </ResponsiveContainer>
+
+                )}
 
             </div>
 

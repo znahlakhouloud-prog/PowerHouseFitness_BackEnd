@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { ArrowLeft } from "lucide-react";
+
 import { forgotPassword } from "../services/authService";
+
+import AuthLayout from "../components/AuthLayout";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function ForgotPassword() {
 
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
+    const [fieldError, setFieldError] = useState("");
+
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -18,25 +26,39 @@ function ForgotPassword() {
 
         setMessage("");
         setError("");
+        setFieldError("");
+
+        if (!email.trim()) {
+            setFieldError("Please enter your email.");
+            return;
+        }
+
+        if (!EMAIL_PATTERN.test(email.trim())) {
+            setFieldError("Invalid email address.");
+            return;
+        }
+
         setLoading(true);
 
         try {
 
-            const data = await forgotPassword(email);
+            const data = await forgotPassword(email.trim());
 
             setMessage(data.message);
 
-        } catch (error) {
+        } catch (err) {
 
-            console.error(
-                "FORGOT PASSWORD ERROR:",
-                error
-            );
+            console.error("FORGOT PASSWORD ERROR:", err);
 
-            setError(
-                error.response?.data?.message ||
-                "Something went wrong"
-            );
+            if (err.response?.data?.message) {
+
+                setError(err.response.data.message);
+
+            } else {
+
+                setError("Server error. Please try again.");
+
+            }
 
         } finally {
 
@@ -45,60 +67,70 @@ function ForgotPassword() {
     };
 
     return (
-        <div>
+
+        <AuthLayout>
 
             <h1>Forgot Password</h1>
-
-            <p>
-                Enter your email address and we will
-                send you a password reset link.
+            <p className="auth-subtitle">
+                Enter the email associated with your account.
             </p>
 
             {message && (
-                <p>{message}</p>
+                <div className="auth-success-banner">{message}</div>
             )}
 
             {error && (
-                <p>{error}</p>
+                <div className="auth-error-banner">{error}</div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            {!message && (
 
-                <div>
+                <form onSubmit={handleSubmit} noValidate>
 
-                    <label>Email</label>
+                    <div className={`auth-form-field ${fieldError ? "auth-field-invalid" : ""}`}>
 
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
-                        }
-                        required
-                    />
+                        <label htmlFor="forgot-email">Email</label>
 
-                </div>
+                        <input
+                            id="forgot-email"
+                            type="email"
+                            value={email}
+                            autoComplete="email"
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+
+                        {fieldError && (
+                            <p className="auth-field-error">{fieldError}</p>
+                        )}
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="auth-submit-btn"
+                        disabled={loading}
+                    >
+                        {loading ? "Sending..." : "Send Reset Link"}
+                    </button>
+
+                </form>
+
+            )}
+
+            <div className="auth-secondary-action">
 
                 <button
-                    type="submit"
-                    disabled={loading}
+                    type="button"
+                    className="auth-back-link"
+                    onClick={() => navigate("/login")}
                 >
-                    {loading
-                        ? "Sending..."
-                        : "Send Reset Link"
-                    }
+                    <ArrowLeft size={15} />
+                    Back to Login
                 </button>
 
-            </form>
+            </div>
 
-            <button
-                type="button"
-                onClick={() => navigate("/login")}
-            >
-                Back to Login
-            </button>
-
-        </div>
+        </AuthLayout>
     );
 }
 

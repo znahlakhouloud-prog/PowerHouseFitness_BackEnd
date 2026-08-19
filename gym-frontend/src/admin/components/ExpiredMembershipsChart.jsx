@@ -8,7 +8,11 @@ import {
     Tooltip
 } from "recharts";
 
+import { formatTrendData } from "../utils/chartFormat";
+
 const ExpiredMembershipsChart = ({ data }) => {
+
+    const chartData = formatTrendData(data);
 
     return (
 
@@ -18,7 +22,7 @@ const ExpiredMembershipsChart = ({ data }) => {
 
                 <div>
                     <h3>Expired Memberships</h3>
-                    <p>Monthly churn trend</p>
+                    <p>Churn trend over time</p>
                 </div>
 
             </div>
@@ -26,31 +30,49 @@ const ExpiredMembershipsChart = ({ data }) => {
 
             <div className="chart-container">
 
-                <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                >
+                {chartData.length === 0 ? (
 
-                    <BarChart data={data}>
+                    <div className="chart-empty">
+                        No memberships expired in this period.
+                    </div>
 
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                        />
+                ) : (
 
-                        <XAxis dataKey="month" />
+                    <ResponsiveContainer width="100%" height="100%">
 
-                        <YAxis />
+                        <BarChart data={chartData}>
 
-                        <Tooltip />
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                vertical={false}
+                            />
 
-                        <Bar
-                            dataKey="total"
-                            radius={[6, 6, 0, 0]}
-                        />
+                            <XAxis
+                                dataKey="period_label"
+                                tick={{ fontSize: 12 }}
+                            />
 
-                    </BarChart>
+                            <YAxis
+                                tick={{ fontSize: 12 }}
+                                width={40}
+                                allowDecimals={false}
+                            />
 
-                </ResponsiveContainer>
+                            <Tooltip
+                                formatter={(value) => [value, "Expired"]}
+                            />
+
+                            <Bar
+                                dataKey="total"
+                                fill="#dc2626"
+                                radius={[6, 6, 0, 0]}
+                            />
+
+                        </BarChart>
+
+                    </ResponsiveContainer>
+
+                )}
 
             </div>
 

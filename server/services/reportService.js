@@ -8,25 +8,77 @@ import {
     getExpiredMemberships,
     getTopMembership,
     getAttendanceCount,
-    getMonthlyIncome,
-    getMonthlyNewMembers,
-    getMonthlyAttendance,
-    getMonthlyExpiredMemberships,
-    getMonthlyPaymentsByType
+    getActiveMembersCount,
+    getAttendanceToday,
+    getPendingPaymentsCount,
+    getEquipmentIssuesCount,
+    getRecentRegistrations,
+    getRecentPayments,
+    getRecentExpiredMemberships,
+    getRecentEquipmentReports,
+    getIncomeTrend,
+    getAttendanceTrend,
+    getNewMembersTrend,
+    getExpiredMembershipsTrend,
+    getPaymentsByTypeTrend
 } from "../models/report.js";
 
-// Reshape flat {month, type, total} rows into one object per month:
-// [{month, cash, card, transfer}, ...] - what a stacked bar chart needs
-const groupPaymentsByMonth = (rows) => {
+import { getAllMemberships } from "../models/membership.js";
 
-    const monthsByKey = new Map();
+const VALID_PERIODS = ["week", "month", "year"];
+
+// Membership rows only ever store "active"/"expired" - "expiring
+// soon" is derived here the same way the frontend already does it
+// (member/utils/membershipStatus.js), so the dashboard's donut chart
+// matches what every role's own UI already shows.
+const EXPIRING_SOON_THRESHOLD_DAYS = 7;
+
+const getMembershipStatusBreakdown = (memberships) => {
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const breakdown = { active: 0, expiring: 0, expired: 0 };
+
+    for (const membership of memberships) {
+
+        if (membership.state === "expired") {
+            breakdown.expired++;
+            continue;
+        }
+
+        const endDate = new Date(membership.end_date);
+        endDate.setHours(0, 0, 0, 0);
+
+        const remainingDays = Math.round(
+            (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (remainingDays <= EXPIRING_SOON_THRESHOLD_DAYS) {
+            breakdown.expiring++;
+        } else {
+            breakdown.active++;
+        }
+
+    }
+
+    return breakdown;
+
+};
+
+// Reshape flat {period_label, type, total} rows into one object per
+// bucket: [{period_label, cash, card, transfer}, ...] - what a
+// stacked bar chart needs
+const groupPaymentsByPeriod = (rows) => {
+
+    const bucketsByKey = new Map();
 
     for (const row of rows) {
 
-        if (!monthsByKey.has(row.month)) {
+        if (!bucketsByKey.has(row.period_label)) {
 
-            monthsByKey.set(row.month, {
-                month: row.month,
+            bucketsByKey.set(row.period_label, {
+                period_label: row.period_label,
                 cash: 0,
                 card: 0,
                 transfer: 0
@@ -34,11 +86,11 @@ const groupPaymentsByMonth = (rows) => {
 
         }
 
-        monthsByKey.get(row.month)[row.type] = Number(row.total);
+        bucketsByKey.get(row.period_label)[row.type] = Number(row.total);
 
     }
 
-    return Array.from(monthsByKey.values());
+    return Array.from(bucketsByKey.values());
 
 };
 
@@ -124,64 +176,115 @@ export const deleteReportService = async (id) => {
 // DASHBOARD ANALYTICS
 // =========================================
 
-export const getDashboardAnalyticsService = async () => {
+export const getDashboardAnalyticsService = async (rawPeriod) => {
 
-    const income =
-        await getTotalIncome();
+    const period = VALID_PERIODS.includes(rawPeriod)
+        ? rawPeriod
+        : "year";
 
-    const newMembers =
-        await getNewMembers();
+    const income = await getTotalIncome();
+    const newMembers = await getNewMembers();
+    const expiredMemberships = await getExpiredMemberships();
+    const topMembership = await getTopMembership();
+    const attendance = await getAttendanceCount();
 
-    const expiredMemberships =
-        await getExpiredMemberships();
+    const activeMembers = await getActiveMembersCount();
+    const attendanceToday = await getAttendanceToday();
+    const pendingPayments = await getPendingPaymentsCount();
+    const equipmentIssues = await getEquipmentIssuesCount();
 
-    const topMembership =
-        await getTopMembership();
+    const memberships = await getAllMemberships();
+    const membershipStatus = getMembershipStatusBreakdown(memberships);
 
-    const attendance =
-        await getAttendanceCount();
+    const incomeTrend = await getIncomeTrend(period);
+    const attendanceTrend = await getAttendanceTrend(period);
+    const newMembersTrend = await getNewMembersTrend(period);
+    const expiredMembershipsTrend = await getExpiredMembershipsTrend(period);
 
-    const monthlyIncome =
-        await getMonthlyIncome();
-
-    const monthlyNewMembers =
-        await getMonthlyNewMembers();
-
-    const monthlyAttendance =
-        await getMonthlyAttendance();
-
-    const monthlyExpiredMemberships =
-        await getMonthlyExpiredMemberships();
-
-    const monthlyPaymentsByTypeRows =
-        await getMonthlyPaymentsByType();
-
-    const monthlyPaymentsByType =
-        groupPaymentsByMonth(monthlyPaymentsByTypeRows);
-
+    const paymentsByTypeRows = await getPaymentsByTypeTrend(period);
+    const paymentsByTypeTrend = groupPaymentsByPeriod(paymentsByTypeRows);
 
     return {
 
+        period,
+
         income,
-
         newMembers,
-
         expiredMemberships,
-
         topMembership,
-
         attendance,
 
-        monthlyIncome,
+        activeMembers,
+        attendanceToday,
+        pendingPayments,
+        equipmentIssues,
 
-        monthlyNewMembers,
+        membershipStatus,
 
-        monthlyAttendance,
-
-        monthlyExpiredMemberships,
-
-        monthlyPaymentsByType
+        incomeTrend,
+        attendanceTrend,
+        newMembersTrend,
+        expiredMembershipsTrend,
+        paymentsByTypeTrend
 
     };
+
+};
+
+// =========================================
+// RECENT ACTIVITY (merged chronologically across sources in JS -
+// each source table has a different, non-comparable id sequence and
+// only some have real timestamps, so the merge can't happen in SQL)
+// =========================================
+
+export const getRecentActivityService = async (limit = 15) => {
+
+    const [registrations, payments, expiredMemberships, equipmentReports] =
+        await Promise.all([
+            getRecentRegistrations(limit),
+            getRecentPayments(limit),
+            getRecentExpiredMemberships(limit),
+            getRecentEquipmentReports(limit)
+        ]);
+
+    const events = [
+
+        ...registrations.map((r) => ({
+            type: "registration",
+            title: "New user registered",
+            description: `${r.user_name} joined as ${r.role}`,
+            date: r.created_at
+        })),
+
+        ...payments.map((p) => ({
+            type: "payment",
+            title: p.status === "approved"
+                ? "Payment received"
+                : `Payment ${p.status}`,
+            description: `${p.user_name} - ${Number(p.amount).toLocaleString()} DA`,
+            date: p.p_date
+        })),
+
+        ...expiredMemberships.map((m) => ({
+            type: "membership_expired",
+            title: "Membership expired",
+            description: `${m.user_name}'s ${m.name} membership expired`,
+            date: m.end_date
+        })),
+
+        ...equipmentReports.map((e) => ({
+            type: "equipment_report",
+            title: "Equipment reported",
+            description: `${e.equipment_name} reported by ${e.user_name}`,
+            date: e.created_at
+        }))
+
+    ];
+
+    events.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    return events.slice(0, limit);
 
 };

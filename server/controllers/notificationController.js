@@ -5,7 +5,9 @@ import {
     createNotificationService,
     updateNotificationService,
     deleteNotificationService,
-    markNotificationAsReadService
+    markNotificationAsReadService,
+    fetchUnreadCountService,
+    markAllAsReadService
 } from "../services/notificationService.js";
 
 // GET ALL NOTIFICATIONS
@@ -145,6 +147,46 @@ export const readNotification = async (req, res) => {
 
         res.json({
             message: "Notification marked as read"
+        });
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// GET MY UNREAD COUNT
+export const fetchUnreadCount = async (req, res) => {
+
+    try {
+
+        const count = await fetchUnreadCountService(req.user.id);
+
+        res.json({ count });
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// MARK ALL MY NOTIFICATIONS AS READ
+export const readAllNotifications = async (req, res) => {
+
+    try {
+
+        await markAllAsReadService(req.user.id);
+
+        res.json({
+            message: "All notifications marked as read"
         });
 
     } catch (error) {

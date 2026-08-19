@@ -12,13 +12,19 @@ import { createMembership } from "../services/membershipService";
 import RegisterUserForm from "../../shared/components/RegisterUserForm";
 import TemporaryPasswordModal from "../../shared/components/TemporaryPasswordModal";
 
-import "../style/receptionist.css";
-import "../style/registerMember.css";
+import "../style/registerUser.css";
+
+const ADMIN_ROLE_OPTIONS = [
+    "receptionist",
+    "employee",
+    "coach",
+    "member"
+];
 
 const todayISO = () =>
     new Date().toISOString().split("T")[0];
 
-function RegisterMemberPage() {
+function RegisterUserPage() {
 
     const navigate = useNavigate();
 
@@ -44,8 +50,8 @@ function RegisterMemberPage() {
 
                 console.error("LOAD PLANS ERROR:", err);
 
-                // Non-fatal - registration still works without the
-                // picker, it just won't have options to choose from.
+                // Non-fatal - only the "member" role ever needs the
+                // plan picker, and registration still works without it.
 
             }
 
@@ -106,7 +112,7 @@ function RegisterMemberPage() {
 
         } catch (err) {
 
-            console.error("REGISTER MEMBER ERROR:", err);
+            console.error("REGISTER USER ERROR:", err);
 
             if (err.response?.data?.errors) {
 
@@ -120,7 +126,7 @@ function RegisterMemberPage() {
 
                 setError(
                     err.response?.data?.message ||
-                    "Failed to register member"
+                    "Failed to register user"
                 );
 
             }
@@ -136,20 +142,20 @@ function RegisterMemberPage() {
 
     const handleDone = () => {
 
-        navigate("/receptionist/members");
+        navigate("/admin/users");
 
     };
 
 
     return (
 
-        <div className="register-member-page">
+        <div className="register-user-page">
 
             <div className="page-header">
 
                 <div>
-                    <h1>Register Member</h1>
-                    <p>Create a new member account</p>
+                    <h1>Register User</h1>
+                    <p>Create a Receptionist, Employee, Coach or Member account</p>
                 </div>
 
             </div>
@@ -157,7 +163,7 @@ function RegisterMemberPage() {
             <div className="dashboard-card register-member-card">
 
                 <RegisterUserForm
-                    roleOptions={["member"]}
+                    roleOptions={ADMIN_ROLE_OPTIONS}
                     onSubmit={handleSubmit}
                     loading={loading}
                     error={error}
@@ -184,4 +190,4 @@ function RegisterMemberPage() {
     );
 }
 
-export default RegisterMemberPage;
+export default RegisterUserPage;

@@ -5,13 +5,15 @@ import { AuthContext } from "../context/authContext";
 
 import { changePassword } from "../services/authService";
 
+import AuthLayout from "../components/AuthLayout";
+import PasswordInput from "../components/PasswordInput";
+
 function ChangePassword() {
 
     const navigate = useNavigate();
 
     const {
         user,
-        // token,
         updateUser
     } = useContext(AuthContext);
 
@@ -75,9 +77,7 @@ function ChangePassword() {
             const data = await changePassword(
                 oldPassword,
                 newPassword
-                // token
             );
-
 
             console.log(
                 "CHANGE PASSWORD RESPONSE:",
@@ -150,17 +150,22 @@ function ChangePassword() {
             }
 
 
-        } catch (error) {
+        } catch (err) {
 
             console.error(
                 "CHANGE PASSWORD ERROR:",
-                error
+                err
             );
 
-            setError(
-                error.response?.data?.message ||
-                "Password change failed"
-            );
+            if (err.response?.data?.message) {
+
+                setError(err.response.data.message);
+
+            } else {
+
+                setError("Server error. Please try again.");
+
+            }
 
         } finally {
 
@@ -171,102 +176,73 @@ function ChangePassword() {
 
     return (
 
-        <div>
+        <AuthLayout>
 
             <h1>Change Password</h1>
-
+            <p className="auth-subtitle">
+                For your security, please set a new password before continuing.
+            </p>
 
             {error && (
-                <p>{error}</p>
+                <div className="auth-error-banner">{error}</div>
             )}
-
 
             {success && (
-                <p>{success}</p>
+                <div className="auth-success-banner">{success}</div>
             )}
 
+            <form onSubmit={handleSubmit} noValidate>
 
-            <form onSubmit={handleSubmit}>
+                <div className="auth-form-field">
 
+                    <label htmlFor="change-old-password">Old Password</label>
 
-                {/* OLD PASSWORD */}
-
-                <div>
-
-                    <label>
-                        Old Password
-                    </label>
-
-                    <input
-                        type="password"
+                    <PasswordInput
+                        id="change-old-password"
                         value={oldPassword}
-                        onChange={(e) =>
-                            setOldPassword(e.target.value)
-                        }
-                        required
+                        autoComplete="current-password"
+                        onChange={(e) => setOldPassword(e.target.value)}
                     />
 
                 </div>
 
+                <div className="auth-form-field">
 
-                {/* NEW PASSWORD */}
+                    <label htmlFor="change-new-password">New Password</label>
 
-                <div>
-
-                    <label>
-                        New Password
-                    </label>
-
-                    <input
-                        type="password"
+                    <PasswordInput
+                        id="change-new-password"
                         value={newPassword}
-                        onChange={(e) =>
-                            setNewPassword(e.target.value)
-                        }
-                        required
+                        autoComplete="new-password"
+                        onChange={(e) => setNewPassword(e.target.value)}
                     />
 
                 </div>
 
+                <div className="auth-form-field">
 
-                {/* CONFIRM PASSWORD */}
+                    <label htmlFor="change-confirm-password">Confirm New Password</label>
 
-                <div>
-
-                    <label>
-                        Confirm New Password
-                    </label>
-
-                    <input
-                        type="password"
+                    <PasswordInput
+                        id="change-confirm-password"
                         value={confirmPassword}
-                        onChange={(e) =>
-                            setConfirmPassword(e.target.value)
-                        }
-                        required
+                        autoComplete="new-password"
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                     />
 
                 </div>
-
-
-                {/* SUBMIT */}
 
                 <button
                     type="submit"
+                    className="auth-submit-btn"
                     disabled={loading}
                 >
-
-                    {loading
-                        ? "Changing password..."
-                        : "Change Password"
-                    }
-
+                    {loading ? "Changing password..." : "Change Password"}
                 </button>
-
 
             </form>
 
-        </div>
+        </AuthLayout>
     );
 }
 

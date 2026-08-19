@@ -286,6 +286,7 @@ function PaymentsPage() {
                                 <th>Amount</th>
                                 <th>Rest</th>
                                 <th>Type</th>
+                                <th>Status</th>
                                 <th></th>
                             </tr>
 
@@ -334,6 +335,14 @@ function PaymentsPage() {
                                             className={`type-badge type-${p.type}`}
                                         >
                                             {p.type}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span
+                                            className={`status-badge status-${p.status || "approved"}`}
+                                        >
+                                            {p.status || "approved"}
                                         </span>
                                     </td>
 

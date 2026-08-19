@@ -7,7 +7,8 @@ import {
 } from "../models/attendance.js";
 
 import { getUserById } from "../models/user.js";
-import { getActiveMembershipByUserId,updateExpiredMemberships } from "../models/membership.js";
+import { getActiveMembershipByUserId } from "../models/membership.js";
+import { checkExpiredMemberships } from "./membershipService.js";
 
 // GET ALL ATTENDANCES
 export const fetchAttendancesService = async () => {
@@ -43,7 +44,7 @@ export const fetchAttendanceByUserIdService = async (id_user) => {
 // CREATE ATTENDANCE (CHECK-IN)
 export const createAttendanceService = async (data) => {
     //1. Update expired memberships first
-    await updateExpiredMemberships();
+    await checkExpiredMemberships();
 
     //2. Check user exists
     const user = await getUserById(data.id_user);

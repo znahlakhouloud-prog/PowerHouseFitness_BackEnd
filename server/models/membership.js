@@ -136,17 +136,37 @@ export const getActiveMembershipByUserId = async (id_user) => {
     return rows;
 };
 
-// UPDATE EXPIRED MEMBERSHIPS
+// UPDATE EXPIRED MEMBERSHIPS - returns the rows that just transitioned
+// (with user_name) so the caller can notify about them exactly once,
+// not the raw UPDATE result which none of the existing callers use
 export const updateExpiredMemberships = async () => {
 
-    const sql = `
-        UPDATE membership
-        SET state = 'expired'
-        WHERE end_date < CURDATE()
-        AND state = 'active'
+    const selectSql = `
+        SELECT
+            m.id,
+            m.id_user,
+            m.name,
+            u.user_name
+        FROM membership m
+        JOIN user u ON m.id_user = u.id
+        WHERE m.end_date < CURDATE()
+        AND m.state = 'active'
     `;
 
-    const [result] = await db.query(sql);
+    const [newlyExpired] = await db.query(selectSql);
 
-    return result;
+    if (newlyExpired.length > 0) {
+
+        const updateSql = `
+            UPDATE membership
+            SET state = 'expired'
+            WHERE end_date < CURDATE()
+            AND state = 'active'
+        `;
+
+        await db.query(updateSql);
+
+    }
+
+    return newlyExpired;
 };

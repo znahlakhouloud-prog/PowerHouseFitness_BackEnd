@@ -5,7 +5,8 @@ import {
     fetchReportById,
     generateReport,
     removeReport,
-    getDashboardAnalytics
+    getDashboardAnalytics,
+    getRecentActivity
 } from "../controllers/reportController.js";
 
 import { authenticateToken } from "../middleware/authMiddleware.js";
@@ -20,6 +21,8 @@ router.use(authorizeRoles("admin"));
 router.get("/", fetchReports);
 
 router.get("/analytics",getDashboardAnalytics);
+
+router.get("/recent-activity", getRecentActivity);
 
 router.get("/:id", fetchReportById);
 

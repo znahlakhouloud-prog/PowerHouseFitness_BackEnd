@@ -54,7 +54,15 @@ api.interceptors.response.use(
 
     (error) => {
 
-        if (error.response?.status === 401) {
+        // A 401 from these two endpoints means "wrong credentials" -
+        // a normal, user-correctable input error the calling page
+        // already handles inline. It does NOT mean the session is
+        // invalid, so it must not trigger a forced logout/redirect.
+        const isExpectedAuthFailure =
+            error.config?.url?.includes("/auth/login") ||
+            error.config?.url?.includes("/auth/change-password");
+
+        if (error.response?.status === 401 && !isExpectedAuthFailure) {
 
             // Remove authentication data
             localStorage.removeItem("token");

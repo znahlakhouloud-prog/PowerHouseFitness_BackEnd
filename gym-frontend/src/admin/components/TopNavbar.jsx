@@ -1,193 +1,51 @@
-// import { useContext, useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-// import { AuthContext } from "../../auth/context/authContext";
-
-// function Navbar({ onMenuClick }) {
-
-//     const navigate = useNavigate();
-
-//     const { user, logout } =
-//         useContext(AuthContext);
-
-//     const [profileOpen, setProfileOpen] =
-//         useState(false);
-
-//     const handleLogout = () => {
-
-//         logout();
-
-//         navigate("/login");
-//     };
-
-//     return (
-//         <header className="admin-navbar">
-
-//             {/* LEFT */}
-
-//             <div className="navbar-left">
-
-//                 <button
-//                     className="menu-button"
-//                     onClick={onMenuClick}
-//                     aria-label="Toggle sidebar"
-//                 >
-//                     ☰
-//                 </button>
-
-
-//                 <div
-//                     className="navbar-logo"
-//                     onClick={() =>
-//                         navigate("/admin")
-//                     }
-//                 >
-//                     PowerHouse
-//                     <span>Fitness</span>
-//                 </div>
-
-//             </div>
-
-
-//             {/* SEARCH */}
-
-//             <div className="navbar-search">
-
-//                 <span>⌕</span>
-
-//                 <input
-//                     type="text"
-//                     placeholder="Search..."
-//                 />
-
-//                 <kbd>Ctrl K</kbd>
-
-//             </div>
-
-
-//             {/* RIGHT */}
-
-//             <div className="navbar-right">
-
-//                 <button
-//                     className="navbar-icon"
-//                     title="Notifications"
-//                 >
-//                     🔔
-//                 </button>
-
-
-//                 <button
-//                     className="navbar-icon"
-//                     title="Messages"
-//                 >
-//                     💬
-//                 </button>
-
-
-//                 <div className="profile-container">
-
-//                     <button
-//                         className="profile-button"
-//                         onClick={() =>
-//                             setProfileOpen(
-//                                 !profileOpen
-//                             )
-//                         }
-//                     >
-
-//                         <div className="avatar">
-//                             {user?.user_name
-//                                 ?.charAt(0)
-//                                 .toUpperCase() || "A"}
-//                         </div>
-
-
-//                         <div className="profile-info">
-
-//                             <strong>
-//                                 {user?.user_name ||
-//                                     "Administrator"}
-//                             </strong>
-
-//                             <small>
-//                                 Administrator
-//                             </small>
-
-//                         </div>
-
-//                         <span>⌄</span>
-
-//                     </button>
-
-
-//                     {profileOpen && (
-
-//                         <div className="profile-dropdown">
-
-//                             <button
-//                                 onClick={() =>
-//                                     navigate(
-//                                         "/admin/profile"
-//                                     )
-//                                 }
-//                             >
-//                                 👤 Profile
-//                             </button>
-
-
-//                             <button
-//                                 onClick={() =>
-//                                     navigate(
-//                                         "/admin/settings"
-//                                     )
-//                                 }
-//                             >
-//                                 ⚙ Settings
-//                             </button>
-
-
-//                             <hr />
-
-
-//                             <button
-//                                 className="logout-button"
-//                                 onClick={handleLogout}
-//                             >
-//                                 ↪ Logout
-//                             </button>
-
-//                         </div>
-
-//                     )}
-
-//                 </div>
-
-//             </div>
-
-//         </header>
-//     );
-// }
-
-// export default Navbar;
 import {
     Menu,
-    Search,
-    Bell,
-    MessageCircle,
+    X,
+    Dumbbell,
     User,
-    LogOut
+    LogOut,
+    ChevronDown
 } from "lucide-react";
 
-import { useContext } from "react";
 import { AuthContext } from "../../auth/context/authContext";
+import NotificationBell from "../../shared/components/notifications/NotificationBell";
 
-const TopNavbar = ({ setIsOpen }) => {
+const PAGE_TITLES = {
+    "/admin": "Dashboard",
+    "/admin/users": "Users",
+    "/admin/users/new": "Register User",
+    "/admin/memberships": "Memberships",
+    "/admin/payments": "Payments",
+    "/admin/equipment": "Equipment",
+    "/admin/reports": "Reports & Analytics",
+    "/admin/profile": "Profile"
+};
+
+const getPageTitle = (pathname) =>
+    PAGE_TITLES[pathname] || "Dashboard";
+
+const TopNavbar = ({ isSidebarOpen, onToggleSidebar }) => {
 
     const {
         user,
         logout
     } = useContext(AuthContext);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const handleLogout = () => {
+
+        logout();
+
+        navigate("/login", { replace: true });
+
+    };
 
     return (
 
@@ -197,66 +55,94 @@ const TopNavbar = ({ setIsOpen }) => {
 
                 <button
                     className="menu-button"
-                    onClick={() => setIsOpen(true)}
+                    onClick={onToggleSidebar}
+                    aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+                    aria-expanded={isSidebarOpen}
                 >
-                    <Menu size={24} />
+                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
 
+                <button
+                    type="button"
+                    className="navbar-logo"
+                    onClick={() => navigate("/admin")}
+                >
 
-                <div className="search-box">
+                    <span className="navbar-logo-icon">
+                        <Dumbbell size={18} />
+                    </span>
 
-                    <Search size={19} />
+                    <span className="navbar-logo-text">
+                        PowerHouse<span className="navbar-logo-suffix"> Fitness</span>
+                    </span>
 
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                    />
-
-                </div>
+                </button>
 
             </div>
 
 
             <div className="navbar-right">
 
-                <button className="navbar-icon">
-                    <Bell size={21} />
+                <h1 className="navbar-page-title">
+                    {getPageTitle(location.pathname)}
+                </h1>
 
-                    <span className="notification-dot" />
-                </button>
+                <NotificationBell />
 
-
-                <button className="navbar-icon">
-                    <MessageCircle size={21} />
-                </button>
-
-
-                <div className="profile">
-
-                    <div className="profile-avatar">
-                        <User size={19} />
-                    </div>
-
-                    <div className="profile-info">
-
-                        <strong>
-                            {user?.user_name || "Admin"}
-                        </strong>
-
-                        <span>
-                            {user?.role || "admin"}
-                        </span>
-
-                    </div>
-
+                <div className="profile-container">
 
                     <button
-                        className="logout-button"
-                        onClick={logout}
-                        title="Logout"
+                        className="profile-button"
+                        onClick={() => setMenuOpen(!menuOpen)}
                     >
-                        <LogOut size={19} />
+
+                        <div className="avatar">
+                            <User size={18} />
+                        </div>
+
+                        <div className="profile-info">
+
+                            <strong>
+                                {user?.user_name || "Admin"}
+                            </strong>
+
+                            <small>
+                                Administrator
+                            </small>
+
+                        </div>
+
+                        <ChevronDown size={16} />
+
                     </button>
+
+                    {menuOpen && (
+
+                        <div className="profile-dropdown">
+
+                            <button
+                                onClick={() => {
+                                    setMenuOpen(false);
+                                    navigate("/admin/profile");
+                                }}
+                            >
+                                <User size={16} style={{ marginRight: 8 }} />
+                                Profile
+                            </button>
+
+                            <hr />
+
+                            <button
+                                className="logout-button"
+                                onClick={handleLogout}
+                            >
+                                <LogOut size={16} style={{ marginRight: 8 }} />
+                                Logout
+                            </button>
+
+                        </div>
+
+                    )}
 
                 </div>
 

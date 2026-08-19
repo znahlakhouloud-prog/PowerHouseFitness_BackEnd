@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { CheckCircle2, Copy, Check, AlertTriangle } from "lucide-react";
 
+const ROLE_LABELS = {
+    admin: "Admin",
+    receptionist: "Receptionist",
+    employee: "Employee",
+    coach: "Coach",
+    member: "Member"
+};
+
 const TemporaryPasswordModal = ({
-    memberName,
+    userName,
     email,
+    role,
     temporaryPassword,
     membershipWarning,
     onDone
@@ -31,10 +40,10 @@ const TemporaryPasswordModal = ({
                     <CheckCircle2 size={40} />
                 </div>
 
-                <h2>Member Registered Successfully</h2>
+                <h2>User Registered Successfully</h2>
 
                 <p className="temp-password-subtitle">
-                    Give this temporary password to the member.
+                    Give this temporary password to the user securely.
                     They'll be asked to change it on first login.
                 </p>
 
@@ -42,13 +51,22 @@ const TemporaryPasswordModal = ({
 
                     <div className="temp-password-row">
                         <span>Name</span>
-                        <strong>{memberName}</strong>
+                        <strong>{userName}</strong>
                     </div>
 
                     <div className="temp-password-row">
                         <span>Email</span>
                         <strong>{email}</strong>
                     </div>
+
+                    {role && (
+
+                        <div className="temp-password-row">
+                            <span>Role</span>
+                            <strong>{ROLE_LABELS[role] || role}</strong>
+                        </div>
+
+                    )}
 
                 </div>
 
@@ -71,7 +89,7 @@ const TemporaryPasswordModal = ({
                         ) : (
                             <>
                                 <Copy size={16} />
-                                Copy Temporary Password
+                                Copy Password
                             </>
                         )}
                     </button>
@@ -85,7 +103,7 @@ const TemporaryPasswordModal = ({
                         <span>
                             Account created, but the membership
                             couldn't be assigned: {membershipWarning}{" "}
-                            You can add it from the member's page later.
+                            You can add it from the user's page later.
                         </span>
                     </div>
 

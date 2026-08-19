@@ -2,7 +2,7 @@
     padding: 24px;
     width: 100%;
     min-height: 100%;
-    background: #f5f6f8;
+    background: var(--admin-bg);
     box-sizing: border-box;
 }
 
@@ -22,7 +22,7 @@
     margin: 0;
     font-size: 28px;
     font-weight: 700;
-    color: #111827;
+    color: var(--admin-black);
 }
 
 .dashboard-header p {
@@ -66,20 +66,17 @@
    CARD
 ========================= */
 
-.dashboard-card {
-    background: white;
+/* Scoped under .admin-layout: coach.css/member.css/receptionist.css
+   each declare their own same-specificity .dashboard-card rule with
+   the old hardcoded radius, loaded after this file. */
+.admin-layout .dashboard-card {
+    background: var(--admin-white);
 
-    border-radius: 14px;
+    border-radius: var(--admin-radius);
 
     padding: 20px;
 
-    box-shadow:
-        0 2px 8px rgba(
-            0,
-            0,
-            0,
-            0.06
-        );
+    box-shadow: var(--admin-shadow);
 
     box-sizing: border-box;
 }
@@ -99,7 +96,123 @@
 
     font-weight: 600;
 
-    color: #111827;
+    color: var(--admin-black);
+}
+
+
+/* =========================
+   KPI CARD (KpiCard component - fixes a mismatch where this file
+   only styled bare span/strong/small tags the component never
+   renders; the actual markup is .kpi-card-header/.kpi-title/
+   .kpi-icon/.kpi-value/.kpi-description)
+========================= */
+
+.kpi-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.kpi-title {
+    color: #737c8c;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.kpi-icon {
+    color: #9aa1ad;
+}
+
+.kpi-value {
+    margin: 10px 0 0;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--admin-black);
+}
+
+.kpi-description {
+    margin: 4px 0 0;
+    color: #8b93a1;
+    font-size: 11px;
+}
+
+
+/* =========================
+   CHART CARD (chart components render into these classes - they
+   had no CSS at all, so ResponsiveContainer's height="100%" had
+   nothing concrete to size against)
+========================= */
+
+.chart-card {
+    background: var(--admin-white);
+    border-radius: var(--admin-radius);
+    padding: 20px;
+    box-shadow: var(--admin-shadow);
+    box-sizing: border-box;
+}
+
+.chart-header {
+    margin-bottom: 16px;
+}
+
+.chart-header h3 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--admin-black);
+}
+
+.chart-header p {
+    margin: 0;
+    color: #858d9b;
+    font-size: 12px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 280px;
+}
+
+.chart-empty {
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #9aa1ad;
+    font-size: 13px;
+    padding: 0 20px;
+}
+
+
+/* =========================
+   PERIOD SELECTOR
+========================= */
+
+.period-selector {
+    display: inline-flex;
+    gap: 4px;
+    background: #eef0f3;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.period-selector button {
+    border: none;
+    background: transparent;
+    padding: 8px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5b6270;
+    cursor: pointer;
+}
+
+.period-selector button.active {
+    background: white;
+    color: var(--admin-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 
@@ -113,6 +226,8 @@
     min-height: 400px;
 
     display: flex;
+    flex-direction: column;
+    gap: 16px;
 
     justify-content: center;
 
@@ -121,8 +236,9 @@
     font-size: 16px;
 }
 
-.admin-dashboard-error {
+.admin-dashboard-error p {
     color: #dc2626;
+    margin: 0;
 }
 
 

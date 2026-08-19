@@ -11,6 +11,13 @@ import {
     deleteUser
 } from "../services/userService";
 
+import { getMemberships } from "../services/membershipService";
+
+import {
+    getMembershipStatus,
+    getCurrentMembership
+} from "../utils/membershipStatus";
+
 import EditUserModal from "../components/EditUserModal";
 
 import "../style/usersPage.css";
@@ -30,11 +37,19 @@ const MANAGED_ROLES = [
     "employee"
 ];
 
+const STATUS_LABELS = {
+    active: "Active",
+    expiring: "Expiring Soon",
+    expired: "Expired"
+};
+
 function UsersPage() {
 
     const navigate = useNavigate();
 
     const [users, setUsers] = useState([]);
+    const [memberships, setMemberships] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -49,17 +64,21 @@ function UsersPage() {
 
         try {
 
-            // setLoading(true);
             setError("");
 
-            const data = await getUsers();
+            const [usersData, membershipsData] = await Promise.all([
+                getUsers(),
+                getMemberships()
+            ]);
 
             // This page only manages non-admin accounts
             setUsers(
-                data.filter((u) =>
+                usersData.filter((u) =>
                     MANAGED_ROLES.includes(u.role)
                 )
             );
+
+            setMemberships(membershipsData);
 
         } catch (err) {
 
@@ -68,42 +87,26 @@ function UsersPage() {
             setError(
                 err.response?.data?.message ||
                 "Failed to load users"
-            );}
+            );
 
-    //     } finally {
-
-    //         setLoading(false);
-
-    //     }
+        }
 
     };
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const data = await getUsers();
-                setUsers(
-                    data.filter((u) =>
-                        MANAGED_ROLES.includes(u.role)
-                    )
-                );
-            } catch (err) {
-                console.error("LOAD USERS ERROR:", err);
 
-                setError(
-                    err.response?.data?.message ||
-                    "Failed to load users"
-                );
-            } finally {
-                setLoading(false);
-            }
+        const initialLoad = async () => {
+
+            await loadUsers();
+
+            setLoading(false);
+
         };
-        fetchUsers();
 
-    //     loadUsers();
+        initialLoad();
 
     }, []);
-   
+
 
     const filteredUsers = users.filter((u) => {
 
@@ -256,9 +259,9 @@ function UsersPage() {
 
                             <tr>
                                 <th>Name</th>
-                                <th>Age</th>
                                 <th>Email</th>
                                 <th>Role</th>
+                                <th>Status</th>
                                 <th></th>
                             </tr>
 
@@ -266,49 +269,69 @@ function UsersPage() {
 
                         <tbody>
 
-                            {filteredUsers.map((u) => (
+                            {filteredUsers.map((u) => {
 
-                                <tr key={u.id}>
+                                const current = u.role === "member"
+                                    ? getCurrentMembership(u.id, memberships)
+                                    : null;
 
-                                    <td>{u.user_name}</td>
+                                const status = getMembershipStatus(current);
 
-                                    <td>{u.age}</td>
+                                return (
 
-                                    <td>{u.email}</td>
+                                    <tr key={u.id}>
 
-                                    <td>
-                                        <span
-                                            className={`role-badge role-${u.role}`}
-                                        >
-                                            {u.role}
-                                        </span>
-                                    </td>
+                                        <td>{u.user_name}</td>
 
-                                    <td className="users-actions">
+                                        <td>{u.email}</td>
 
-                                        <button
-                                            className="btn-link"
-                                            onClick={() =>
-                                                setEditingUser(u)
-                                            }
-                                        >
-                                            Edit
-                                        </button>
+                                        <td>
+                                            <span
+                                                className={`role-badge role-${u.role}`}
+                                            >
+                                                {u.role}
+                                            </span>
+                                        </td>
 
-                                        <button
-                                            className="btn-link btn-danger"
-                                            onClick={() =>
-                                                handleDelete(u)
-                                            }
-                                        >
-                                            Delete
-                                        </button>
+                                        <td>
+                                            {status ? (
+                                                <span
+                                                    className={`status-badge status-${status}`}
+                                                >
+                                                    {STATUS_LABELS[status]}
+                                                </span>
+                                            ) : (
+                                                <span className="no-membership">—</span>
+                                            )}
+                                        </td>
 
-                                    </td>
+                                        <td className="users-actions">
 
-                                </tr>
+                                            <button
+                                                className="btn-link"
+                                                onClick={() =>
+                                                    setEditingUser(u)
+                                                }
+                                            >
+                                                Edit
+                                            </button>
 
-                            ))}
+                                            <button
+                                                className="btn-link btn-danger"
+                                                onClick={() =>
+                                                    handleDelete(u)
+                                                }
+                                            >
+                                                Delete
+                                            </button>
+
+                                        </td>
+
+                                    </tr>
+
+                                );
+
+                            })}
 
                         </tbody>
 

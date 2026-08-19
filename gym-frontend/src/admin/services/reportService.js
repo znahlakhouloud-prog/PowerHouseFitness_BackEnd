@@ -2,10 +2,22 @@ import api from "../../services/api";
 
 
 // GET LIVE DASHBOARD ANALYTICS
-export const getAnalytics = async () => {
+export const getAnalytics = async (period = "year") => {
 
     const response = await api.get(
-        "/reports/analytics"
+        "/reports/analytics",
+        { params: { period } }
+    );
+
+    return response.data;
+};
+
+
+// GET RECENT ACTIVITY FEED
+export const getRecentActivity = async () => {
+
+    const response = await api.get(
+        "/reports/recent-activity"
     );
 
     return response.data;

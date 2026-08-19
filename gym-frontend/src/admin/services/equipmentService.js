@@ -52,3 +52,15 @@ export const deleteEquipment = async (
 
     return response.data;
 };
+
+
+// GET ALL EQUIPMENT REPORTS (member/coach-submitted broken-equipment
+// reports, any reporter)
+export const getEquipmentReports = async () => {
+
+    const response = await api.get(
+        "/equipment-reports"
+    );
+
+    return response.data;
+};

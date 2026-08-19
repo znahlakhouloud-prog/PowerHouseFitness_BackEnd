@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext.js";
 import { loginUser } from "../services/authService";
 
+import AuthLayout from "../components/AuthLayout";
+import PasswordInput from "../components/PasswordInput";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function Login() {
 
     const navigate = useNavigate();
@@ -13,74 +18,99 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const [fieldErrors, setFieldErrors] = useState({});
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+
+    const validate = () => {
+
+        const errors = {};
+
+        if (!email.trim()) {
+            errors.email = "Please enter your email.";
+        } else if (!EMAIL_PATTERN.test(email.trim())) {
+            errors.email = "Invalid email address.";
+        }
+
+        if (!password) {
+            errors.password = "Please enter your password.";
+        }
+
+        return errors;
+
+    };
+
 
     const handleSubmit = async (e) => {
 
         e.preventDefault();
 
         setError("");
+
+        const errors = validate();
+
+        setFieldErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
         setLoading(true);
 
         try {
 
-            const data = await loginUser(
-                email,
-                password
-            );
+            const data = await loginUser(email.trim(), password);
 
-            console.log("LOGIN RESPONSE:", data);
+            login(data.user, data.token);
 
-        
-
-            login(
-                data.user,
-                data.token
-            );
-            //   first login
             if (data.user.must_change_password === 1) {
 
                 navigate("/change-password");
+                return;
 
-                return ;
+            }
 
-            } 
-            
-            // Normal login
             switch (data.user.role) {
-                case"admin":
-                   navigate("/admin");
-                   break;
+
+                case "admin":
+                    navigate("/admin");
+                    break;
 
                 case "employee":
                     navigate("/employee");
                     break;
 
-                 case "coach":
+                case "coach":
                     navigate("/coach");
                     break;
 
-                 case "member":
+                case "member":
                     navigate("/member");
                     break;
-                
-                 case "receptionist":
+
+                case "receptionist":
                     navigate("/receptionist");
                     break;
 
                 default:
                     setError("Unknown user role");
+
             }
 
-        } catch (error) {
+        } catch (err) {
 
-            console.error("LOGIN ERROR:",error);
+            console.error("LOGIN ERROR:", err);
 
-            setError(
-                error.response?.data?.message ||
-                "Login failed"
-            );
+            if (err.response?.data?.message) {
+
+                setError(err.response.data.message);
+
+            } else {
+
+                setError("Server error. Please try again.");
+
+            }
 
         } finally {
 
@@ -90,74 +120,81 @@ function Login() {
 
     };
 
+
     return (
 
-        <div>
+        <AuthLayout>
 
-            <h1>Login</h1>
+            <h1>Welcome Back</h1>
+            <p className="auth-subtitle">
+                Log in to your PowerHouse Fitness account.
+            </p>
 
             {error && (
-                <p>{error}</p>
+                <div className="auth-error-banner">{error}</div>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
 
-                <div>
+                <div className={`auth-form-field ${fieldErrors.email ? "auth-field-invalid" : ""}`}>
 
-                    <label>
-                        Email
-                    </label>
+                    <label htmlFor="login-email">Email</label>
 
                     <input
+                        id="login-email"
                         type="email"
                         value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
-                        }
-                        required
+                        autoComplete="email"
+                        onChange={(e) => setEmail(e.target.value)}
                     />
+
+                    {fieldErrors.email && (
+                        <p className="auth-field-error">{fieldErrors.email}</p>
+                    )}
 
                 </div>
 
-                <div>
+                <div className={`auth-form-field ${fieldErrors.password ? "auth-field-invalid" : ""}`}>
 
-                    <label>
-                        Password
-                    </label>
+                    <label htmlFor="login-password">Password</label>
 
-                    <input
-                        type="password"
+                    <PasswordInput
+                        id="login-password"
                         value={password}
-                        onChange={(e) =>
-                            setPassword(e.target.value)
-                        }
-                        required
+                        autoComplete="current-password"
+                        onChange={(e) => setPassword(e.target.value)}
                     />
+
+                    {fieldErrors.password && (
+                        <p className="auth-field-error">{fieldErrors.password}</p>
+                    )}
+
+                </div>
+
+                <div className="auth-row-between">
+
+                    <button
+                        type="button"
+                        className="auth-link"
+                        onClick={() => navigate("/forgot-password")}
+                    >
+                        Forgot password?
+                    </button>
 
                 </div>
 
                 <button
                     type="submit"
+                    className="auth-submit-btn"
                     disabled={loading}
                 >
-
-                    {loading
-                        ? "Logging in..."
-                        : "Login"
-                    }
-
+                    {loading ? "Logging in..." : "Login"}
                 </button>
-
-                <button
-                    type="button"
-                    onClick={() => navigate("/forgot-password")}
-                >
-                Forgot Password?
-</button>
 
             </form>
 
-        </div>
+        </AuthLayout>
+
     );
 }
 

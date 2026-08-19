@@ -11,11 +11,16 @@ function AdminLayout() {
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    const toggleSidebar = () => {
+        setSidebarOpen((prev) => !prev);
+    };
+
     return (
         <div className="admin-layout">
 
             <Navbar
-                setIsOpen={setSidebarOpen}
+                isSidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
             />
 
             <div className="admin-body">

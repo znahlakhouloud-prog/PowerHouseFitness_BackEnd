@@ -9,7 +9,11 @@ import {
     Legend
 } from "recharts";
 
+import { formatTrendData } from "../utils/chartFormat";
+
 const PaymentTypeChart = ({ data }) => {
+
+    const chartData = formatTrendData(data);
 
     return (
 
@@ -19,7 +23,7 @@ const PaymentTypeChart = ({ data }) => {
 
                 <div>
                     <h3>Revenue by Payment Type</h3>
-                    <p>Monthly income split by cash / card / transfer</p>
+                    <p>Approved income split by cash / card / transfer</p>
                 </div>
 
             </div>
@@ -27,49 +31,67 @@ const PaymentTypeChart = ({ data }) => {
 
             <div className="chart-container">
 
-                <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                >
+                {chartData.length === 0 ? (
 
-                    <BarChart data={data}>
+                    <div className="chart-empty">
+                        No payment data available for this period.
+                    </div>
 
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                        />
+                ) : (
 
-                        <XAxis dataKey="month" />
+                    <ResponsiveContainer width="100%" height="100%">
 
-                        <YAxis />
+                        <BarChart data={chartData}>
 
-                        <Tooltip />
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                vertical={false}
+                            />
 
-                        <Legend />
+                            <XAxis
+                                dataKey="period_label"
+                                tick={{ fontSize: 12 }}
+                            />
 
-                        <Bar
-                            dataKey="cash"
-                            stackId="a"
-                            fill="#16a34a"
-                            radius={[0, 0, 0, 0]}
-                        />
+                            <YAxis
+                                tick={{ fontSize: 12 }}
+                                width={60}
+                            />
 
-                        <Bar
-                            dataKey="card"
-                            stackId="a"
-                            fill="#0284c7"
-                            radius={[0, 0, 0, 0]}
-                        />
+                            <Tooltip
+                                formatter={(value, name) =>
+                                    [`${Number(value).toLocaleString()} DA`, name]
+                                }
+                            />
 
-                        <Bar
-                            dataKey="transfer"
-                            stackId="a"
-                            fill="#7c3aed"
-                            radius={[6, 6, 0, 0]}
-                        />
+                            <Legend
+                                wrapperStyle={{ fontSize: 12 }}
+                            />
 
-                    </BarChart>
+                            <Bar
+                                dataKey="cash"
+                                stackId="a"
+                                fill="#16a34a"
+                            />
 
-                </ResponsiveContainer>
+                            <Bar
+                                dataKey="card"
+                                stackId="a"
+                                fill="#0284c7"
+                            />
+
+                            <Bar
+                                dataKey="transfer"
+                                stackId="a"
+                                fill="#7c3aed"
+                                radius={[6, 6, 0, 0]}
+                            />
+
+                        </BarChart>
+
+                    </ResponsiveContainer>
+
+                )}
 
             </div>
 

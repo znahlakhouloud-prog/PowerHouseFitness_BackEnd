@@ -3,6 +3,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { resetPassword } from "../services/authService";
 
+import AuthLayout from "../components/AuthLayout";
+import PasswordInput from "../components/PasswordInput";
+
 function ResetPassword() {
 
     const navigate = useNavigate();
@@ -67,17 +70,19 @@ function ResetPassword() {
             setNewPassword("");
             setConfirmPassword("");
 
-        } catch (error) {
+        } catch (err) {
 
-            console.error(
-                "RESET PASSWORD ERROR:",
-                error
-            );
+            console.error("RESET PASSWORD ERROR:", err);
 
-            setError(
-                error.response?.data?.message ||
-                "Something went wrong."
-            );
+            if (err.response?.data?.message) {
+
+                setError(err.response.data.message);
+
+            } else {
+
+                setError("Server error. Please try again.");
+
+            }
 
         } finally {
 
@@ -86,89 +91,98 @@ function ResetPassword() {
     };
 
     return (
-        <div>
+
+        <AuthLayout>
 
             <h1>Reset Password</h1>
 
-            {message && (
-                <div>
+            {!message && (
+                <p className="auth-subtitle">
+                    Choose a new password for your account.
+                </p>
+            )}
 
-                    <p>{message}</p>
+            {message && (
+
+                <>
+
+                    <div className="auth-success-banner">{message}</div>
 
                     <button
                         type="button"
+                        className="auth-submit-btn"
                         onClick={() => navigate("/login")}
                     >
                         Go to Login
                     </button>
 
-                </div>
+                </>
+
             )}
 
             {error && (
-                <p>{error}</p>
+                <div className="auth-error-banner">{error}</div>
             )}
 
             {!message && (
-                <form onSubmit={handleSubmit}>
 
-                    <div>
+                <form onSubmit={handleSubmit} noValidate>
 
-                        <label>
-                            New Password
-                        </label>
+                    <div className="auth-form-field">
 
-                        <input
-                            type="password"
+                        <label htmlFor="reset-new-password">New Password</label>
+
+                        <PasswordInput
+                            id="reset-new-password"
                             value={newPassword}
-                            onChange={(e) =>
-                                setNewPassword(e.target.value)
-                            }
-                            required
+                            autoComplete="new-password"
+                            onChange={(e) => setNewPassword(e.target.value)}
                         />
 
                     </div>
 
-                    <div>
+                    <div className="auth-form-field">
 
-                        <label>
-                            Confirm Password
-                        </label>
+                        <label htmlFor="reset-confirm-password">Confirm Password</label>
 
-                        <input
-                            type="password"
+                        <PasswordInput
+                            id="reset-confirm-password"
                             value={confirmPassword}
-                            onChange={(e) =>
-                                setConfirmPassword(e.target.value)
-                            }
-                            required
+                            autoComplete="new-password"
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
 
                     </div>
 
                     <button
                         type="submit"
+                        className="auth-submit-btn"
                         disabled={loading}
                     >
-                        {loading
-                            ? "Resetting..."
-                            : "Reset Password"
-                        }
+                        {loading ? "Resetting..." : "Reset Password"}
                     </button>
 
                 </form>
+
             )}
 
             {!message && (
-                <button
-                    type="button"
-                    onClick={() => navigate("/login")}
-                >
-                    Back to Login
-                </button>
+
+                <div className="auth-secondary-action">
+
+                    <button
+                        type="button"
+                        className="auth-back-link"
+                        onClick={() => navigate("/login")}
+                    >
+                        Back to Login
+                    </button>
+
+                </div>
+
             )}
 
-        </div>
+        </AuthLayout>
     );
 }
 

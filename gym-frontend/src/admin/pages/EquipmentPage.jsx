@@ -7,7 +7,8 @@ import {
     getEquipments,
     createEquipment,
     updateEquipment,
-    deleteEquipment
+    deleteEquipment,
+    getEquipmentReports
 } from "../services/equipmentService";
 
 import EquipmentModal from "../components/EquipmentModal";
@@ -62,6 +63,8 @@ const getQuickActions = (state) => {
 function EquipmentPage() {
 
     const [equipments, setEquipments] = useState([]);
+    const [reports, setReports] = useState([]);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -75,13 +78,17 @@ function EquipmentPage() {
 
     useEffect(() => {
 
-        const fetchEquipments = async () => {
+        const fetchAll = async () => {
 
             try {
 
-                const data = await getEquipments();
+                const [equipmentData, reportsData] = await Promise.all([
+                    getEquipments(),
+                    getEquipmentReports()
+                ]);
 
-                setEquipments(data);
+                setEquipments(equipmentData);
+                setReports(reportsData);
 
             } catch (err) {
 
@@ -100,7 +107,7 @@ function EquipmentPage() {
 
         };
 
-        fetchEquipments();
+        fetchAll();
 
     }, []);
 
@@ -398,6 +405,88 @@ function EquipmentPage() {
                 </div>
 
             )}
+
+
+            <div className="reports-section">
+
+                <div className="page-header">
+
+                    <div>
+                        <h2>Recent Equipment Reports</h2>
+                        <p>Broken-equipment reports submitted by coaches and members</p>
+                    </div>
+
+                </div>
+
+                {reports.length === 0 ? (
+
+                    <div className="equipment-empty">
+                        No equipment reports have been submitted.
+                    </div>
+
+                ) : (
+
+                    <div className="equipment-table-card">
+
+                        <table className="equipment-table">
+
+                            <thead>
+
+                                <tr>
+                                    <th>Equipment</th>
+                                    <th>Reported By</th>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {reports.map((report) => (
+
+                                    <tr key={report.id}>
+
+                                        <td>{report.equipment_name}</td>
+
+                                        <td>
+                                            {report.reported_by}
+                                            {" "}
+                                            <span style={{ color: "#9aa1ad", textTransform: "capitalize" }}>
+                                                ({report.reported_by_role})
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {new Date(
+                                                report.created_at
+                                            ).toLocaleDateString()}
+                                        </td>
+
+                                        <td>{report.description || "—"}</td>
+
+                                        <td>
+                                            <span
+                                                className={`status-badge status-${report.status}`}
+                                            >
+                                                {report.status}
+                                            </span>
+                                        </td>
+
+                                    </tr>
+
+                                ))}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                )}
+
+            </div>
 
 
             {modalMode && (

@@ -155,3 +155,35 @@ export const markNotificationAsRead = async (id) => {
     return result;
 
 };
+
+// UNREAD COUNT FOR ONE USER
+export const getUnreadCountByUserId = async (id_user) => {
+
+    const sql = `
+        SELECT COUNT(*) AS total
+        FROM notification
+        WHERE id_user = ?
+        AND is_read = false
+    `;
+
+    const [rows] = await db.query(sql, [id_user]);
+
+    return rows[0].total;
+
+};
+
+// MARK ALL AS READ FOR ONE USER
+export const markAllAsReadByUserId = async (id_user) => {
+
+    const sql = `
+        UPDATE notification
+        SET is_read = true
+        WHERE id_user = ?
+        AND is_read = false
+    `;
+
+    const [result] = await db.query(sql, [id_user]);
+
+    return result;
+
+};

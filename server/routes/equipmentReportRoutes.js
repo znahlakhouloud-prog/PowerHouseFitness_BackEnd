@@ -2,11 +2,13 @@ import express from "express";
 
 import {
     addEquipmentReport,
-    fetchMyEquipmentReports
+    fetchMyEquipmentReports,
+    fetchAllEquipmentReports
 } from "../controllers/equipmentReportController.js";
 
 import { validateEquipmentReport } from "../middleware/validateEquipmentReport.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
@@ -23,6 +25,14 @@ router.get(
     "/me",
     authenticateToken,
     fetchMyEquipmentReports
+);
+
+// Admin/receptionist review list - all reports, any reporter
+router.get(
+    "/",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchAllEquipmentReports
 );
 
 export default router;

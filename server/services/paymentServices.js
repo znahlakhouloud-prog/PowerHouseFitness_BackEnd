@@ -12,6 +12,32 @@ import {
     getMembershipById
 } from "../models/membership.js";
 
+import { getUserById } from "../models/user.js";
+import { notifyAdmins } from "./notificationService.js";
+
+// Non-fatal - a payment must still succeed even if the notification
+// fails for some reason
+const notifyAdminsOfPayment = async (id_user, amount, status) => {
+
+    try {
+
+        const users = await getUserById(id_user);
+        const userName = users[0]?.user_name || "A member";
+
+        await notifyAdmins({
+            title: status === "approved" ? "Payment Received" : "Payment Pending",
+            descrip: `${userName} - ${Number(amount).toLocaleString()} DA (${status})`,
+            type: "payment"
+        });
+
+    } catch (notifyError) {
+
+        console.error("NOTIFY ADMINS ERROR (payment):", notifyError);
+
+    }
+
+};
+
 
 // GET ALL PAYMENTS
 export const fetchPaymentsService = async () => {
@@ -120,7 +146,11 @@ export const createPaymentService = async (data) => {
 
     };
 
-    return await createPayment(paymentData);
+    const result = await createPayment(paymentData);
+
+    await notifyAdminsOfPayment(membership.id_user, paymentData.amount, paymentData.status);
+
+    return result;
 
 };
 
@@ -185,7 +215,11 @@ export const createMemberPaymentService = async (id_user, data, file) => {
 
     };
 
-    return await createPayment(paymentData);
+    const result = await createPayment(paymentData);
+
+    await notifyAdminsOfPayment(id_user, paymentData.amount, paymentData.status);
+
+    return result;
 
 };
 

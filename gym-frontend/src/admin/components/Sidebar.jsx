@@ -1,158 +1,21 @@
-// import { NavLink } from "react-router-dom";
-
-// function Sidebar({ isOpen }) {
-
-//     const navigation = [
-
-//         {
-//             label: "MAIN",
-//             items: [
-//                 {
-//                     name: "Dashboard",
-//                     path: "/admin",
-//                     icon: "▦"
-//                 }
-//             ]
-//         },
-
-//         {
-//             label: "MANAGEMENT",
-//             items: [
-//                 {
-//                     name: "Users",
-//                     path: "/admin/users",
-//                     icon: "♙"
-//                 },
-//                 {
-//                     name: "Equipment",
-//                     path: "/admin/equipment",
-//                     icon: "▣"
-//                 },
-//                 {
-//                     name: "Payments",
-//                     path: "/admin/payments",
-//                     icon: "$"
-//                 },
-//                 {
-//                     name: "Membership",
-//                     path: "/admin/memberships",
-//                     icon: "▤"
-//                 }
-//             ]
-//         },
-
-//         {
-//             label: "ANALYTICS",
-//             items: [
-//                 {
-//                     name: "Reports & Analytics",
-//                     path: "/admin/reports",
-//                     icon: "◩"
-//                 }
-//             ]
-//         }
-
-//     ];
-
-
-//     return (
-
-//         <aside
-//             className={
-//                 isOpen
-//                     ? "admin-sidebar"
-//                     : "admin-sidebar closed"
-//             }
-//         >
-
-//             <nav>
-
-//                 {navigation.map(
-//                     (section) => (
-
-//                         <div
-//                             className="sidebar-section"
-//                             key={section.label}
-//                         >
-
-//                             <div className="sidebar-label">
-//                                 {section.label}
-//                             </div>
-
-
-//                             {section.items.map(
-//                                 (item) => (
-
-//                                     <NavLink
-//                                         key={item.path}
-//                                         to={item.path}
-//                                         end={
-//                                             item.path ===
-//                                             "/admin"
-//                                         }
-//                                         className={({
-//                                             isActive
-//                                         }) =>
-//                                             isActive
-//                                                 ? "sidebar-link active"
-//                                                 : "sidebar-link"
-//                                         }
-//                                     >
-
-//                                         <span className="sidebar-icon">
-//                                             {item.icon}
-//                                         </span>
-
-//                                         <span className="sidebar-text">
-//                                             {item.name}
-//                                         </span>
-
-//                                     </NavLink>
-
-//                                 )
-//                             )}
-
-//                         </div>
-
-//                     )
-//                 )}
-
-//             </nav>
-
-
-//             <div className="sidebar-bottom">
-
-//                 <NavLink
-//                     to="/admin/settings"
-//                     className="sidebar-link"
-//                 >
-//                     <span className="sidebar-icon">
-//                         ⚙
-//                     </span>
-
-//                     <span className="sidebar-text">
-//                         Settings
-//                     </span>
-//                 </NavLink>
-
-//             </div>
-
-//         </aside>
-//     );
-// }
-
-// export default Sidebar;
 import { NavLink } from "react-router-dom";
 
 import {
     LayoutDashboard,
     Users,
+    UserPlus,
     Dumbbell,
     CreditCard,
     BadgeDollarSign,
     BarChart3,
+    User,
+    LogOut,
     X
 } from "lucide-react";
+
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../auth/context/authContext";
 
 const navLinkClass = ({ isActive }) =>
     isActive ? "sidebar-link active" : "sidebar-link";
@@ -162,92 +25,149 @@ const Sidebar = ({
     setIsOpen
 }) => {
 
+    const { logout } = useContext(AuthContext);
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+
+        logout();
+
+        navigate("/login", { replace: true });
+
+    };
+
     return (
-        <aside
-            className={`admin-sidebar ${
-                isOpen ? "open" : ""
-            }`}
-        >
+        <>
 
-            <div className="sidebar-header">
+            {isOpen && (
+                <div
+                    className="sidebar-backdrop"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
 
-                <div className="sidebar-logo">
-                    <Dumbbell size={28} />
+            <aside
+                className={`admin-sidebar ${
+                    isOpen ? "open" : ""
+                }`}
+            >
 
-                    <span>
-                        PowerHouse
-                    </span>
+                <div className="sidebar-header">
+
+                    <div className="sidebar-logo">
+                        <span className="sidebar-logo-icon">
+                            <Dumbbell size={20} />
+                        </span>
+
+                        <span>
+                            PowerHouse
+                        </span>
+                    </div>
+
+                    <button
+                        className="sidebar-close"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <X size={22} />
+                    </button>
+
                 </div>
 
-                <button
-                    className="sidebar-close"
-                    onClick={() => setIsOpen(false)}
-                >
-                    <X size={22} />
-                </button>
 
-            </div>
+                <nav className="sidebar-nav">
 
-
-            <nav className="sidebar-nav">
-
-                <NavLink
-                    to="/admin"
-                    end
-                    className={navLinkClass}
-                >
-                    <LayoutDashboard size={20} />
-                    <span>Dashboard</span>
-                </NavLink>
+                    <NavLink
+                        to="/admin"
+                        end
+                        className={navLinkClass}
+                    >
+                        <LayoutDashboard size={20} />
+                        <span>Dashboard</span>
+                    </NavLink>
 
 
-                <NavLink
-                    to="/admin/users"
-                    className={navLinkClass}
-                >
-                    <Users size={20} />
-                    <span>Users</span>
-                </NavLink>
+                    <NavLink
+                        to="/admin/users"
+                        end
+                        className={navLinkClass}
+                    >
+                        <Users size={20} />
+                        <span>Users</span>
+                    </NavLink>
 
 
-                <NavLink
-                    to="/admin/equipment"
-                    className={navLinkClass}
-                >
-                    <Dumbbell size={20} />
-                    <span>Equipment</span>
-                </NavLink>
+                    <NavLink
+                        to="/admin/users/new"
+                        className={navLinkClass}
+                    >
+                        <UserPlus size={20} />
+                        <span>Register User</span>
+                    </NavLink>
 
 
-                <NavLink
-                    to="/admin/payments"
-                    className={navLinkClass}
-                >
-                    <CreditCard size={20} />
-                    <span>Payments</span>
-                </NavLink>
+                    <NavLink
+                        to="/admin/memberships"
+                        className={navLinkClass}
+                    >
+                        <BadgeDollarSign size={20} />
+                        <span>Memberships</span>
+                    </NavLink>
 
 
-                <NavLink
-                    to="/admin/memberships"
-                    className={navLinkClass}
-                >
-                    <BadgeDollarSign size={20} />
-                    <span>Memberships</span>
-                </NavLink>
+                    <NavLink
+                        to="/admin/payments"
+                        className={navLinkClass}
+                    >
+                        <CreditCard size={20} />
+                        <span>Payments</span>
+                    </NavLink>
 
 
-                <NavLink
-                    to="/admin/reports"
-                    className={navLinkClass}
-                >
-                    <BarChart3 size={20} />
-                    <span>Reports & Analytics</span>
-                </NavLink>
+                    <NavLink
+                        to="/admin/equipment"
+                        className={navLinkClass}
+                    >
+                        <Dumbbell size={20} />
+                        <span>Equipment</span>
+                    </NavLink>
 
-            </nav>
 
-        </aside>
+                    <NavLink
+                        to="/admin/reports"
+                        className={navLinkClass}
+                    >
+                        <BarChart3 size={20} />
+                        <span>Reports & Analytics</span>
+                    </NavLink>
+
+
+                    <NavLink
+                        to="/admin/profile"
+                        className={navLinkClass}
+                    >
+                        <User size={20} />
+                        <span>Profile</span>
+                    </NavLink>
+
+                </nav>
+
+
+                <div className="sidebar-bottom">
+
+                    <button
+                        className="sidebar-link sidebar-logout"
+                        onClick={handleLogout}
+                    >
+                        <LogOut size={20} />
+                        <span>Logout</span>
+                    </button>
+
+                </div>
+
+            </aside>
+
+        </>
     );
 };
 

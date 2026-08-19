@@ -7,7 +7,6 @@ import {
 import Landing from "../landing/pages/Landing";
 
 import Login from "../auth/pages/Login";
-import Register from "../auth/pages/Register";
 import ChangePassword from "../auth/pages/ChangePassword";
 import ForgotPassword from "../auth/pages/ForgotPassword";
 import ResetPassword from "../auth/pages/ResetPassword";
@@ -17,10 +16,12 @@ import ProtectedRoute from "./ProtectedRoute";
 import AdminLayout from "../admin/components/AdminLayout";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import UsersPage from "../admin/pages/UsersPage";
+import RegisterUserPage from "../admin/pages/RegisterUserPage";
 import EquipmentPage from "../admin/pages/EquipmentPage";
 import PaymentsPage from "../admin/pages/PaymentsPage";
 import MembershipsPage from "../admin/pages/MembershipsPage";
 import ReportsPage from "../admin/pages/ReportsPage";
+import AdminProfile from "../admin/pages/AdminProfile";
 
 import ReceptionistLayout from "../receptionist/components/ReceptionistLayout";
 import ReceptionistDashboard from "../receptionist/pages/ReceptionistDashboard";
@@ -143,7 +144,7 @@ function AppRoutes() {
                         <Route
                             path="users/new"
                             element={
-                                <Register />
+                                <RegisterUserPage />
                             }
                         />
 
@@ -172,6 +173,13 @@ function AppRoutes() {
                             path="reports"
                             element={
                                 <ReportsPage />
+                            }
+                        />
+
+                        <Route
+                            path="profile"
+                            element={
+                                <AdminProfile />
                             }
                         />
 
