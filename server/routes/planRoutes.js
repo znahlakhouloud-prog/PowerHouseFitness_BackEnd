@@ -13,6 +13,11 @@ import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
+// PUBLIC CATALOG (landing page) - no auth required, deliberately
+// separate from the authenticated /  below. Same read-only data,
+// reused as-is; pricing is the kind of thing a gym publishes openly.
+router.get("/public", fetchPlans);
+
 router.use(authenticateToken);
 
 // Admin/receptionist browse the catalog to assign a plan; members
