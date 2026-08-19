@@ -33,3 +33,14 @@ export const getMyEquipmentReports = async () => {
 
     return response.data;
 };
+
+
+// GET ALL EQUIPMENT REPORTS (admin/receptionist review list, any reporter)
+export const getEquipmentReports = async () => {
+
+    const response = await api.get(
+        "/equipment-reports"
+    );
+
+    return response.data;
+};

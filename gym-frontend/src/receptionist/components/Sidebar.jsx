@@ -8,7 +8,6 @@ import {
     BadgeDollarSign,
     CalendarCheck,
     Wrench,
-    Bell,
     User,
     LogOut,
     Dumbbell,
@@ -38,116 +37,121 @@ const Sidebar = ({
     };
 
     return (
-        <aside
-            className={`receptionist-sidebar ${
-                isOpen ? "open" : ""
-            }`}
-        >
+        <>
 
-            <div className="sidebar-header">
+            {isOpen && (
+                <div
+                    className="sidebar-backdrop"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
 
-                <div className="sidebar-logo">
-                    <Dumbbell size={28} />
+            <aside
+                className={`receptionist-sidebar ${
+                    isOpen ? "open" : ""
+                }`}
+            >
 
-                    <span>
-                        PowerHouse
-                    </span>
+                <div className="sidebar-header">
+
+                    <div className="sidebar-logo">
+                        <span className="sidebar-logo-icon">
+                            <Dumbbell size={20} />
+                        </span>
+
+                        <span>
+                            PowerHouse
+                        </span>
+                    </div>
+
+                    <button
+                        className="sidebar-close"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <X size={22} />
+                    </button>
+
                 </div>
 
-                <button
-                    className="sidebar-close"
-                    onClick={() => setIsOpen(false)}
-                >
-                    <X size={22} />
-                </button>
 
-            </div>
+                <nav className="sidebar-nav">
 
+                    <NavLink
+                        to="/receptionist"
+                        end
+                        className={navLinkClass}
+                    >
+                        <LayoutDashboard size={20} />
+                        <span>Dashboard</span>
+                    </NavLink>
 
-            <nav className="sidebar-nav">
+                    <NavLink
+                        to="/receptionist/members"
+                        end
+                        className={navLinkClass}
+                    >
+                        <Users size={20} />
+                        <span>Members</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/receptionist"
-                    end
-                    className={navLinkClass}
-                >
-                    <LayoutDashboard size={20} />
-                    <span>Dashboard</span>
-                </NavLink>
+                    <NavLink
+                        to="/receptionist/members/new"
+                        className={navLinkClass}
+                    >
+                        <UserPlus size={20} />
+                        <span>Register Member</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/receptionist/members"
-                    end
-                    className={navLinkClass}
-                >
-                    <Users size={20} />
-                    <span>Members</span>
-                </NavLink>
+                    <NavLink
+                        to="/receptionist/memberships"
+                        className={navLinkClass}
+                    >
+                        <BadgeDollarSign size={20} />
+                        <span>Memberships</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/receptionist/members/new"
-                    className={navLinkClass}
-                >
-                    <UserPlus size={20} />
-                    <span>Register Member</span>
-                </NavLink>
+                    <NavLink
+                        to="/receptionist/attendance"
+                        className={navLinkClass}
+                    >
+                        <CalendarCheck size={20} />
+                        <span>Attendance</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/receptionist/memberships"
-                    className={navLinkClass}
-                >
-                    <BadgeDollarSign size={20} />
-                    <span>Memberships</span>
-                </NavLink>
+                    <NavLink
+                        to="/receptionist/equipment"
+                        className={navLinkClass}
+                    >
+                        <Wrench size={20} />
+                        <span>Equipment</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/receptionist/attendance"
-                    className={navLinkClass}
-                >
-                    <CalendarCheck size={20} />
-                    <span>Attendance</span>
-                </NavLink>
+                    <NavLink
+                        to="/receptionist/profile"
+                        className={navLinkClass}
+                    >
+                        <User size={20} />
+                        <span>Profile</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/receptionist/equipment"
-                    className={navLinkClass}
-                >
-                    <Wrench size={20} />
-                    <span>Equipment</span>
-                </NavLink>
-
-                <NavLink
-                    to="/receptionist/notifications"
-                    className={navLinkClass}
-                >
-                    <Bell size={20} />
-                    <span>Notifications</span>
-                </NavLink>
-
-                <NavLink
-                    to="/receptionist/profile"
-                    className={navLinkClass}
-                >
-                    <User size={20} />
-                    <span>Profile</span>
-                </NavLink>
-
-            </nav>
+                </nav>
 
 
-            <div className="sidebar-bottom">
+                <div className="sidebar-bottom">
 
-                <button
-                    className="sidebar-link sidebar-logout"
-                    onClick={handleLogout}
-                >
-                    <LogOut size={20} />
-                    <span>Logout</span>
-                </button>
+                    <button
+                        className="sidebar-link sidebar-logout"
+                        onClick={handleLogout}
+                    >
+                        <LogOut size={20} />
+                        <span>Logout</span>
+                    </button>
 
-            </div>
+                </div>
 
-        </aside>
+            </aside>
+
+        </>
     );
 };
 

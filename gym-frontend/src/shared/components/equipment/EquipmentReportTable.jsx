@@ -2,6 +2,7 @@ import EquipmentStatusBadge from "./EquipmentStatusBadge";
 
 function EquipmentReportTable({
     reports,
+    showReporter = false,
     emptyMessage = "No equipment reports yet."
 }) {
 
@@ -25,6 +26,7 @@ function EquipmentReportTable({
 
                     <tr>
                         <th>Equipment</th>
+                        {showReporter && <th>Reported By</th>}
                         <th>Description</th>
                         <th>Reported On</th>
                         <th>Status</th>
@@ -39,6 +41,19 @@ function EquipmentReportTable({
                         <tr key={report.id}>
 
                             <td>{report.equipment_name}</td>
+
+                            {showReporter && (
+
+                                <td>
+                                    {report.reported_by}
+                                    {report.reported_by_role && (
+                                        <span style={{ color: "#9aa1ad", textTransform: "capitalize" }}>
+                                            {" "}({report.reported_by_role})
+                                        </span>
+                                    )}
+                                </td>
+
+                            )}
 
                             <td>{report.description || "—"}</td>
 

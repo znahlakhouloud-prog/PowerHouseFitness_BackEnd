@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 import {
     Menu,
-    Search,
-    Bell,
+    X,
+    Dumbbell,
     User,
     LogOut,
     ChevronDown
 } from "lucide-react";
 
 import { AuthContext } from "../../auth/context/authContext";
+import NotificationBell from "../../shared/components/notifications/NotificationBell";
 
-const TopNavbar = ({ setIsOpen }) => {
+const TopNavbar = ({ isSidebarOpen, onToggleSidebar }) => {
 
     const {
         user,
@@ -39,33 +40,35 @@ const TopNavbar = ({ setIsOpen }) => {
 
                 <button
                     className="menu-button"
-                    onClick={() => setIsOpen(true)}
+                    onClick={onToggleSidebar}
+                    aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+                    aria-expanded={isSidebarOpen}
                 >
-                    <Menu size={24} />
+                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
 
-                <div className="search-box">
+                <button
+                    type="button"
+                    className="navbar-logo"
+                    onClick={() => navigate("/receptionist")}
+                >
 
-                    <Search size={19} />
+                    <span className="navbar-logo-icon">
+                        <Dumbbell size={18} />
+                    </span>
 
-                    <input
-                        type="text"
-                        placeholder="Search members..."
-                    />
+                    <span className="navbar-logo-text">
+                        PowerHouse<span className="navbar-logo-suffix"> Fitness</span>
+                    </span>
 
-                </div>
+                </button>
 
             </div>
 
 
             <div className="navbar-right">
 
-                <button className="navbar-icon">
-                    <Bell size={21} />
-
-                    <span className="notification-dot" />
-                </button>
-
+                <NotificationBell />
 
                 <div className="profile-container">
 

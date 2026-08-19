@@ -1,106 +1,78 @@
-import {
-    useEffect,
-    useState
-} from "react";
+import { useEffect, useState } from "react";
 
 import {
     getEquipments,
-    reportEquipmentBroken
-} from "../services/equipmentService";
+    reportEquipment,
+    getEquipmentReports
+} from "../../shared/services/equipmentService";
+
+import EquipmentTable from "../../shared/components/equipment/EquipmentTable";
+import EquipmentReportModal from "../../shared/components/equipment/EquipmentReportModal";
+import EquipmentReportTable from "../../shared/components/equipment/EquipmentReportTable";
 
 import "../style/receptionist.css";
-
-const STATUS_TABS = [
-    { label: "All", value: "all" },
-    { label: "Available", value: "available" },
-    { label: "Maintenance", value: "maintenance" },
-    { label: "Broken", value: "broken" }
-];
 
 function EquipmentPage() {
 
     const [equipments, setEquipments] = useState([]);
+    const [reports, setReports] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [actionError, setActionError] = useState("");
 
-    const [activeTab, setActiveTab] = useState("all");
-    const [reportingId, setReportingId] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
 
 
-    const loadEquipments = async () => {
+    const loadAll = async () => {
 
-        try {
+        const [equipmentData, reportsData] = await Promise.all([
+            getEquipments(),
+            getEquipmentReports()
+        ]);
 
-            const data = await getEquipments();
-
-            setEquipments(data);
-
-        } catch (err) {
-
-            console.error("LOAD EQUIPMENT ERROR:", err);
-
-            setError(
-                err.response?.data?.message ||
-                "Failed to load equipment"
-            );
-
-        } finally {
-
-            setLoading(false);
-
-        }
+        setEquipments(equipmentData);
+        setReports(reportsData);
 
     };
 
+
     useEffect(() => {
 
-        loadEquipments();
+        const load = async () => {
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+            try {
+
+                await loadAll();
+
+            } catch (err) {
+
+                console.error("LOAD EQUIPMENT ERROR:", err);
+
+                setError(
+                    err.response?.data?.message ||
+                    "Failed to load equipment"
+                );
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+        load();
+
     }, []);
 
 
-    const filteredEquipments = equipments.filter(
-        (item) =>
-            activeTab === "all" || item.state === activeTab
-    );
+    const handleSave = async (data) => {
 
+        await reportEquipment(data);
 
-    const handleReportBroken = async (item) => {
+        setModalOpen(false);
 
-        const confirmed = window.confirm(
-            `Report "${item.name}" as broken?`
-        );
-
-        if (!confirmed) {
-            return;
-        }
-
-        setActionError("");
-        setReportingId(item.id);
-
-        try {
-
-            await reportEquipmentBroken(item.id);
-
-            await loadEquipments();
-
-        } catch (err) {
-
-            console.error("REPORT BROKEN ERROR:", err);
-
-            setActionError(
-                err.response?.data?.message ||
-                "Failed to report equipment as broken"
-            );
-
-        } finally {
-
-            setReportingId(null);
-
-        }
+        await loadAll();
 
     };
 
@@ -132,128 +104,52 @@ function EquipmentPage() {
 
                 <div>
                     <h1>Equipment</h1>
-                    <p>Report broken equipment to the admin team</p>
+                    <p>View gym equipment and report any issues</p>
                 </div>
+
+                <button
+                    className="dashboard-action-button"
+                    onClick={() => setModalOpen(true)}
+                >
+                    Report Broken Equipment
+                </button>
 
             </div>
 
 
-            <div className="members-toolbar">
+            <div className="dashboard-card">
 
-                <div className="members-tabs">
-
-                    {STATUS_TABS.map((tab) => (
-
-                        <button
-                            key={tab.value}
-                            className={
-                                activeTab === tab.value
-                                    ? "members-tab active"
-                                    : "members-tab"
-                            }
-                            onClick={() => setActiveTab(tab.value)}
-                        >
-                            {tab.label}
-                        </button>
-
-                    ))}
-
+                <div className="card-header">
+                    <h2>Equipment</h2>
                 </div>
+
+                <EquipmentTable equipments={equipments} />
 
             </div>
 
 
-            {actionError && (
-                <div className="dashboard-error">{actionError}</div>
-            )}
+            <div className="dashboard-card">
 
-
-            {filteredEquipments.length === 0 ? (
-
-                <div className="receptionist-empty">
-                    No equipment found.
+                <div className="card-header">
+                    <h2>Equipment Reports</h2>
+                    <p>Broken-equipment reports submitted by members, coaches and staff</p>
                 </div>
 
-            ) : (
+                <EquipmentReportTable
+                    reports={reports}
+                    showReporter
+                    emptyMessage="No equipment reports have been submitted."
+                />
 
-                <div className="receptionist-table-card">
+            </div>
 
-                    <table className="receptionist-table">
 
-                        <thead>
+            {modalOpen && (
 
-                            <tr>
-                                <th>Name</th>
-                                <th>Last Maintenance</th>
-                                <th>Status</th>
-                                <th></th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            {filteredEquipments.map((item) => (
-
-                                <tr key={item.id}>
-
-                                    <td>{item.name}</td>
-
-                                    <td>
-                                        {item.maint_date
-                                            ? new Date(
-                                                item.maint_date
-                                            ).toLocaleDateString()
-                                            : "—"
-                                        }
-                                    </td>
-
-                                    <td>
-                                        <span
-                                            className={`status-badge status-${item.state}`}
-                                        >
-                                            {item.state}
-                                        </span>
-                                    </td>
-
-                                    <td>
-
-                                        {item.state === "broken" ? (
-
-                                            <span className="no-membership">
-                                                Already reported
-                                            </span>
-
-                                        ) : (
-
-                                            <button
-                                                className="btn-link btn-danger"
-                                                disabled={
-                                                    reportingId === item.id
-                                                }
-                                                onClick={() =>
-                                                    handleReportBroken(item)
-                                                }
-                                            >
-                                                {reportingId === item.id
-                                                    ? "Reporting..."
-                                                    : "Report Broken"
-                                                }
-                                            </button>
-
-                                        )}
-
-                                    </td>
-
-                                </tr>
-
-                            ))}
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+                <EquipmentReportModal
+                    onClose={() => setModalOpen(false)}
+                    onSave={handleSave}
+                />
 
             )}
 

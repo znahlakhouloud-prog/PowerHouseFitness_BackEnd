@@ -78,6 +78,7 @@ function ReceptionistDashboard() {
 
         const today = new Date();
 
+        let withMembership = 0;
         let active = 0;
         let expired = 0;
         let expiringSoon = 0;
@@ -92,6 +93,12 @@ function ReceptionistDashboard() {
             if (!current) {
                 return;
             }
+
+            // Counted as a "Total Member" as soon as they have any
+            // membership row - state is only ever active/expired in
+            // the database, "expiring" is just an active membership
+            // close to its end date (see membershipStatus.js).
+            withMembership++;
 
             const status = getMembershipStatus(current);
 
@@ -118,7 +125,7 @@ function ReceptionistDashboard() {
         ).length;
 
         return {
-            total: members.length,
+            total: withMembership,
             active,
             expired,
             expiringSoon,

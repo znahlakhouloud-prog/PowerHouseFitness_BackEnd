@@ -10,11 +10,16 @@ function ReceptionistLayout() {
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    const toggleSidebar = () => {
+        setSidebarOpen((prev) => !prev);
+    };
+
     return (
         <div className="receptionist-layout">
 
             <TopNavbar
-                setIsOpen={setSidebarOpen}
+                isSidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
             />
 
             <div className="receptionist-body">

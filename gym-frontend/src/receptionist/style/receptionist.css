@@ -1,16 +1,29 @@
 /* =========================================
    LAYOUT
+   Reuses the --admin-* design tokens declared in admin.css's :root
+   (globally available once admin.css is bundled) rather than
+   redeclaring them here, so Receptionist stays on the same palette
+   as Admin without duplicating the token values.
 ========================================= */
 
 .receptionist-layout {
     min-height: 100vh;
-    background: #f5f7fa;
-    color: #172033;
+    background: var(--admin-bg);
+    color: var(--admin-black);
     font-family: Arial, Helvetica, sans-serif;
 }
 
 * {
     box-sizing: border-box;
+}
+
+.receptionist-layout a:focus-visible,
+.receptionist-layout button:focus-visible,
+.receptionist-layout input:focus-visible,
+.receptionist-layout select:focus-visible,
+.receptionist-layout textarea:focus-visible {
+    outline: 2px solid var(--admin-primary);
+    outline-offset: 2px;
 }
 
 
@@ -56,27 +69,6 @@
     background: #f1f3f6;
 }
 
-.search-box {
-    width: 320px;
-    height: 42px;
-    background: #f5f6f8;
-    border: 1px solid #e7e9ed;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    gap: 9px;
-    color: #7b8494;
-}
-
-.search-box input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 14px;
-}
-
 .navbar-right {
     display: flex;
     align-items: center;
@@ -96,16 +88,6 @@
 
 .navbar-icon:hover {
     background: #f1f3f6;
-}
-
-.notification-dot {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #dc2626;
 }
 
 
@@ -217,15 +199,13 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    transform: translateX(-100%);
     transition: width 0.25s ease, transform 0.25s ease;
     z-index: 900;
 }
 
-.receptionist-sidebar.closed {
-    width: 0;
-    padding-left: 0;
-    padding-right: 0;
-    overflow: hidden;
+.receptionist-sidebar.open {
+    transform: translateX(0);
 }
 
 .sidebar-header {
@@ -241,6 +221,18 @@
     gap: 10px;
     font-weight: 700;
     font-size: 16px;
+}
+
+.sidebar-logo-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-primary);
+    color: var(--admin-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-close {
@@ -280,9 +272,12 @@
     color: white;
 }
 
-.sidebar-link.active {
-    background: #ffffff;
-    color: #111827;
+/* Scoped under .receptionist-layout: coach.css/member.css declare
+   their own same-specificity .sidebar-link.active rule and load
+   after this file, so an unscoped rule here would lose the tie. */
+.receptionist-layout .sidebar-link.active {
+    background: var(--admin-primary);
+    color: var(--admin-white);
     font-weight: 600;
 }
 
@@ -352,10 +347,13 @@
    CARDS
 ========================================= */
 
-.dashboard-card {
+/* Scoped under .receptionist-layout: coach.css/member.css declare
+   their own same-specificity .dashboard-card rule with the old
+   hardcoded radius, loaded after this file. */
+.receptionist-layout .dashboard-card {
     background: white;
     border: 1px solid #e8ebef;
-    border-radius: 12px;
+    border-radius: var(--admin-radius);
     padding: 22px;
     margin-bottom: 20px;
 }
@@ -387,16 +385,19 @@
     margin-bottom: 24px;
 }
 
-.kpi-card {
+/* Scoped under .receptionist-layout: coach.css/member.css declare
+   their own same-specificity .kpi-card rule with the old hardcoded
+   radius, loaded after this file. */
+.receptionist-layout .kpi-card {
     background: white;
     border: 1px solid #e8ebef;
-    border-radius: 12px;
+    border-radius: var(--admin-radius);
     padding: 18px;
     min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--admin-shadow);
 }
 
 .kpi-card-header {
@@ -478,6 +479,124 @@
 .status-broken {
     background: #fee2e2;
     color: #b91c1c;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-resolved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+/* =========================================
+   EQUIPMENT (role-neutral classes - also defined in admin's
+   equipmentPage.css / coach.css / member.css, since
+   shared/components/equipment/* render under every role)
+========================================= */
+
+.equipment-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.equipment-tabs {
+    display: flex;
+    gap: 6px;
+    background: #eef0f3;
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.equipment-tab {
+    border: none;
+    background: transparent;
+    padding: 8px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #5b6270;
+    cursor: pointer;
+}
+
+.equipment-tab.active {
+    background: white;
+    color: #111827;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.equipment-search {
+    width: 240px;
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #e7e9ed;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #9aa1ad;
+}
+
+.equipment-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    background: transparent;
+}
+
+.equipment-table-card {
+    background: white;
+    border: 1px solid #e8ebef;
+    border-radius: 12px;
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+.equipment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.equipment-table th {
+    text-align: left;
+    padding: 14px 18px;
+    background: #f9fafb;
+    color: #7c8594;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e8ebef;
+    white-space: nowrap;
+}
+
+.equipment-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f0f1f4;
+    color: #172033;
+}
+
+.equipment-table tr:last-child td {
+    border-bottom: none;
+}
+
+.equipment-empty {
+    background: white;
+    border: 1px solid #e8ebef;
+    border-radius: 12px;
+    padding: 50px;
+    text-align: center;
+    color: #858d9b;
+    font-size: 14px;
 }
 
 
@@ -563,9 +682,12 @@
    BUTTONS
 ========================================= */
 
-.dashboard-action-button {
+/* Scoped under .receptionist-layout: coach.css/member.css declare
+   their own same-specificity .dashboard-action-button rule, loaded
+   after this file, previously winning the cascade tie. */
+.receptionist-layout .dashboard-action-button {
     border: none;
-    background: #111827;
+    background: var(--admin-primary);
     color: white;
     padding: 11px 18px;
     border-radius: 8px;
@@ -575,8 +697,8 @@
     transition: background 0.2s ease;
 }
 
-.dashboard-action-button:hover {
-    background: #1f2937;
+.receptionist-layout .dashboard-action-button:hover {
+    background: var(--admin-primary-dark);
 }
 
 .btn-link {
@@ -597,9 +719,12 @@
     color: #dc2626;
 }
 
-.btn-primary {
+/* Scoped under .receptionist-layout: coach.css/member.css declare
+   their own same-specificity .btn-primary rule, loaded after this
+   file, previously winning the cascade tie. */
+.receptionist-layout .btn-primary {
     border: none;
-    background: #111827;
+    background: var(--admin-primary);
     color: white;
     padding: 11px 20px;
     border-radius: 8px;
@@ -612,8 +737,8 @@
     gap: 8px;
 }
 
-.btn-primary:hover {
-    background: #1f2937;
+.receptionist-layout .btn-primary:hover {
+    background: var(--admin-primary-dark);
 }
 
 .btn-primary:disabled {
@@ -791,52 +916,11 @@
     outline: none;
 }
 
-.form-field input:focus,
-.form-field select:focus {
-    border-color: #111827;
-}
-
-
-/* =========================================
-   NOTIFICATIONS
-========================================= */
-
-.notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.notification-item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    background: white;
-    border: 1px solid #e8ebef;
-    border-radius: 12px;
-    padding: 16px 18px;
-}
-
-.notification-item.unread {
-    border-left: 3px solid #111827;
-}
-
-.notification-body strong {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 14px;
-}
-
-.notification-body p {
-    margin: 0 0 6px;
-    color: #5b6270;
-    font-size: 13px;
-}
-
-.notification-date {
-    color: #9aa1ad;
-    font-size: 11px;
+/* Scoped under .receptionist-layout: coach.css/member.css declare
+   their own same-specificity focus rule, loaded after this file. */
+.receptionist-layout .form-field input:focus,
+.receptionist-layout .form-field select:focus {
+    border-color: var(--admin-primary);
 }
 
 
@@ -864,15 +948,6 @@
 
     .profile-info {
         display: none;
-    }
-
-    .receptionist-sidebar {
-        transform: translateX(0);
-    }
-
-    .receptionist-sidebar.closed {
-        transform: translateX(-100%);
-        width: 250px;
     }
 
     .receptionist-content {

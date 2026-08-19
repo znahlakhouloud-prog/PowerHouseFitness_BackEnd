@@ -31,7 +31,6 @@ import MemberDetailsPage from "../receptionist/pages/MemberDetailsPage";
 import ReceptionistMembershipsPage from "../receptionist/pages/MembershipsPage";
 import AttendancePage from "../receptionist/pages/AttendancePage";
 import ReceptionistEquipmentPage from "../receptionist/pages/EquipmentPage";
-import NotificationsPage from "../receptionist/pages/NotificationsPage";
 import ProfilePage from "../receptionist/pages/ProfilePage";
 
 import MemberLayout from "../member/components/MemberLayout";
@@ -275,13 +274,6 @@ function AppRoutes() {
                             path="equipment"
                             element={
                                 <ReceptionistEquipmentPage />
-                            }
-                        />
-
-                        <Route
-                            path="notifications"
-                            element={
-                                <NotificationsPage />
                             }
                         />
 
