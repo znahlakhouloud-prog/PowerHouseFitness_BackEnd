@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 import {
     Menu,
+    X,
+    Dumbbell,
     User,
     LogOut,
     ChevronDown
 } from "lucide-react";
 
 import { AuthContext } from "../../auth/context/authContext";
+import NotificationBell from "../../shared/components/notifications/NotificationBell";
 
-const TopNavbar = ({ setIsOpen }) => {
+const TopNavbar = ({ isSidebarOpen, onToggleSidebar }) => {
 
     const {
         user,
@@ -37,19 +40,35 @@ const TopNavbar = ({ setIsOpen }) => {
 
                 <button
                     className="menu-button"
-                    onClick={() => setIsOpen(true)}
+                    onClick={onToggleSidebar}
+                    aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+                    aria-expanded={isSidebarOpen}
                 >
-                    <Menu size={24} />
+                    {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
 
-                <strong>
-                    PowerHouse Fitness
-                </strong>
+                <button
+                    type="button"
+                    className="navbar-logo"
+                    onClick={() => navigate("/coach")}
+                >
+
+                    <span className="navbar-logo-icon">
+                        <Dumbbell size={18} />
+                    </span>
+
+                    <span className="navbar-logo-text">
+                        PowerHouse<span className="navbar-logo-suffix"> Fitness</span>
+                    </span>
+
+                </button>
 
             </div>
 
 
             <div className="navbar-right">
+
+                <NotificationBell />
 
                 <div className="profile-container">
 

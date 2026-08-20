@@ -10,11 +10,16 @@ function CoachLayout() {
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    const toggleSidebar = () => {
+        setSidebarOpen((prev) => !prev);
+    };
+
     return (
         <div className="coach-layout">
 
             <TopNavbar
-                setIsOpen={setSidebarOpen}
+                isSidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
             />
 
             <div className="coach-body">
