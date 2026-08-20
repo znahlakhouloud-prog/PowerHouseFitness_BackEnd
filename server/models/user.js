@@ -11,7 +11,7 @@ export const getAllUsers = async () => {
         SELECT
             id,
             user_name,
-            age,
+            birth_date,
             email,
             role
         FROM user
@@ -33,7 +33,7 @@ export const getUserById = async (id) => {
         SELECT
             id,
             user_name,
-            age,
+            birth_date,
             email,
             password,
             role,
@@ -61,7 +61,7 @@ export const getUserByEmail = async (email) => {
         SELECT
             id,
             user_name,
-            age,
+            birth_date,
             email,
             password,
             role,
@@ -91,7 +91,7 @@ export const createUser = async (data) => {
         INSERT INTO user
         (
             user_name,
-            age,
+            birth_date,
             email,
             password,
             role,
@@ -104,7 +104,7 @@ export const createUser = async (data) => {
         sql,
         [
             data.user_name,
-            data.age,
+            data.birth_date,
             data.email,
             data.password,
             data.role
@@ -125,7 +125,7 @@ export const updateUser = async (id, data) => {
         UPDATE user
         SET
             user_name = ?,
-            age = ?,
+            birth_date = ?,
             email = ?,
             role = ?
         WHERE id = ?
@@ -135,7 +135,7 @@ export const updateUser = async (id, data) => {
         sql,
         [
             data.user_name,
-            data.age,
+            data.birth_date,
             data.email,
             data.role,
             id

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { AuthContext } from "../../auth/context/authContext";
 
+import { calculateAge, formatDateOnly } from "../../shared/utils/dateUtils";
+
 import "../style/receptionist.css";
 import "../style/memberDetails.css";
 
@@ -44,8 +46,13 @@ function ProfilePage() {
                     </div>
 
                     <div className="member-info-item">
+                        <span>Birth Date</span>
+                        <strong>{formatDateOnly(user?.birth_date)}</strong>
+                    </div>
+
+                    <div className="member-info-item">
                         <span>Age</span>
-                        <strong>{user?.age}</strong>
+                        <strong>{calculateAge(user?.birth_date)}</strong>
                     </div>
 
                     <div className="member-info-item">

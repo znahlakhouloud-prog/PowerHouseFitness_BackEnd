@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { calculateAge, formatDateOnly } from "../../shared/utils/dateUtils";
+
 const ROLE_OPTIONS = [
     "member",
     "coach",
@@ -9,10 +11,11 @@ const ROLE_OPTIONS = [
 
 function EditUserModal({ user, onClose, onSave }) {
 
+    // email and birth_date are authentication/identity data and are
+    // intentionally excluded here - they're never sent to the backend
+    // on save (which ignores them regardless), only shown read-only.
     const [formData, setFormData] = useState({
         user_name: user.user_name,
-        age: user.age,
-        email: user.email,
         role: user.role
     });
 
@@ -112,28 +115,26 @@ function EditUserModal({ user, onClose, onSave }) {
 
                     <div className="form-field">
 
-                        <label>Age</label>
+                        <label>Email (read-only)</label>
 
                         <input
-                            type="number"
-                            name="age"
-                            value={formData.age}
-                            onChange={handleChange}
-                            required
+                            type="email"
+                            value={user.email}
+                            disabled
+                            readOnly
                         />
 
                     </div>
 
                     <div className="form-field">
 
-                        <label>Email</label>
+                        <label>Birth Date (read-only)</label>
 
                         <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
+                            type="text"
+                            value={`${formatDateOnly(user.birth_date)} (age ${calculateAge(user.birth_date)})`}
+                            disabled
+                            readOnly
                         />
 
                     </div>

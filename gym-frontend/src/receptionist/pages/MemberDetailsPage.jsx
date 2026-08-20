@@ -21,6 +21,8 @@ import {
     getMembershipStatus
 } from "../utils/membershipStatus";
 
+import { calculateAge, formatDateOnly } from "../../shared/utils/dateUtils";
+
 import "../style/receptionist.css";
 import "../style/memberDetails.css";
 
@@ -197,8 +199,13 @@ function MemberDetailsPage() {
                     </div>
 
                     <div className="member-info-item">
+                        <span>Birth Date</span>
+                        <strong>{formatDateOnly(member.birth_date)}</strong>
+                    </div>
+
+                    <div className="member-info-item">
                         <span>Age</span>
-                        <strong>{member.age}</strong>
+                        <strong>{calculateAge(member.birth_date)}</strong>
                     </div>
 
                     <div className="member-info-item">

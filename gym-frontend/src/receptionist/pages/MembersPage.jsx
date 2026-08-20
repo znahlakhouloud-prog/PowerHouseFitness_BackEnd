@@ -17,6 +17,8 @@ import {
     getMembershipStatus
 } from "../utils/membershipStatus";
 
+import { calculateAge } from "../../shared/utils/dateUtils";
+
 import "../style/receptionist.css";
 import "../style/members.css";
 
@@ -251,7 +253,7 @@ function MembersPage() {
 
                                     <td>{member.email}</td>
 
-                                    <td>{member.age}</td>
+                                    <td>{calculateAge(member.birth_date)}</td>
 
                                     <td>
                                         {member.status ? (

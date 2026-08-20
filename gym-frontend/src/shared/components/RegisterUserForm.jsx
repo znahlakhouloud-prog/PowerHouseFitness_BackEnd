@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+const todayISO = () =>
+    new Date().toISOString().split("T")[0];
+
 const ROLE_LABELS = {
     receptionist: "Receptionist",
     employee: "Employee",
@@ -38,7 +41,7 @@ const RegisterUserForm = ({
 
     const [formData, setFormData] = useState({
         user_name: "",
-        age: "",
+        birth_date: "",
         email: ""
     });
 
@@ -135,15 +138,14 @@ const RegisterUserForm = ({
 
             <div className="form-field">
 
-                <label>Age</label>
+                <label>Birth Date</label>
 
                 <input
-                    type="number"
-                    name="age"
-                    min="1"
-                    value={formData.age}
+                    type="date"
+                    name="birth_date"
+                    max={todayISO()}
+                    value={formData.birth_date}
                     onChange={handleChange}
-                    placeholder="e.g. 28"
                     required
                 />
 

@@ -12,7 +12,7 @@ export const getMe = async (id) => {
 };
 
 
-// UPDATE MY PROFILE (name/age/email only - role can never be changed here)
+// UPDATE MY PROFILE (name only - email/birth_date/role can never be changed here)
 export const updateMe = async (data) => {
 
     const response = await api.put(

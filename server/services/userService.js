@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import {
     getAllUsers,
     getUserById,
-    getUserByEmail,
     updateUser,
     deleteUser,
     changePassword
@@ -43,14 +42,17 @@ export const fetchUserByIdService = async (id) => {
 return {
     id: user.id,
     user_name: user.user_name,
-    age: user.age,
+    birth_date: user.birth_date,
     email: user.email,
     role: user.role,
     must_change_password: user.must_change_password
 };
 };
 
-// UPDATE USER
+// UPDATE USER (admin editing another user's account - email and
+// birth_date are authentication/identity data and are never taken
+// from the request body, only ever carried over from the existing
+// record, exactly like role already was for self-service updates)
 export const updateUserService = async (id, data) => {
 
     const users = await getUserById(id);
@@ -59,27 +61,18 @@ export const updateUserService = async (id, data) => {
         throw new Error("USER_NOT_FOUND");
     }
 
-    // Check duplicate email
-    const existingUsers = await getUserByEmail(data.email);
-
-    if (
-        existingUsers.length > 0 &&
-        existingUsers[0].id !== Number(id)
-    ) {
-        throw new Error("EMAIL_ALREADY_EXISTS");
-    }
-
     await updateUser(id, {
         user_name: data.user_name,
-        age: data.age,
-        email: data.email,
+        birth_date: users[0].birth_date,
+        email: users[0].email,
         role: data.role
     });
 
 };
 
-// UPDATE OWN PROFILE (member self-service - role is never taken
-// from the request, only ever carried over from the existing record)
+// UPDATE OWN PROFILE (member self-service - role, email and
+// birth_date are never taken from the request, only ever carried
+// over from the existing record)
 export const updateOwnProfileService = async (id, data) => {
 
     const users = await getUserById(id);
@@ -88,19 +81,10 @@ export const updateOwnProfileService = async (id, data) => {
         throw new Error("USER_NOT_FOUND");
     }
 
-    const existingUsers = await getUserByEmail(data.email);
-
-    if (
-        existingUsers.length > 0 &&
-        existingUsers[0].id !== Number(id)
-    ) {
-        throw new Error("EMAIL_ALREADY_EXISTS");
-    }
-
     await updateUser(id, {
         user_name: data.user_name,
-        age: data.age,
-        email: data.email,
+        birth_date: users[0].birth_date,
+        email: users[0].email,
         role: users[0].role
     });
 

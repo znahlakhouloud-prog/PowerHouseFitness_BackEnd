@@ -5,6 +5,8 @@ import { AuthContext } from "../../auth/context/authContext";
 
 import { updateMe } from "../services/memberService";
 
+import { calculateAge, formatDateOnly } from "../../shared/utils/dateUtils";
+
 import "../style/member.css";
 
 function ProfilePage() {
@@ -15,10 +17,10 @@ function ProfilePage() {
 
     const [editing, setEditing] = useState(false);
 
+    // email and birth_date are authentication/identity data and are
+    // never editable through this form.
     const [formData, setFormData] = useState({
-        user_name: user?.user_name || "",
-        age: user?.age || "",
-        email: user?.email || ""
+        user_name: user?.user_name || ""
     });
 
     const [errors, setErrors] = useState([]);
@@ -39,9 +41,7 @@ function ProfilePage() {
     const handleEdit = () => {
 
         setFormData({
-            user_name: user?.user_name || "",
-            age: user?.age || "",
-            email: user?.email || ""
+            user_name: user?.user_name || ""
         });
 
         setErrors([]);
@@ -63,9 +63,7 @@ function ProfilePage() {
             await updateMe(formData);
 
             updateUser({
-                user_name: formData.user_name,
-                age: Number(formData.age),
-                email: formData.email
+                user_name: formData.user_name
             });
 
             setSuccessMessage("Profile updated successfully.");
@@ -162,29 +160,26 @@ function ProfilePage() {
 
                         <div className="form-field">
 
-                            <label>Age</label>
+                            <label>Email (read-only)</label>
 
                             <input
-                                type="number"
-                                name="age"
-                                min="1"
-                                value={formData.age}
-                                onChange={handleChange}
-                                required
+                                type="email"
+                                value={user?.email || ""}
+                                disabled
+                                readOnly
                             />
 
                         </div>
 
                         <div className="form-field">
 
-                            <label>Email</label>
+                            <label>Birth Date (read-only)</label>
 
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
+                                type="text"
+                                value={formatDateOnly(user?.birth_date)}
+                                disabled
+                                readOnly
                             />
 
                         </div>
@@ -227,8 +222,13 @@ function ProfilePage() {
                         </div>
 
                         <div className="profile-info-item">
+                            <span>Birth Date</span>
+                            <strong>{formatDateOnly(user?.birth_date)}</strong>
+                        </div>
+
+                        <div className="profile-info-item">
                             <span>Age</span>
-                            <strong>{user?.age}</strong>
+                            <strong>{calculateAge(user?.birth_date)}</strong>
                         </div>
 
                         <div className="profile-info-item">

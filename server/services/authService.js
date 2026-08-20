@@ -70,7 +70,7 @@ export const registerService = async (userData,creatorRole) => {
     // 5. Create user
     const newUser = {
         user_name: userData.user_name,
-        age: userData.age,
+        birth_date: userData.birth_date,
         email: userData.email,
         password: hashedPassword,
         role: userData.role
@@ -137,7 +137,7 @@ export const loginService = async (email, password) => {
         user: {
             id: user.id,
             user_name: user.user_name,
-            age: user.age,
+            birth_date: user.birth_date,
             email: user.email,
             role: user.role,
             must_change_password: user.must_change_password
