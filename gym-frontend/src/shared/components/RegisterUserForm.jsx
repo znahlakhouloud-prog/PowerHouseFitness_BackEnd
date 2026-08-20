@@ -10,12 +10,6 @@ const ROLE_LABELS = {
     member: "Member"
 };
 
-const PAYMENT_TYPE_LABELS = {
-    cash: "Cash",
-    card: "Card",
-    transfer: "Bank Transfer"
-};
-
 const getSubmitLabel = (roleOptions, loading) => {
 
     if (loading) {
@@ -54,11 +48,13 @@ const previewEndDate = (startDate, durationDays) => {
  * section only ever applies to the "member" role, regardless of who's
  * using the form.
  *
- * Only id_plan (the real plan row id) and the payment amount/type are
- * ever sent for the membership/payment - price, duration, name and
- * type are always derived server-side from the real plan, never
- * trusted from this form. The "Total/Paid/Remaining" preview below is
- * for the user's convenience only; the backend recalculates it.
+ * Only id_plan (the real plan row id) and the payment amount are ever
+ * sent for the membership/payment - price and duration are always
+ * derived server-side from the real plan, never trusted from this
+ * form. The "Total/Paid/Remaining" preview below is for the user's
+ * convenience only; the backend recalculates it. Cash is the only
+ * payment method the application accepts, so there is nothing to
+ * choose here - the backend hardcodes it regardless of what's sent.
  */
 const RegisterUserForm = ({
     roleOptions,
@@ -80,7 +76,6 @@ const RegisterUserForm = ({
     const [selectedOptionId, setSelectedOptionId] = useState("");
 
     const [startDate, setStartDate] = useState(todayISO());
-    const [paymentType, setPaymentType] = useState("cash");
     const [amountPaid, setAmountPaid] = useState("");
 
     const showRoleSelector = roleOptions.length > 1;
@@ -142,9 +137,10 @@ const RegisterUserForm = ({
 
             if (paidAmount > 0) {
 
+                // No payment method field - cash is the only method,
+                // hardcoded server-side regardless of what's sent.
                 payment = {
-                    amount: paidAmount,
-                    type: paymentType
+                    amount: paidAmount
                 };
 
             }
@@ -386,24 +382,9 @@ const RegisterUserForm = ({
 
                         <label>Payment Method</label>
 
-                        <select
-                            value={paymentType}
-                            onChange={(e) =>
-                                setPaymentType(e.target.value)
-                            }
-                        >
-
-                            {Object.entries(PAYMENT_TYPE_LABELS).map(
-                                ([value, label]) => (
-
-                                    <option key={value} value={value}>
-                                        {label}
-                                    </option>
-
-                                )
-                            )}
-
-                        </select>
+                        <div className="register-payment-method-fixed">
+                            Cash
+                        </div>
 
                     </div>
 

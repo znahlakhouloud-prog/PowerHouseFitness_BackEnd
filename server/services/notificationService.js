@@ -163,3 +163,26 @@ export const notifyAdmins = async ({ title, descrip, type }) => {
     }
 
 };
+
+// NOTIFY A MEMBER OF AN UNPAID BALANCE CARRIED OVER FROM A PREVIOUS
+// membership/season. Uses its own "payment_reminder" type (distinct
+// from the regular "payment" type used for payment-received alerts)
+// so it renders with its own icon and can be told apart at a glance.
+// Callers are responsible for only calling this once per real event
+// (a membership expiring with a balance still owed, or a new
+// membership being created while one is owed) - this function itself
+// does not de-duplicate, the same way notifyAdmins doesn't either.
+export const notifyMemberOfUnpaidBalance = async (id_user, amount) => {
+
+    await createNotification({
+        id_user,
+        title: "Payment Reminder",
+        descrip:
+            `You still have an unpaid balance of ${Number(amount).toLocaleString()} DA ` +
+            "from your previous membership. Please settle your remaining balance " +
+            "before starting your next season.",
+        is_read: false,
+        type: "payment_reminder"
+    });
+
+};

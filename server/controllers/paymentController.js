@@ -3,6 +3,7 @@ import {
     fetchPaymentsService,
     fetchPaymentByIdService,
     fetchPaymentsByMembershipService,
+    fetchInvoiceDataService,
     createPaymentService,
     createMemberPaymentService,
     updatePaymentService,
@@ -72,6 +73,28 @@ export const fetchPaymentsByMembership = async (req, res) => {
 
 };
 
+// GET INVOICE DATA FOR ONE PAYMENT
+export const fetchInvoice = async (req, res) => {
+
+    try {
+
+        const invoice = await fetchInvoiceDataService(
+            req.params.id,
+            req.user
+        );
+
+        res.json(invoice);
+
+    } catch (error) {
+
+        res.status(error.status || 500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
 // CREATE PAYMENT (member self-service)
 export const addMyPayment = async (req, res) => {
 
@@ -79,8 +102,7 @@ export const addMyPayment = async (req, res) => {
 
         const result = await createMemberPaymentService(
             req.user.id,
-            req.body,
-            req.file
+            req.body
         );
 
         res.status(201).json({

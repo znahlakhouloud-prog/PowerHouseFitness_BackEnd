@@ -4,6 +4,7 @@ import {
     fetchPayments,
     fetchPaymentById,
     fetchPaymentsByMembership,
+    fetchInvoice,
     addPayment,
     addMyPayment,
     editPayment,
@@ -12,7 +13,6 @@ import {
 
 import { validatePayment } from "../middleware/validatePayment.js";
 import { validateMemberPayment } from "../middleware/validateMemberPayment.js";
-import { handleReceiptUpload } from "../middleware/upload.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/roleMiddleware.js";
 
@@ -26,14 +26,6 @@ router.get(
     fetchPayments
 );
 
-// GET PAYMENT BY ID
-router.get(
-    "/:id",
-    authenticateToken,
-    authorizeRoles("admin", "receptionist"),
-    fetchPaymentById
-);
-
 // GET PAYMENTS OF A MEMBERSHIP (member allowed - ownership is
 // enforced in the service since this is keyed by membership, not user)
 router.get(
@@ -43,13 +35,30 @@ router.get(
     fetchPaymentsByMembership
 );
 
-// CREATE PAYMENT (member self-service - card mock-approved instantly,
-// bank transfer pending with an optional receipt file)
+// GET INVOICE DATA FOR ONE PAYMENT (member allowed - ownership is
+// enforced in the service; must be registered before /:id so
+// "invoice" isn't swallowed as an id param)
+router.get(
+    "/invoice/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist", "member"),
+    fetchInvoice
+);
+
+// GET PAYMENT BY ID
+router.get(
+    "/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist"),
+    fetchPaymentById
+);
+
+// CREATE PAYMENT (member self-service - cash only, always approved
+// instantly)
 router.post(
     "/me",
     authenticateToken,
     authorizeRoles("member"),
-    handleReceiptUpload,
     validateMemberPayment,
     addMyPayment
 );

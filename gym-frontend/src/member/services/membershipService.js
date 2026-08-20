@@ -12,6 +12,18 @@ export const getMyMembership = async (id_user) => {
 };
 
 
+// GET MY BALANCE SUMMARY (current membership's paid/remaining, plus
+// any unpaid balance carried over from previous memberships)
+export const getMyBalance = async (id_user) => {
+
+    const response = await api.get(
+        `/memberships/balance/${id_user}`
+    );
+
+    return response.data;
+};
+
+
 // SUBSCRIBE TO A PLAN (self-service - fails if already active)
 export const subscribeToPlan = async (data) => {
 

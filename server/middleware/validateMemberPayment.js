@@ -1,5 +1,11 @@
 import { body, validationResult } from "express-validator";
 
+/*
+ * Cash is the only payment method a member can submit - card and bank
+ * transfer (and the receipt upload that only bank transfer needed)
+ * have been removed entirely, so this only ever validates the
+ * membership and the amount.
+ */
 export const validateMemberPayment = [
 
     body("id_membership")
@@ -10,10 +16,6 @@ export const validateMemberPayment = [
         .isFloat({ min: 0.01 })
         .withMessage("Amount must be greater than 0"),
 
-    body("type")
-        .isIn(["card", "transfer"])
-        .withMessage("Payment type must be card or transfer"),
-
     (req, res, next) => {
 
         const errors = validationResult(req);
@@ -22,16 +24,6 @@ export const validateMemberPayment = [
 
             return res.status(400).json({
                 errors: errors.array()
-            });
-
-        }
-
-        if (req.body.type === "transfer" && !req.file) {
-
-            return res.status(400).json({
-                errors: [{
-                    msg: "A receipt file is required for bank transfer payments"
-                }]
             });
 
         }

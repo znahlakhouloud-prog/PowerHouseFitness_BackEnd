@@ -3,12 +3,14 @@ import {
     CreditCard,
     CalendarX,
     Wrench,
+    BadgeAlert,
     Bell as BellIcon
 } from "lucide-react";
 
 const ICONS = {
     registration: <UserPlus size={16} />,
     payment: <CreditCard size={16} />,
+    payment_reminder: <BadgeAlert size={16} />,
     membership: <CalendarX size={16} />,
     equipment: <Wrench size={16} />
 };

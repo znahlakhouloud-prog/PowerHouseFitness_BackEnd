@@ -10,6 +10,8 @@ export const getAllPayments = async () => {
             p.p_date,
             p.amount,
             p.type,
+            p.card_brand,
+            p.transaction_reference,
             p.rest,
             p.status,
             p.receipt_file,
@@ -38,6 +40,8 @@ export const getPaymentById = async (id) => {
             p.p_date,
             p.amount,
             p.type,
+            p.card_brand,
+            p.transaction_reference,
             p.rest,
             p.status,
             p.receipt_file,
@@ -66,6 +70,8 @@ export const getPaymentsByMembership = async (id_membership) => {
             p.p_date,
             p.amount,
             p.type,
+            p.card_brand,
+            p.transaction_reference,
             p.rest,
             p.status,
             p.receipt_file,
@@ -85,6 +91,44 @@ export const getPaymentsByMembership = async (id_membership) => {
     return rows;
 };
 
+// GET ONE PAYMENT'S FULL INVOICE DATA (payment + membership + payer -
+// only safe, non-authentication fields are selected here; password,
+// reset tokens etc. are never part of this query)
+export const getInvoiceDataById = async (id) => {
+
+    const sql = `
+        SELECT
+            p.id AS payment_id,
+            p.p_date,
+            p.amount,
+            p.type,
+            p.card_brand,
+            p.transaction_reference,
+            p.rest,
+            p.status,
+            m.id AS membership_id,
+            m.id_user,
+            m.name AS membership_name,
+            m.type AS membership_type,
+            m.duration,
+            m.price AS membership_price,
+            m.start_date,
+            m.end_date,
+            u.user_name,
+            u.email
+        FROM payment p
+        JOIN membership m
+            ON p.id_membership = m.id
+        JOIN user u
+            ON m.id_user = u.id
+        WHERE p.id = ?
+    `;
+
+    const [rows] = await db.query(sql, [id]);
+
+    return rows;
+};
+
 // CREATE PAYMENT
 // `conn` defaults to the pool so every existing call site keeps
 // working unchanged; a transactional caller passes its own
@@ -98,11 +142,13 @@ export const createPayment = async (paymentData, conn = db) => {
             p_date,
             amount,
             type,
+            card_brand,
+            transaction_reference,
             rest,
             status,
             receipt_file
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -110,6 +156,8 @@ export const createPayment = async (paymentData, conn = db) => {
         paymentData.p_date,
         paymentData.amount,
         paymentData.type,
+        paymentData.card_brand ?? null,
+        paymentData.transaction_reference ?? null,
         paymentData.rest,
         paymentData.status,
         paymentData.receipt_file ?? null
@@ -147,6 +195,8 @@ export const updatePayment = async (id, paymentData) => {
             p_date = ?,
             amount = ?,
             type = ?,
+            card_brand = ?,
+            transaction_reference = ?,
             rest = ?,
             status = ?
         WHERE id = ?
@@ -157,6 +207,8 @@ export const updatePayment = async (id, paymentData) => {
         paymentData.p_date,
         paymentData.amount,
         paymentData.type,
+        paymentData.card_brand ?? null,
+        paymentData.transaction_reference ?? null,
         paymentData.rest,
         paymentData.status,
         id

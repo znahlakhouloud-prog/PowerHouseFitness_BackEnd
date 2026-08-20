@@ -6,6 +6,7 @@ import { AuthContext } from "../../auth/context/authContext";
 import { getPlans } from "../services/planService";
 import {
     getMyMembership,
+    getMyBalance,
     subscribeToPlan
 } from "../services/membershipService";
 
@@ -21,6 +22,7 @@ function MembershipPlansPage() {
 
     const [plans, setPlans] = useState([]);
     const [hasActiveMembership, setHasActiveMembership] = useState(false);
+    const [previousUnpaidBalance, setPreviousUnpaidBalance] = useState(0);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -49,6 +51,9 @@ function MembershipPlansPage() {
 
                 }
 
+                const balanceData = await getMyBalance(user.id);
+                setPreviousUnpaidBalance(balanceData.previousUnpaidBalance);
+
             } catch (err) {
 
                 console.error("LOAD PLANS ERROR:", err);
@@ -70,6 +75,8 @@ function MembershipPlansPage() {
 
     }, [user.id]);
 
+
+    const selectionBlocked = hasActiveMembership || previousUnpaidBalance > 0;
 
     const handleSelectOption = (plan, option) => {
 
@@ -147,6 +154,15 @@ function MembershipPlansPage() {
                 </div>
             )}
 
+            {!hasActiveMembership && previousUnpaidBalance > 0 && (
+                <div className="dashboard-error">
+                    You have an unpaid balance of{" "}
+                    {previousUnpaidBalance.toLocaleString()} DA from a
+                    previous membership. Please settle it with the front
+                    desk before starting a new season.
+                </div>
+            )}
+
             {plans.length === 0 ? (
 
                 <div className="member-empty">
@@ -179,7 +195,7 @@ function MembershipPlansPage() {
                                                 : "plan-option"
                                         }
                                         onClick={() =>
-                                            !hasActiveMembership &&
+                                            !selectionBlocked &&
                                             handleSelectOption(plan, option)
                                         }
                                     >
@@ -203,7 +219,7 @@ function MembershipPlansPage() {
                                 <button
                                     className="btn-primary"
                                     disabled={
-                                        hasActiveMembership ||
+                                        selectionBlocked ||
                                         subscribing ||
                                         selected.planId !== plan.id
                                     }

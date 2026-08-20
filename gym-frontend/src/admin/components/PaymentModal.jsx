@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-const TYPE_OPTIONS = [
-    "cash",
-    "card",
-    "transfer"
-];
-
 const todayISO = () =>
     new Date().toISOString().split("T")[0];
+
+const TYPE_LABELS = {
+    cash: "Cash",
+    card: "Card (legacy)",
+    transfer: "Bank Transfer (legacy)"
+};
 
 function PaymentModal({
     payment,
@@ -19,13 +19,17 @@ function PaymentModal({
 
     const isEdit = Boolean(payment);
 
+    // Cash is the only payment method the application creates going
+    // forward - there is no method field to fill in. Editing an
+    // existing payment never changes its method either (the backend
+    // preserves it regardless of what's sent), so a legacy card/
+    // transfer row is only ever shown here, never editable.
     const [formData, setFormData] = useState({
         id_membership: payment?.id_membership || "",
         amount: payment?.amount || "",
         p_date: payment?.p_date
             ? String(payment.p_date).split("T")[0]
-            : todayISO(),
-        type: payment?.type || "cash"
+            : todayISO()
     });
 
     const [errors, setErrors] = useState([]);
@@ -190,26 +194,24 @@ function PaymentModal({
 
                     <div className="form-field">
 
-                        <label>Type</label>
+                        <label>Payment Method</label>
 
-                        <select
-                            name="type"
-                            value={formData.type}
-                            onChange={handleChange}
-                        >
+                        <div className="register-payment-method-fixed">
+                            {isEdit
+                                ? (TYPE_LABELS[payment.type] || payment.type)
+                                : "Cash"
+                            }
+                        </div>
 
-                            {TYPE_OPTIONS.map((type) => (
+                        {isEdit && payment.type !== "cash" && (
 
-                                <option
-                                    key={type}
-                                    value={type}
-                                >
-                                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                                </option>
+                            <p className="form-hint">
+                                This is a historical record created before
+                                Card/Bank Transfer were removed - its payment
+                                method is preserved and can't be changed.
+                            </p>
 
-                            ))}
-
-                        </select>
+                        )}
 
                     </div>
 

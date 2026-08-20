@@ -4,7 +4,8 @@ import {
     createMembershipService,
     updateMembershipService,
     checkMembershipAccessService,
-    renewMembershipService
+    renewMembershipService,
+    getBalanceSummaryService
 } from "../services/membershipService.js";
 
 // GET ALL MEMBERSHIPS
@@ -69,7 +70,7 @@ export const addMembership = async (req, res) => {
             : req.body;
 
         const result =
-            await createMembershipService(data);
+            await createMembershipService(data, req.user.role);
 
         res.status(201).json({
             message: "Membership created successfully",
@@ -90,6 +91,17 @@ export const addMembership = async (req, res) => {
 
             return res.status(409).json({
                 message: "User already has an active membership"
+            });
+
+        }
+
+        if (error.message === "PREVIOUS_BALANCE_UNPAID") {
+
+            return res.status(409).json({
+                message:
+                    `You have an unpaid balance of ${Number(error.amount).toLocaleString()} DA ` +
+                    "from a previous membership. Please settle it before starting a new one.",
+                amount: error.amount
             });
 
         }
@@ -191,7 +203,7 @@ export const renewMembership = async (req, res) => {
     try {
 
         const result =
-            await renewMembershipService(req.body);
+            await renewMembershipService(req.body, req.user.role);
 
         res.status(201).json({
             message: "Membership renewed successfully",
@@ -216,10 +228,49 @@ export const renewMembership = async (req, res) => {
 
         }
 
+        if (error.message === "PREVIOUS_BALANCE_UNPAID") {
+
+            return res.status(409).json({
+                message:
+                    `This member has an unpaid balance of ${Number(error.amount).toLocaleString()} DA ` +
+                    "from a previous membership.",
+                amount: error.amount
+            });
+
+        }
+
         if (error.message === "PLAN_NOT_FOUND") {
 
             return res.status(404).json({
                 message: "Membership plan not found"
+            });
+
+        }
+
+        res.status(500).json({
+            message: error.message
+        });
+
+    }
+
+};
+
+// GET BALANCE SUMMARY (current membership + previous unpaid balance)
+export const fetchBalanceSummary = async (req, res) => {
+
+    try {
+
+        const summary =
+            await getBalanceSummaryService(req.params.id_user);
+
+        res.status(200).json(summary);
+
+    } catch (error) {
+
+        if (error.message === "USER_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "User not found"
             });
 
         }

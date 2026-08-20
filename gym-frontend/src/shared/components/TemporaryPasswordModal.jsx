@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { CheckCircle2, Copy, Check } from "lucide-react";
+import { CheckCircle2, Copy, Check, Printer } from "lucide-react";
+
+import InvoiceModal from "./InvoiceModal";
 
 const ROLE_LABELS = {
     admin: "Admin",
@@ -9,10 +11,11 @@ const ROLE_LABELS = {
     member: "Member"
 };
 
+// Cash is the only payment method new registrations can create, but
+// the fallback (`|| payment.type`) still covers a legacy record type
+// gracefully if one is ever passed in.
 const PAYMENT_TYPE_LABELS = {
-    cash: "Cash",
-    card: "Card",
-    transfer: "Bank Transfer"
+    cash: "Cash"
 };
 
 const formatDA = (value) =>
@@ -29,6 +32,7 @@ const TemporaryPasswordModal = ({
 }) => {
 
     const [copied, setCopied] = useState(false);
+    const [showInvoice, setShowInvoice] = useState(false);
 
     const handleCopy = () => {
 
@@ -165,6 +169,19 @@ const TemporaryPasswordModal = ({
 
                         )}
 
+                        {payment && (
+
+                            <button
+                                type="button"
+                                className="btn-secondary temp-password-print"
+                                onClick={() => setShowInvoice(true)}
+                            >
+                                <Printer size={16} />
+                                Print Invoice
+                            </button>
+
+                        )}
+
                     </div>
 
                 )}
@@ -178,6 +195,15 @@ const TemporaryPasswordModal = ({
                 </button>
 
             </div>
+
+            {showInvoice && payment && (
+
+                <InvoiceModal
+                    paymentId={payment.id}
+                    onClose={() => setShowInvoice(false)}
+                />
+
+            )}
 
         </div>
 

@@ -2,6 +2,7 @@ import {
     getAllPayments,
     getPaymentById,
     getPaymentsByMembership,
+    getInvoiceDataById,
     createPayment,
     updatePayment,
     deletePayment,
@@ -14,6 +15,19 @@ import {
 
 import { getUserById } from "../models/user.js";
 import { notifyAdmins } from "./notificationService.js";
+
+// Cash is the only payment method the application accepts for new
+// payments - card and bank transfer have been removed entirely, so
+// every payment created from here on is unconditionally "cash" with
+// no card_brand/transaction_reference/receipt, regardless of what a
+// caller might send. This is never read from the request body, so it
+// can't be spoofed into anything else.
+const NEW_PAYMENT_FIELDS = {
+    type: "cash",
+    card_brand: null,
+    transaction_reference: null,
+    receipt_file: null
+};
 
 // Non-fatal - a payment must still succeed even if the notification
 // fails for some reason
@@ -92,6 +106,73 @@ export const fetchPaymentsByMembershipService = async (
 
 };
 
+// GET INVOICE DATA FOR ONE PAYMENT (member allowed - ownership is
+// enforced the same way as fetchPaymentsByMembershipService, since a
+// member should only ever be able to print their own invoices)
+export const fetchInvoiceDataService = async (id, requester) => {
+
+    const rows = await getInvoiceDataById(id);
+
+    if (rows.length === 0) {
+
+        const error = new Error("Payment not found");
+        error.status = 404;
+        throw error;
+
+    }
+
+    const invoice = rows[0];
+
+    if (
+        requester?.role === "member" &&
+        invoice.id_user !== requester.id
+    ) {
+
+        const error = new Error("Access denied");
+        error.status = 403;
+        throw error;
+
+    }
+
+    // Invoice number is derived from the real payment id, generated
+    // here on the backend - never a frontend-side random value, and
+    // stable/unique since it's built from the payment's own primary
+    // key. Format: PF-<year of payment>-<payment id, zero-padded>.
+    const year = new Date(invoice.p_date).getFullYear();
+
+    const invoiceNumber =
+        `PF-${year}-${String(invoice.payment_id).padStart(6, "0")}`;
+
+    return {
+        invoiceNumber,
+        payment: {
+            id: invoice.payment_id,
+            p_date: invoice.p_date,
+            amount: invoice.amount,
+            type: invoice.type,
+            card_brand: invoice.card_brand,
+            transaction_reference: invoice.transaction_reference,
+            rest: invoice.rest,
+            status: invoice.status
+        },
+        membership: {
+            id: invoice.membership_id,
+            name: invoice.membership_name,
+            type: invoice.membership_type,
+            duration: invoice.duration,
+            price: invoice.membership_price,
+            start_date: invoice.start_date,
+            end_date: invoice.end_date
+        },
+        member: {
+            id: invoice.id_user,
+            user_name: invoice.user_name,
+            email: invoice.email
+        }
+    };
+
+};
+
 // CREATE PAYMENT (admin/receptionist - always treated as confirmed)
 export const createPaymentService = async (data) => {
 
@@ -139,10 +220,9 @@ export const createPaymentService = async (data) => {
         id_membership: data.id_membership,
         p_date: data.p_date,
         amount: Number(data.amount),
-        type: data.type,
+        ...NEW_PAYMENT_FIELDS,
         rest: remaining - Number(data.amount),
-        status: "approved",
-        receipt_file: null
+        status: "approved"
 
     };
 
@@ -154,9 +234,10 @@ export const createPaymentService = async (data) => {
 
 };
 
-// CREATE PAYMENT (member self-service) - card is mock-approved
-// instantly, bank transfer goes in as pending until reviewed.
-export const createMemberPaymentService = async (id_user, data, file) => {
+// CREATE PAYMENT (member self-service) - cash only, always approved
+// instantly (there is no pending state left to reach now that the
+// only pending-eligible method, bank transfer, has been removed).
+export const createMemberPaymentService = async (id_user, data) => {
 
     const memberships = await getMembershipById(data.id_membership);
 
@@ -208,10 +289,9 @@ export const createMemberPaymentService = async (id_user, data, file) => {
         id_membership: data.id_membership,
         p_date: new Date().toISOString().split("T")[0],
         amount: Number(data.amount),
-        type: data.type,
+        ...NEW_PAYMENT_FIELDS,
         rest: remaining - Number(data.amount),
-        status: data.type === "transfer" ? "pending" : "approved",
-        receipt_file: file ? file.filename : null
+        status: "approved"
 
     };
 
@@ -285,7 +365,15 @@ export const updatePaymentService = async (id, data) => {
         id_membership: data.id_membership,
         p_date: data.p_date,
         amount: Number(data.amount),
-        type: data.type,
+        // The payment method is never editable, even for staff - an
+        // edit here can only correct the amount/date/membership of an
+        // existing record. Whatever this row's real historical method
+        // was (cash, or a legacy card/transfer payment from before
+        // those were removed) is preserved exactly as-is, so editing a
+        // payment can never rewrite payment-method history.
+        type: currentPayment.type,
+        card_brand: currentPayment.card_brand,
+        transaction_reference: currentPayment.transaction_reference,
         rest: remaining - Number(data.amount),
         // An admin/receptionist edit is always treated as confirmed -
         // this also doubles as the only way today to manually approve

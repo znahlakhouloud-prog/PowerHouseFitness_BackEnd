@@ -6,7 +6,8 @@ import {
     addMembership,
     editMembership,
     checkMembershipAccess,
-    renewMembership
+    renewMembership,
+    fetchBalanceSummary
 } from "../controllers/membershipController.js";
 
 import { validateMembership } from "../middleware/validateMembership.js";
@@ -32,6 +33,16 @@ router.get(
     authenticateToken,
     authorizeOwnerOrRoles("id_user", "admin", "receptionist", "coach"),
     checkMembershipAccess
+);
+
+// GET BALANCE SUMMARY (current membership + previous unpaid balance -
+// also used by a member to see their own carried-over debt, hence the
+// ownership check, same pattern as /check/:id_user)
+router.get(
+    "/balance/:id_user",
+    authenticateToken,
+    authorizeOwnerOrRoles("id_user", "admin", "receptionist"),
+    fetchBalanceSummary
 );
 
 // GET MEMBERSHIP BY ID

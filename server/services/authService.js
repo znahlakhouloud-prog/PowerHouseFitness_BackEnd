@@ -22,8 +22,6 @@ import {
 
 import { notifyAdmins } from "./notificationService.js";
 
-const PAYMENT_TYPES = ["cash", "card", "transfer"];
-
 // REGISTER
 export const registerService = async (userData,creatorRole) => {
 
@@ -131,10 +129,6 @@ export const registerService = async (userData,creatorRole) => {
 
     if (userData.payment) {
 
-        if (!PAYMENT_TYPES.includes(userData.payment.type)) {
-            throw new Error("INVALID_PAYMENT_TYPE");
-        }
-
         paymentAmount = Number(userData.payment.amount);
 
         if (!(paymentAmount > 0)) {
@@ -179,7 +173,9 @@ export const registerService = async (userData,creatorRole) => {
                 id_membership: membershipId,
                 p_date: new Date().toISOString().split("T")[0],
                 amount: paymentAmount,
-                type: userData.payment.type,
+                type: "cash",
+                card_brand: null,
+                transaction_reference: null,
                 rest: plan.price - paymentAmount,
                 status: "approved",
                 receipt_file: null

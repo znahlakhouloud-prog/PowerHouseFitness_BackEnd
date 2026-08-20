@@ -64,14 +64,6 @@ export const register = async (req, res) => {
 
         }
 
-        if (error.message === "INVALID_PAYMENT_TYPE") {
-
-            return res.status(400).json({
-                message: "Payment type must be cash, card or transfer"
-            });
-
-        }
-
         if (error.message === "INVALID_PAYMENT_AMOUNT") {
 
             return res.status(400).json({

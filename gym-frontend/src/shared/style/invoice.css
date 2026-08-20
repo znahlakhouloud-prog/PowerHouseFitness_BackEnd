@@ -1,0 +1,211 @@
+/* =========================================
+   INVOICE MODAL (on-screen chrome)
+========================================= */
+
+.invoice-modal-content {
+    max-width: 480px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.invoice-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.invoice-modal-state {
+    padding: 50px 20px;
+    text-align: center;
+    color: #7c8594;
+    font-size: 14px;
+}
+
+.invoice-modal-error {
+    color: #b91c1c;
+}
+
+
+/* =========================================
+   INVOICE DOCUMENT
+========================================= */
+
+.invoice-printable {
+    padding: 28px 26px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111827;
+    font-size: 13px;
+    background: white;
+}
+
+.invoice-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border-bottom: 2px solid #111827;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+}
+
+.invoice-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.invoice-logo-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: #0ea5e9;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invoice-brand-name {
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+}
+
+.invoice-brand-contact {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 1px;
+}
+
+.invoice-title {
+    text-align: right;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.6px;
+    color: #0ea5e9;
+    white-space: nowrap;
+}
+
+.invoice-meta {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 18px;
+}
+
+.invoice-meta span {
+    display: block;
+    color: #9aa1ad;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 3px;
+}
+
+.invoice-meta strong {
+    font-size: 13px;
+}
+
+.invoice-section {
+    margin-bottom: 16px;
+}
+
+.invoice-section h3 {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b7280;
+    border-bottom: 1px solid #eef0f3;
+    padding-bottom: 5px;
+}
+
+.invoice-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.invoice-row span {
+    color: #6b7280;
+}
+
+.invoice-divider {
+    border-top: 1px dashed #d1d5db;
+    margin: 16px 0;
+}
+
+.invoice-amounts div {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.invoice-amounts span {
+    color: #374151;
+}
+
+.invoice-amounts strong {
+    font-weight: 700;
+}
+
+.invoice-amounts-remaining strong {
+    color: #b91c1c;
+    font-size: 15px;
+}
+
+.invoice-footer {
+    text-align: center;
+    margin-top: 22px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.invoice-footer p {
+    margin: 0;
+}
+
+.invoice-footer-brand {
+    font-weight: 700;
+    color: #111827;
+    font-size: 13px;
+    margin-top: 2px !important;
+}
+
+
+/* =========================================
+   PRINT
+========================================= */
+
+@media print {
+
+    body * {
+        visibility: hidden;
+    }
+
+    .invoice-printable,
+    .invoice-printable * {
+        visibility: visible;
+    }
+
+    .invoice-printable {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 0;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    @page {
+        size: A4;
+        margin: 16mm;
+    }
+
+}

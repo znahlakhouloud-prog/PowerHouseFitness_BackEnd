@@ -65,15 +65,13 @@ export const validateUser = [
         .isObject()
         .withMessage("Payment must be an object"),
 
+    // Cash is the only payment method - the service layer hardcodes
+    // type to "cash" regardless of what's sent, so there is nothing
+    // else about the payment method to validate here.
     body("payment.amount")
         .if(body("payment").exists())
         .isFloat({ min: 0.01 })
         .withMessage("Payment amount must be greater than 0"),
-
-    body("payment.type")
-        .if(body("payment").exists())
-        .isIn(["cash", "card", "transfer"])
-        .withMessage("Payment type must be cash, card or transfer"),
 
     (req, res, next) => {
 

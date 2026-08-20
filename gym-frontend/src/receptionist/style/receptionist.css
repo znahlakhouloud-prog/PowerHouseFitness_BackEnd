@@ -367,6 +367,16 @@
     font-size: 16px;
 }
 
+.card-header-with-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-header-with-action h2 {
+    margin: 0;
+}
+
 .card-header p {
     margin: 0;
     color: #858d9b;
@@ -677,6 +687,16 @@
     font-size: 13px;
 }
 
+.dashboard-success {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
 
 /* =========================================
    BUTTONS
@@ -713,6 +733,19 @@
 
 .btn-link:hover {
     text-decoration: underline;
+}
+
+.btn-link:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.checked-in-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #166534;
+    cursor: default;
 }
 
 .btn-danger {

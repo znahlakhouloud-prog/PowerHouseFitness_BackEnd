@@ -3,6 +3,8 @@ import {
     useState
 } from "react";
 
+import { Printer } from "lucide-react";
+
 import {
     getPayments,
     createPayment,
@@ -14,6 +16,7 @@ import { getMemberships } from "../services/membershipService";
 import { getUsers } from "../services/userService";
 
 import PaymentModal from "../components/PaymentModal";
+import InvoiceModal from "../../shared/components/InvoiceModal";
 
 import "../style/paymentsPage.css";
 
@@ -40,6 +43,7 @@ function PaymentsPage() {
     const [editingPayment, setEditingPayment] = useState(null);
 
     const [actionError, setActionError] = useState("");
+    const [invoicePaymentId, setInvoicePaymentId] = useState(null);
 
 
     useEffect(() => {
@@ -348,6 +352,20 @@ function PaymentsPage() {
 
                                     <td className="payments-actions">
 
+                                        {(p.status || "approved") === "approved" && (
+
+                                            <button
+                                                className="btn-link"
+                                                onClick={() =>
+                                                    setInvoicePaymentId(p.id)
+                                                }
+                                            >
+                                                <Printer size={14} />
+                                                Invoice
+                                            </button>
+
+                                        )}
+
                                         <button
                                             className="btn-link"
                                             onClick={() =>
@@ -389,6 +407,15 @@ function PaymentsPage() {
                     users={users}
                     onClose={closeModal}
                     onSave={handleSave}
+                />
+
+            )}
+
+            {invoicePaymentId && (
+
+                <InvoiceModal
+                    paymentId={invoicePaymentId}
+                    onClose={() => setInvoicePaymentId(null)}
                 />
 
             )}

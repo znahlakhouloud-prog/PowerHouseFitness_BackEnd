@@ -8,13 +8,16 @@ import {
     useParams
 } from "react-router-dom";
 
+import { Printer, CalendarCheck, Check } from "lucide-react";
+
 import { getMemberById } from "../services/memberService";
 import { getMemberships } from "../services/membershipService";
 import { getPaymentsByMembership } from "../services/paymentService";
-import { getAttendances } from "../services/attendanceService";
+import { getAttendances, checkInMember } from "../services/attendanceService";
 
 import MembershipCard from "../components/MembershipCard";
 import MemberStatusBadge from "../components/MemberStatusBadge";
+import InvoiceModal from "../../shared/components/InvoiceModal";
 
 import {
     getCurrentMembership,
@@ -38,6 +41,64 @@ function MemberDetailsPage() {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    const [invoicePaymentId, setInvoicePaymentId] = useState(null);
+
+    const [checkingIn, setCheckingIn] = useState(false);
+    const [checkInMessage, setCheckInMessage] = useState(null);
+
+
+    const refreshAttendance = async () => {
+
+        const allAttendance = await getAttendances();
+
+        const ownAttendance = allAttendance
+            .filter((a) => a.id_user === Number(id))
+            .sort(
+                (a, b) =>
+                    new Date(b.check_in) -
+                    new Date(a.check_in)
+            );
+
+        setAttendance(ownAttendance);
+
+    };
+
+
+    const handleCheckIn = async () => {
+
+        setCheckInMessage(null);
+        setCheckingIn(true);
+
+        try {
+
+            await checkInMember(Number(id));
+
+            await refreshAttendance();
+
+            setCheckInMessage({
+                type: "success",
+                text: `${member.user_name} checked in successfully.`
+            });
+
+        } catch (err) {
+
+            console.error("CHECK-IN ERROR:", err);
+
+            setCheckInMessage({
+                type: "error",
+                text:
+                    err.response?.data?.message ||
+                    "Failed to check in this member"
+            });
+
+        } finally {
+
+            setCheckingIn(false);
+
+        }
+
+    };
 
 
     useEffect(() => {
@@ -228,9 +289,42 @@ function MemberDetailsPage() {
                 className="dashboard-card"
             >
 
-                <div className="card-header">
+                <div className="card-header card-header-with-action">
+
                     <h2>Current Membership</h2>
+
+                    {currentMembership?.state === "active" && (
+
+                        <button
+                            type="button"
+                            className="btn-link"
+                            disabled={checkingIn}
+                            onClick={handleCheckIn}
+                        >
+                            <CalendarCheck size={14} />
+                            {checkingIn ? "Checking In..." : "Check In"}
+                        </button>
+
+                    )}
+
                 </div>
+
+                {checkInMessage && (
+
+                    <div
+                        className={
+                            checkInMessage.type === "success"
+                                ? "dashboard-success"
+                                : "dashboard-error"
+                        }
+                    >
+                        {checkInMessage.type === "success" && (
+                            <Check size={14} />
+                        )}
+                        {" "}{checkInMessage.text}
+                    </div>
+
+                )}
 
                 {currentMembership ? (
 
@@ -274,6 +368,7 @@ function MemberDetailsPage() {
                                         <th>Amount</th>
                                         <th>Rest</th>
                                         <th>Type</th>
+                                        <th></th>
                                     </tr>
 
                                 </thead>
@@ -309,6 +404,23 @@ function MemberDetailsPage() {
                                             </td>
 
                                             <td>{p.type}</td>
+
+                                            <td>
+                                                {p.status === "approved" && (
+
+                                                    <button
+                                                        type="button"
+                                                        className="btn-link"
+                                                        onClick={() =>
+                                                            setInvoicePaymentId(p.id)
+                                                        }
+                                                    >
+                                                        <Printer size={14} />
+                                                        Invoice
+                                                    </button>
+
+                                                )}
+                                            </td>
 
                                         </tr>
 
@@ -471,6 +583,15 @@ function MemberDetailsPage() {
                 )}
 
             </div>
+
+            {invoicePaymentId && (
+
+                <InvoiceModal
+                    paymentId={invoicePaymentId}
+                    onClose={() => setInvoicePaymentId(null)}
+                />
+
+            )}
 
         </div>
 

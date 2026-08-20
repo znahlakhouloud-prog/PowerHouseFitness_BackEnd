@@ -5,12 +5,13 @@ import {
     CalendarCheck,
     BadgeDollarSign,
     CreditCard,
-    Wrench
+    Wrench,
+    AlertTriangle
 } from "lucide-react";
 
 import { AuthContext } from "../../auth/context/authContext";
 
-import { getMyMembership } from "../services/membershipService";
+import { getMyMembership, getMyBalance } from "../services/membershipService";
 import { getMyAttendance } from "../services/attendanceService";
 import { getMyPayments } from "../services/paymentService";
 
@@ -30,6 +31,7 @@ function MemberDashboard() {
     const [membership, setMembership] = useState(null);
     const [attendance, setAttendance] = useState([]);
     const [payments, setPayments] = useState([]);
+    const [balance, setBalance] = useState(null);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -68,6 +70,9 @@ function MemberDashboard() {
                     setPayments(paymentsData);
 
                 }
+
+                const balanceData = await getMyBalance(user.id);
+                setBalance(balanceData);
 
             } catch (err) {
 
@@ -135,6 +140,8 @@ function MemberDashboard() {
 
     const lastPayment = payments[payments.length - 1];
 
+    const previousUnpaidBalance = balance?.previousUnpaidBalance || 0;
+
 
     return (
 
@@ -148,6 +155,18 @@ function MemberDashboard() {
                 </div>
 
             </div>
+
+            {previousUnpaidBalance > 0 && (
+
+                <div className="dashboard-error">
+                    <AlertTriangle size={16} />
+                    {" "}You have an unpaid balance of{" "}
+                    {previousUnpaidBalance.toLocaleString()} DA from a
+                    previous membership.{" "}
+                    <Link to="/member/payments">View details</Link>
+                </div>
+
+            )}
 
 
             <div className="member-kpi-grid">

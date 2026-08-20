@@ -1,5 +1,11 @@
 import { body, validationResult } from "express-validator";
 
+/*
+ * Cash is the only payment method the application accepts - the
+ * service layer always hardcodes type to "cash" regardless of what's
+ * sent, so there is nothing to validate about a payment method here.
+ * If a caller does send a "type", it's simply ignored downstream.
+ */
 export const validatePayment = [
 
     body("id_membership")
@@ -13,16 +19,6 @@ export const validatePayment = [
     body("p_date")
         .isISO8601()
         .withMessage("Valid payment date is required"),
-
-    body("type")
-        .isIn([
-            "cash",
-            "card",
-            "transfer"
-        ])
-        .withMessage(
-            "Payment type must be cash, card or transfer"
-        ),
 
     (req, res, next) => {
 

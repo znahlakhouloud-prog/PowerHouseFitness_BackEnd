@@ -5,8 +5,11 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
+import { CalendarCheck, Check } from "lucide-react";
+
 import { getMembers } from "../services/memberService";
 import { getMemberships } from "../services/membershipService";
+import { checkInMember } from "../services/attendanceService";
 
 import SearchBar from "../components/SearchBar";
 import Pagination from "../components/Pagination";
@@ -44,6 +47,10 @@ function MembersPage() {
     const [activeTab, setActiveTab] = useState("all");
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+
+    const [checkingInId, setCheckingInId] = useState(null);
+    const [checkedInIds, setCheckedInIds] = useState(new Set());
+    const [actionMessage, setActionMessage] = useState(null);
 
 
     useEffect(() => {
@@ -143,6 +150,42 @@ function MembersPage() {
     };
 
 
+    const handleCheckIn = async (member) => {
+
+        setActionMessage(null);
+        setCheckingInId(member.id);
+
+        try {
+
+            await checkInMember(member.id);
+
+            setCheckedInIds((prev) => new Set(prev).add(member.id));
+
+            setActionMessage({
+                type: "success",
+                text: `${member.user_name} checked in successfully.`
+            });
+
+        } catch (err) {
+
+            console.error("CHECK-IN ERROR:", err);
+
+            setActionMessage({
+                type: "error",
+                text:
+                    err.response?.data?.message ||
+                    `Failed to check in ${member.user_name}`
+            });
+
+        } finally {
+
+            setCheckingInId(null);
+
+        }
+
+    };
+
+
     if (loading) {
 
         return (
@@ -183,6 +226,20 @@ function MembersPage() {
                 </button>
 
             </div>
+
+            {actionMessage && (
+
+                <div
+                    className={
+                        actionMessage.type === "success"
+                            ? "dashboard-success"
+                            : "dashboard-error"
+                    }
+                >
+                    {actionMessage.text}
+                </div>
+
+            )}
 
 
             <div className="members-toolbar">
@@ -277,6 +334,36 @@ function MembersPage() {
                                     </td>
 
                                     <td className="members-actions">
+
+                                        {(member.status === "active" ||
+                                            member.status === "expiring") && (
+
+                                            checkedInIds.has(member.id) ? (
+
+                                                <span className="btn-link checked-in-label">
+                                                    <Check size={14} />
+                                                    Checked In
+                                                </span>
+
+                                            ) : (
+
+                                                <button
+                                                    className="btn-link"
+                                                    disabled={checkingInId === member.id}
+                                                    onClick={() =>
+                                                        handleCheckIn(member)
+                                                    }
+                                                >
+                                                    <CalendarCheck size={14} />
+                                                    {checkingInId === member.id
+                                                        ? "Checking In..."
+                                                        : "Check In"
+                                                    }
+                                                </button>
+
+                                            )
+
+                                        )}
 
                                         <button
                                             className="btn-link"

@@ -114,6 +114,33 @@ export const updateMembership = async (id, data) => {
     return result;
 };
 
+// GET ALL MEMBERSHIPS FOR ONE USER (every state - active and expired -
+// ordered oldest first, so a caller can distinguish the current one
+// from past seasons and never has to guess which row is "current")
+export const getMembershipsByUserId = async (id_user) => {
+
+    const sql = `
+        SELECT
+            id,
+            id_user,
+            name,
+            duration,
+            price,
+            start_date,
+            end_date,
+            state,
+            duration_promo,
+            type
+        FROM membership
+        WHERE id_user = ?
+        ORDER BY start_date ASC, id ASC
+    `;
+
+    const [rows] = await db.query(sql, [id_user]);
+
+    return rows;
+};
+
 // GET ACTIVE MEMBERSHIP
 export const getActiveMembershipByUserId = async (id_user) => {
 
@@ -149,6 +176,7 @@ export const updateExpiredMemberships = async () => {
             m.id,
             m.id_user,
             m.name,
+            m.price,
             u.user_name
         FROM membership m
         JOIN user u ON m.id_user = u.id
