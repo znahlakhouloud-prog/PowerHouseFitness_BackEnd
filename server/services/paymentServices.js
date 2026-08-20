@@ -134,14 +134,24 @@ export const fetchInvoiceDataService = async (id, requester) => {
 
     }
 
-    // Invoice number is derived from the real payment id, generated
-    // here on the backend - never a frontend-side random value, and
-    // stable/unique since it's built from the payment's own primary
-    // key. Format: PF-<year of payment>-<payment id, zero-padded>.
+    // Invoice/receipt number is derived from the real payment id,
+    // generated here on the backend - never a frontend-side random
+    // value, and stable/unique since it's built from the payment's
+    // own primary key. Format: PF-<year of payment>-<payment id,
+    // zero-padded>.
     const year = new Date(invoice.p_date).getFullYear();
 
     const invoiceNumber =
         `PF-${year}-${String(invoice.payment_id).padStart(6, "0")}`;
+
+    // "Previously paid" is derived from fields already computed and
+    // stored by the trusted backend at the time this payment was
+    // created: rest = price - previouslyPaid - thisAmount, so
+    // previouslyPaid = price - rest - thisAmount. No new column or
+    // extra query needed, and it can never be spoofed from the
+    // frontend since it's arithmetic over server-owned columns.
+    const previouslyPaid =
+        invoice.membership_price - invoice.rest - invoice.amount;
 
     return {
         invoiceNumber,
@@ -149,6 +159,7 @@ export const fetchInvoiceDataService = async (id, requester) => {
             id: invoice.payment_id,
             p_date: invoice.p_date,
             amount: invoice.amount,
+            previously_paid: previouslyPaid,
             type: invoice.type,
             card_brand: invoice.card_brand,
             transaction_reference: invoice.transaction_reference,

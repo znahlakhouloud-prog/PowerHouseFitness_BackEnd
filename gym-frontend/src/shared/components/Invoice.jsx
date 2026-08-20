@@ -45,7 +45,7 @@ function Invoice({ data }) {
                 </div>
 
                 <div className="invoice-title">
-                    FACTURE / INVOICE
+                    PAYMENT RECEIPT
                 </div>
 
             </div>
@@ -53,7 +53,7 @@ function Invoice({ data }) {
             <div className="invoice-meta">
 
                 <div>
-                    <span>Invoice N°</span>
+                    <span>Receipt N°</span>
                     <strong>{invoiceNumber}</strong>
                 </div>
 
@@ -122,17 +122,22 @@ function Invoice({ data }) {
             <div className="invoice-amounts">
 
                 <div>
-                    <span>Membership Price</span>
+                    <span>Membership Total</span>
                     <strong>{formatDA(membership.price)}</strong>
                 </div>
 
                 <div>
-                    <span>Amount Paid (this payment)</span>
+                    <span>Previously Paid</span>
+                    <strong>{formatDA(payment.previously_paid)}</strong>
+                </div>
+
+                <div>
+                    <span>This Payment</span>
                     <strong>{formatDA(payment.amount)}</strong>
                 </div>
 
                 <div className="invoice-amounts-remaining">
-                    <span>Remaining</span>
+                    <span>Remaining Balance</span>
                     <strong>{formatDA(payment.rest)}</strong>
                 </div>
 

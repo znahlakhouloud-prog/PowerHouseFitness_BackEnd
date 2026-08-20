@@ -557,6 +557,20 @@
     font-size: 13px;
 }
 
+.payment-success-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.payment-success-banner .btn-secondary {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
 
 /* =========================================
    BUTTONS

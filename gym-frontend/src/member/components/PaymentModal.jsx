@@ -36,9 +36,9 @@ function PaymentModal({ membershipId, remaining, onClose, onSuccess }) {
 
         try {
 
-            await payCash(membershipId, Number(amount));
+            const result = await payCash(membershipId, Number(amount));
 
-            onSuccess();
+            onSuccess(result.id);
 
         } catch (error) {
 

@@ -35,11 +35,22 @@ router.get(
     fetchPaymentsByMembership
 );
 
-// GET INVOICE DATA FOR ONE PAYMENT (member allowed - ownership is
-// enforced in the service; must be registered before /:id so
+// GET INVOICE/RECEIPT DATA FOR ONE PAYMENT (member allowed - ownership
+// is enforced in the service; must be registered before /:id so
 // "invoice" isn't swallowed as an id param)
 router.get(
     "/invoice/:id",
+    authenticateToken,
+    authorizeRoles("admin", "receptionist", "member"),
+    fetchInvoice
+);
+
+// Same data, alternate path (/:id/receipt) - kept as an alias to the
+// exact same controller/service rather than a second implementation,
+// so a payment receipt can be fetched either way with identical
+// authorization and content.
+router.get(
+    "/:id/receipt",
     authenticateToken,
     authorizeRoles("admin", "receptionist", "member"),
     fetchInvoice

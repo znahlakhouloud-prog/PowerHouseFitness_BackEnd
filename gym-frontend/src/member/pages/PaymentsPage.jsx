@@ -31,6 +31,7 @@ function PaymentsPage() {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [invoicePaymentId, setInvoicePaymentId] = useState(null);
+    const [lastPaymentId, setLastPaymentId] = useState(null);
 
 
     const loadPayments = async (membershipId) => {
@@ -97,11 +98,12 @@ function PaymentsPage() {
     }, [user.id]);
 
 
-    const handlePaymentSuccess = async () => {
+    const handlePaymentSuccess = async (paymentId) => {
 
         setModalOpen(false);
 
         setSuccessMessage("Payment recorded successfully.");
+        setLastPaymentId(paymentId);
 
         if (membership) {
             await loadPayments(membership.id);
@@ -203,7 +205,26 @@ function PaymentsPage() {
             </div>
 
             {successMessage && (
-                <div className="dashboard-success">{successMessage}</div>
+
+                <div className="dashboard-success payment-success-banner">
+
+                    <span>{successMessage}</span>
+
+                    {lastPaymentId && (
+
+                        <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => setInvoicePaymentId(lastPaymentId)}
+                        >
+                            <Printer size={14} />
+                            Print Payment Receipt
+                        </button>
+
+                    )}
+
+                </div>
+
             )}
 
             <div className="summary-grid">
@@ -373,7 +394,7 @@ function PaymentsPage() {
                                                 }
                                             >
                                                 <Printer size={14} />
-                                                Invoice
+                                                Print Receipt
                                             </button>
 
                                         )}

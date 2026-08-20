@@ -38,7 +38,7 @@ function InvoiceModal({ paymentId, onClose }) {
 
                     setError(
                         err.response?.data?.message ||
-                        "Failed to load invoice"
+                        "Failed to load receipt"
                     );
 
                 }
@@ -96,7 +96,7 @@ function InvoiceModal({ paymentId, onClose }) {
                             onClick={handlePrint}
                         >
                             <Printer size={16} />
-                            Print Invoice
+                            Print Payment Receipt
                         </button>
 
                     )}
@@ -105,7 +105,7 @@ function InvoiceModal({ paymentId, onClose }) {
 
                 {loading && (
                     <div className="invoice-modal-state no-print">
-                        Loading invoice...
+                        Loading receipt...
                     </div>
                 )}
 
