@@ -48,7 +48,10 @@ export const getMembershipById = async (id) => {
 };
 
 // CREATE MEMBERSHIP
-export const createMembership = async (data) => {
+// `conn` defaults to the pool so every existing call site keeps
+// working unchanged; a transactional caller passes its own
+// connection so this insert becomes part of that transaction.
+export const createMembership = async (data, conn = db) => {
 
     const sql = `
         INSERT INTO membership
@@ -66,7 +69,7 @@ export const createMembership = async (data) => {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    const [result] = await db.query(sql, [
+    const [result] = await conn.query(sql, [
         data.id_user,
         data.name,
         data.duration,

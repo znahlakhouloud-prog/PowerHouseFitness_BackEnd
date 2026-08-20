@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, Copy, Check, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Copy, Check } from "lucide-react";
 
 const ROLE_LABELS = {
     admin: "Admin",
@@ -9,12 +9,22 @@ const ROLE_LABELS = {
     member: "Member"
 };
 
+const PAYMENT_TYPE_LABELS = {
+    cash: "Cash",
+    card: "Card",
+    transfer: "Bank Transfer"
+};
+
+const formatDA = (value) =>
+    `${Number(value).toLocaleString()} DA`;
+
 const TemporaryPasswordModal = ({
     userName,
     email,
     role,
     temporaryPassword,
-    membershipWarning,
+    membership,
+    payment,
     onDone
 }) => {
 
@@ -29,6 +39,15 @@ const TemporaryPasswordModal = ({
         setTimeout(() => setCopied(false), 2000);
 
     };
+
+    // Registration, the membership and the initial payment are all
+    // created together in one transaction on the backend - if we got
+    // here, everything succeeded together, so paid/remaining always
+    // reflect real, committed database rows.
+    const paidAmount = payment ? payment.amount : 0;
+    const remainingAmount = membership
+        ? Number(membership.price) - paidAmount
+        : 0;
 
     return (
 
@@ -96,15 +115,56 @@ const TemporaryPasswordModal = ({
 
                 </div>
 
-                {membershipWarning && (
+                {membership && (
 
-                    <div className="temp-password-membership-warning">
-                        <AlertTriangle size={16} />
-                        <span>
-                            Account created, but the membership
-                            couldn't be assigned: {membershipWarning}{" "}
-                            You can add it from the user's page later.
-                        </span>
+                    <div className="temp-password-membership">
+
+                        <h3>Membership</h3>
+
+                        <div className="temp-password-row">
+                            <span>Plan</span>
+                            <strong>{membership.name} — {membership.type}</strong>
+                        </div>
+
+                        <div className="temp-password-row">
+                            <span>Start / End</span>
+                            <strong>
+                                {new Date(membership.start_date).toLocaleDateString()}
+                                {" – "}
+                                {new Date(membership.end_date).toLocaleDateString()}
+                            </strong>
+                        </div>
+
+                        <div className="register-payment-summary">
+
+                            <div>
+                                <span>Total</span>
+                                <strong>{formatDA(membership.price)}</strong>
+                            </div>
+
+                            <div>
+                                <span>Paid</span>
+                                <strong>{formatDA(paidAmount)}</strong>
+                            </div>
+
+                            <div className="register-payment-summary-remaining">
+                                <span>Remaining</span>
+                                <strong>{formatDA(remainingAmount)}</strong>
+                            </div>
+
+                        </div>
+
+                        {payment && (
+
+                            <div className="temp-password-row">
+                                <span>Payment Method</span>
+                                <strong>
+                                    {PAYMENT_TYPE_LABELS[payment.type] || payment.type}
+                                </strong>
+                            </div>
+
+                        )}
+
                     </div>
 
                 )}

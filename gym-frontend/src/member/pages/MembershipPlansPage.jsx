@@ -87,10 +87,7 @@ function MembershipPlansPage() {
 
             await subscribeToPlan({
                 id_user: user.id,
-                name: plan.name,
-                type: plan.type,
-                price: option.price,
-                duration: plan.duration_days,
+                id_plan: option.id,
                 start_date: todayISO(),
                 duration_promo: 0
             });

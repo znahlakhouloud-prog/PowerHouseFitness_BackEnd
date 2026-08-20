@@ -36,99 +36,112 @@ const Sidebar = ({
     };
 
     return (
-        <aside
-            className={`member-sidebar ${
-                isOpen ? "open" : ""
-            }`}
-        >
+        <>
 
-            <div className="sidebar-header">
+            {isOpen && (
+                <div
+                    className="sidebar-backdrop"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
 
-                <div className="sidebar-logo">
-                    <Dumbbell size={28} />
+            <aside
+                className={`member-sidebar ${
+                    isOpen ? "open" : ""
+                }`}
+            >
 
-                    <span>
-                        PowerHouse
-                    </span>
+                <div className="sidebar-header">
+
+                    <div className="sidebar-logo">
+                        <span className="sidebar-logo-icon">
+                            <Dumbbell size={20} />
+                        </span>
+
+                        <span>
+                            PowerHouse
+                        </span>
+                    </div>
+
+                    <button
+                        className="sidebar-close"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <X size={22} />
+                    </button>
+
                 </div>
 
-                <button
-                    className="sidebar-close"
-                    onClick={() => setIsOpen(false)}
-                >
-                    <X size={22} />
-                </button>
 
-            </div>
+                <nav className="sidebar-nav">
 
+                    <NavLink
+                        to="/member"
+                        end
+                        className={navLinkClass}
+                    >
+                        <LayoutDashboard size={20} />
+                        <span>Dashboard</span>
+                    </NavLink>
 
-            <nav className="sidebar-nav">
+                    <NavLink
+                        to="/member/attendance"
+                        className={navLinkClass}
+                    >
+                        <CalendarCheck size={20} />
+                        <span>My Attendance</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/member"
-                    end
-                    className={navLinkClass}
-                >
-                    <LayoutDashboard size={20} />
-                    <span>Dashboard</span>
-                </NavLink>
+                    <NavLink
+                        to="/member/plans"
+                        className={navLinkClass}
+                    >
+                        <BadgeDollarSign size={20} />
+                        <span>Membership Plans</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/member/attendance"
-                    className={navLinkClass}
-                >
-                    <CalendarCheck size={20} />
-                    <span>My Attendance</span>
-                </NavLink>
+                    <NavLink
+                        to="/member/payments"
+                        className={navLinkClass}
+                    >
+                        <CreditCard size={20} />
+                        <span>Payments</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/member/plans"
-                    className={navLinkClass}
-                >
-                    <BadgeDollarSign size={20} />
-                    <span>Membership Plans</span>
-                </NavLink>
+                    <NavLink
+                        to="/member/equipment"
+                        className={navLinkClass}
+                    >
+                        <Wrench size={20} />
+                        <span>Equipment</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/member/payments"
-                    className={navLinkClass}
-                >
-                    <CreditCard size={20} />
-                    <span>Payments</span>
-                </NavLink>
+                    <NavLink
+                        to="/member/profile"
+                        className={navLinkClass}
+                    >
+                        <User size={20} />
+                        <span>Profile</span>
+                    </NavLink>
 
-                <NavLink
-                    to="/member/equipment"
-                    className={navLinkClass}
-                >
-                    <Wrench size={20} />
-                    <span>Equipment</span>
-                </NavLink>
-
-                <NavLink
-                    to="/member/profile"
-                    className={navLinkClass}
-                >
-                    <User size={20} />
-                    <span>Profile</span>
-                </NavLink>
-
-            </nav>
+                </nav>
 
 
-            <div className="sidebar-bottom">
+                <div className="sidebar-bottom">
 
-                <button
-                    className="sidebar-link sidebar-logout"
-                    onClick={handleLogout}
-                >
-                    <LogOut size={20} />
-                    <span>Logout</span>
-                </button>
+                    <button
+                        className="sidebar-link sidebar-logout"
+                        onClick={handleLogout}
+                    >
+                        <LogOut size={20} />
+                        <span>Logout</span>
+                    </button>
 
-            </div>
+                </div>
 
-        </aside>
+            </aside>
+
+        </>
     );
 };
 

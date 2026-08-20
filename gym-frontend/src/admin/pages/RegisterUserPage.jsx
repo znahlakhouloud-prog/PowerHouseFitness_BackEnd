@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 import { registerUser } from "../../auth/services/authService";
 import { getPlans } from "../services/planService";
-import { createMembership } from "../services/membershipService";
 
 import RegisterUserForm from "../../shared/components/RegisterUserForm";
 import TemporaryPasswordModal from "../../shared/components/TemporaryPasswordModal";
@@ -20,9 +19,6 @@ const ADMIN_ROLE_OPTIONS = [
     "coach",
     "member"
 ];
-
-const todayISO = () =>
-    new Date().toISOString().split("T")[0];
 
 function RegisterUserPage() {
 
@@ -62,52 +58,27 @@ function RegisterUserPage() {
     }, []);
 
 
-    const handleSubmit = async (formData, membershipSelection) => {
+    // Registration, the membership and the initial payment are all
+    // created together in one atomic request - the backend runs them
+    // in a single database transaction (see registerService), so
+    // there's no separate "assign membership" call to fail after the
+    // account already exists.
+    const handleSubmit = async (payload) => {
 
         setError("");
         setLoading(true);
 
         try {
 
-            const data = await registerUser(formData);
-
-            let membershipWarning = "";
-
-            if (membershipSelection) {
-
-                try {
-
-                    await createMembership({
-                        id_user: data.id,
-                        name: membershipSelection.name,
-                        type: membershipSelection.type,
-                        price: membershipSelection.price,
-                        duration: membershipSelection.duration_days,
-                        start_date: todayISO(),
-                        duration_promo: 0
-                    });
-
-                } catch (membershipErr) {
-
-                    console.error(
-                        "ASSIGN MEMBERSHIP ERROR:",
-                        membershipErr
-                    );
-
-                    membershipWarning =
-                        membershipErr.response?.data?.message ||
-                        "Could not assign the membership.";
-
-                }
-
-            }
+            const data = await registerUser(payload);
 
             setRegisteredUser({
-                userName: formData.user_name,
-                email: formData.email,
-                role: formData.role,
+                userName: payload.user_name,
+                email: payload.email,
+                role: payload.role,
                 temporaryPassword: data.temporaryPassword,
-                membershipWarning
+                membership: data.membership,
+                payment: data.payment
             });
 
         } catch (err) {
@@ -179,7 +150,8 @@ function RegisterUserPage() {
                     email={registeredUser.email}
                     role={registeredUser.role}
                     temporaryPassword={registeredUser.temporaryPassword}
-                    membershipWarning={registeredUser.membershipWarning}
+                    membership={registeredUser.membership}
+                    payment={registeredUser.payment}
                     onDone={handleDone}
                 />
 

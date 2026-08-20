@@ -94,6 +94,14 @@ export const addMembership = async (req, res) => {
 
         }
 
+        if (error.message === "PLAN_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "Membership plan not found"
+            });
+
+        }
+
         res.status(500).json({
             message: error.message
         });
@@ -122,6 +130,14 @@ export const editMembership = async (req, res) => {
 
             return res.status(404).json({
                 message: "Membership not found"
+            });
+
+        }
+
+        if (error.message === "PLAN_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "Membership plan not found"
             });
 
         }
@@ -196,6 +212,14 @@ export const renewMembership = async (req, res) => {
 
             return res.status(409).json({
                 message: "User already has an active membership"
+            });
+
+        }
+
+        if (error.message === "PLAN_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "Membership plan not found"
             });
 
         }

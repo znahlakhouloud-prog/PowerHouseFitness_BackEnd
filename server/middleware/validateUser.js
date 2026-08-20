@@ -34,6 +34,47 @@ export const validateUser = [
         ])
         .withMessage("Invalid role"),
 
+    /*
+     * membership/payment are optional - only present when registering
+     * a member with a plan attached. Only their shape is checked here;
+     * the actual plan/price lookup and financial validation happens in
+     * registerService, which never trusts a client-supplied price.
+     */
+    body("membership")
+        .optional()
+        .isObject()
+        .withMessage("Membership must be an object"),
+
+    body("membership.id_plan")
+        .if(body("membership").exists())
+        .isInt({ min: 1 })
+        .withMessage("A valid membership plan is required"),
+
+    body("membership.start_date")
+        .if(body("membership").exists())
+        .isISO8601()
+        .withMessage("A valid membership start date is required"),
+
+    body("membership.duration_promo")
+        .optional()
+        .isInt({ min: 0 })
+        .withMessage("Promotion duration must be 0 or greater"),
+
+    body("payment")
+        .optional()
+        .isObject()
+        .withMessage("Payment must be an object"),
+
+    body("payment.amount")
+        .if(body("payment").exists())
+        .isFloat({ min: 0.01 })
+        .withMessage("Payment amount must be greater than 0"),
+
+    body("payment.type")
+        .if(body("payment").exists())
+        .isIn(["cash", "card", "transfer"])
+        .withMessage("Payment type must be cash, card or transfer"),
+
     (req, res, next) => {
 
         const errors = validationResult(req);

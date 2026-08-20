@@ -10,11 +10,16 @@ function MemberLayout() {
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    const toggleSidebar = () => {
+        setSidebarOpen((prev) => !prev);
+    };
+
     return (
         <div className="member-layout">
 
             <TopNavbar
-                setIsOpen={setSidebarOpen}
+                isSidebarOpen={sidebarOpen}
+                onToggleSidebar={toggleSidebar}
             />
 
             <div className="member-body">

@@ -7,8 +7,41 @@ import {
     updateExpiredMemberships as updateExpiredMembershipsModel
 } from "../models/membership.js";
 
+import { getPlanRowById } from "../models/plan.js";
 import { userExists } from "../models/user.js";
 import { notifyAdmins } from "./notificationService.js";
+
+/*
+ * Turns a verified plan row + staff-supplied start date/promo days
+ * into the membership fields to persist. Centralized here so every
+ * membership-creation path (registration, self-subscribe, direct
+ * create) derives price/duration/name/type from the database plan,
+ * never from the caller.
+ */
+export const buildMembershipDataFromPlan = (plan, data) => {
+
+    const startDate = new Date(data.start_date);
+    const endDate = new Date(startDate);
+
+    const durationPromo = Number(data.duration_promo ?? 0);
+
+    endDate.setDate(
+        startDate.getDate() + plan.duration_days + durationPromo
+    );
+
+    return {
+        id_user: data.id_user,
+        name: plan.name,
+        duration: plan.duration_days,
+        price: plan.price,
+        start_date: data.start_date,
+        end_date: endDate.toISOString().split("T")[0],
+        state: "active",
+        duration_promo: durationPromo,
+        type: plan.type
+    };
+
+};
 
 
 // Runs the expiry check and notifies admins about any membership
@@ -66,7 +99,8 @@ export const fetchMembershipByIdService = async (id) => {
 
 };
 
-// CREATE MEMBERSHIP
+// CREATE MEMBERSHIP (price/duration/name/type are never trusted from
+// the caller - they're always derived from the real plan row)
 export const createMembershipService = async (data) => {
 
     await checkExpiredMemberships();
@@ -84,31 +118,23 @@ export const createMembershipService = async (data) => {
         throw new Error("ACTIVE_MEMBERSHIP_EXISTS");
     }
 
-    const startDate = new Date(data.start_date);
+    const planRows = await getPlanRowById(data.id_plan);
 
-    const endDate = new Date(startDate);
+    if (planRows.length === 0) {
+        throw new Error("PLAN_NOT_FOUND");
+    }
 
-    endDate.setDate(
-        startDate.getDate() + Number(data.duration)
+    const membershipData = buildMembershipDataFromPlan(
+        planRows[0],
+        data
     );
-
-    const membershipData = {
-    id_user: data.id_user,
-    name: data.name,
-    duration: data.duration,
-    price: data.price,
-    start_date: data.start_date,
-    end_date: endDate.toISOString().split("T")[0],
-    state: "active",
-    duration_promo: data.duration_promo ?? 0,
-    type: data.type
-};
 
     return await createMembership(membershipData);
 
 };
 
-// UPDATE MEMBERSHIP
+// UPDATE MEMBERSHIP (same rule - price/duration/name/type come from
+// the real plan row, never from the caller)
 export const updateMembershipService = async (id, data) => {
 
     const memberships = await getMembershipById(id);
@@ -117,23 +143,16 @@ export const updateMembershipService = async (id, data) => {
         throw new Error("MEMBERSHIP_NOT_FOUND");
     }
 
-    const startDate = new Date(data.start_date);
+    const planRows = await getPlanRowById(data.id_plan);
 
-    const endDate = new Date(startDate);
+    if (planRows.length === 0) {
+        throw new Error("PLAN_NOT_FOUND");
+    }
 
-    endDate.setDate(
-        startDate.getDate() + Number(data.duration)
+    const { id_user, ...membershipData } = buildMembershipDataFromPlan(
+        planRows[0],
+        { ...data, id_user: memberships[0].id_user }
     );
-
-    const membershipData = {
-        name: data.name,
-        duration: data.duration,
-        price: data.price,
-        start_date: data.start_date,
-        end_date: endDate.toISOString().split("T")[0],
-        duration_promo: data.duration_promo ?? 0,
-        type: data.type
-    };
 
     return await updateMembership(id, membershipData);
 

@@ -86,7 +86,10 @@ export const getPaymentsByMembership = async (id_membership) => {
 };
 
 // CREATE PAYMENT
-export const createPayment = async (paymentData) => {
+// `conn` defaults to the pool so every existing call site keeps
+// working unchanged; a transactional caller passes its own
+// connection so this insert becomes part of that transaction.
+export const createPayment = async (paymentData, conn = db) => {
 
     const sql = `
         INSERT INTO payment
@@ -112,7 +115,7 @@ export const createPayment = async (paymentData) => {
         paymentData.receipt_file ?? null
     ];
 
-    const [result] = await db.query(sql, values);
+    const [result] = await conn.query(sql, values);
 
     return result;
 };

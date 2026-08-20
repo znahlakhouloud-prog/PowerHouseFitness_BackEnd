@@ -1,16 +1,29 @@
 /* =========================================
    LAYOUT
+   Reuses the --admin-* design tokens declared in admin.css's :root
+   (globally available once admin.css is bundled) rather than
+   redeclaring them here, so Member stays on the same palette as
+   Admin without duplicating the token values.
 ========================================= */
 
 .member-layout {
     min-height: 100vh;
-    background: #f5f7fa;
-    color: #172033;
+    background: var(--admin-bg);
+    color: var(--admin-black);
     font-family: Arial, Helvetica, sans-serif;
 }
 
 * {
     box-sizing: border-box;
+}
+
+.member-layout a:focus-visible,
+.member-layout button:focus-visible,
+.member-layout input:focus-visible,
+.member-layout select:focus-visible,
+.member-layout textarea:focus-visible {
+    outline: 2px solid var(--admin-primary);
+    outline-offset: 2px;
 }
 
 
@@ -186,8 +199,13 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    transform: translateX(-100%);
     transition: width 0.25s ease, transform 0.25s ease;
     z-index: 900;
+}
+
+.member-sidebar.open {
+    transform: translateX(0);
 }
 
 .sidebar-header {
@@ -203,6 +221,18 @@
     gap: 10px;
     font-weight: 700;
     font-size: 16px;
+}
+
+.sidebar-logo-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-primary);
+    color: var(--admin-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-close {
@@ -242,9 +272,12 @@
     color: white;
 }
 
-.sidebar-link.active {
-    background: #ffffff;
-    color: #111827;
+/* Scoped under .member-layout: coach.css declares its own
+   same-specificity .sidebar-link.active rule and loads after this
+   file, so an unscoped rule here would lose the cascade tie. */
+.member-layout .sidebar-link.active {
+    background: var(--admin-primary);
+    color: var(--admin-white);
     font-weight: 600;
 }
 
@@ -307,10 +340,13 @@
    CARDS
 ========================================= */
 
-.dashboard-card {
+/* Scoped under .member-layout: coach.css declares its own
+   same-specificity .dashboard-card rule with the old hardcoded
+   radius, loaded after this file. */
+.member-layout .dashboard-card {
     background: white;
     border: 1px solid #e8ebef;
-    border-radius: 12px;
+    border-radius: var(--admin-radius);
     padding: 22px;
     margin-bottom: 20px;
 }
@@ -345,16 +381,19 @@
     margin-bottom: 24px;
 }
 
-.kpi-card {
+/* Scoped under .member-layout: coach.css declares its own
+   same-specificity .kpi-card rule with the old hardcoded radius,
+   loaded after this file. */
+.member-layout .kpi-card {
     background: white;
     border: 1px solid #e8ebef;
-    border-radius: 12px;
+    border-radius: var(--admin-radius);
     padding: 18px;
     min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--admin-shadow);
 }
 
 .kpi-card-header {
@@ -523,9 +562,12 @@
    BUTTONS
 ========================================= */
 
-.dashboard-action-button {
+/* Scoped under .member-layout: coach.css declares its own
+   same-specificity .dashboard-action-button rule, loaded after this
+   file, previously winning the cascade tie. */
+.member-layout .dashboard-action-button {
     border: none;
-    background: #111827;
+    background: var(--admin-primary);
     color: white;
     padding: 11px 18px;
     border-radius: 8px;
@@ -535,8 +577,8 @@
     transition: background 0.2s ease;
 }
 
-.dashboard-action-button:hover {
-    background: #1f2937;
+.member-layout .dashboard-action-button:hover {
+    background: var(--admin-primary-dark);
 }
 
 .btn-link {
@@ -557,9 +599,12 @@
     color: #dc2626;
 }
 
-.btn-primary {
+/* Scoped under .member-layout: coach.css declares its own
+   same-specificity .btn-primary rule, loaded after this file,
+   previously winning the cascade tie. */
+.member-layout .btn-primary {
     border: none;
-    background: #111827;
+    background: var(--admin-primary);
     color: white;
     padding: 11px 20px;
     border-radius: 8px;
@@ -572,8 +617,8 @@
     gap: 8px;
 }
 
-.btn-primary:hover {
-    background: #1f2937;
+.member-layout .btn-primary:hover {
+    background: var(--admin-primary-dark);
 }
 
 .btn-primary:disabled {
@@ -772,10 +817,12 @@
     height: 40px;
 }
 
-.form-field input:focus,
-.form-field select:focus,
-.form-field textarea:focus {
-    border-color: #111827;
+/* Scoped under .member-layout: coach.css declares its own
+   same-specificity focus rule, loaded after this file. */
+.member-layout .form-field input:focus,
+.member-layout .form-field select:focus,
+.member-layout .form-field textarea:focus {
+    border-color: var(--admin-primary);
 }
 
 .form-hint {

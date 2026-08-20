@@ -14,12 +14,19 @@ export const register = async (req, res) => {
 
     try {
 
-        const { result, temporaryPassword } = await registerService(req.body, req.user.role);
+        const {
+            result,
+            temporaryPassword,
+            membership,
+            payment
+        } = await registerService(req.body, req.user.role);
 
         res.status(201).json({
             message: "User created successfully",
             id: result.insertId,
-            temporaryPassword
+            temporaryPassword,
+            membership: membership || null,
+            payment: payment || null
         });
 
     } catch (error) {
@@ -39,6 +46,46 @@ export const register = async (req, res) => {
                 message:
                     "You are not allowed to create this role"
             });
+        }
+
+        if (error.message === "MEMBERSHIP_ONLY_FOR_MEMBERS") {
+
+            return res.status(400).json({
+                message: "Only member accounts can have a membership"
+            });
+
+        }
+
+        if (error.message === "PLAN_NOT_FOUND") {
+
+            return res.status(404).json({
+                message: "Membership plan not found"
+            });
+
+        }
+
+        if (error.message === "INVALID_PAYMENT_TYPE") {
+
+            return res.status(400).json({
+                message: "Payment type must be cash, card or transfer"
+            });
+
+        }
+
+        if (error.message === "INVALID_PAYMENT_AMOUNT") {
+
+            return res.status(400).json({
+                message: "Payment amount must be greater than 0"
+            });
+
+        }
+
+        if (error.message === "PAYMENT_EXCEEDS_PRICE") {
+
+            return res.status(409).json({
+                message: "Payment amount cannot exceed the membership price"
+            });
+
         }
 
         res.status(500).json({

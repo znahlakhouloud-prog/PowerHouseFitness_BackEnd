@@ -1,18 +1,16 @@
 import { body, validationResult } from "express-validator";
 
+/*
+ * name/duration/price/type are intentionally not accepted here -
+ * they are never trusted from the client. The caller only picks a
+ * real plan (id_plan); updateMembershipService looks that plan up
+ * from the database and derives all financial fields from it.
+ */
 export const validateUpdateMembership = [
 
-    body("name")
-        .notEmpty()
-        .withMessage("Membership name is required"),
-
-    body("duration")
+    body("id_plan")
         .isInt({ min: 1 })
-        .withMessage("Duration must be greater than 0"),
-
-    body("price")
-        .isFloat({ min: 0 })
-        .withMessage("Price must be greater than or equal to 0"),
+        .withMessage("A valid membership plan is required"),
 
     body("start_date")
         .isISO8601()
@@ -22,10 +20,6 @@ export const validateUpdateMembership = [
         .optional()
         .isInt({ min: 0 })
         .withMessage("Promotion duration must be 0 or greater"),
-
-    body("type")
-        .notEmpty()
-        .withMessage("Membership type is required"),
 
     (req, res, next) => {
 
