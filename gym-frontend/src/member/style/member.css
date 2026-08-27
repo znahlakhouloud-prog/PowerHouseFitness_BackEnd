@@ -1314,7 +1314,8 @@
     .member-kpi-grid,
     .quick-actions-grid,
     .summary-grid,
-    .member-plans-grid {
+    .member-plans-grid,
+    .register-payment-summary {
         grid-template-columns: 1fr;
     }
 

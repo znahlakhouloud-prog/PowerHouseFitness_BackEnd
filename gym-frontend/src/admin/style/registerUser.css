@@ -205,3 +205,26 @@
 .temp-password-membership .register-payment-summary {
     margin-top: 10px;
 }
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 480px) {
+
+    .register-membership-preview,
+    .register-payment-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .temp-password-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .temp-password-box .btn-secondary {
+        justify-content: center;
+    }
+
+}
