@@ -21,7 +21,7 @@ function About() {
 
                 <Reveal>
                     <LandingImage
-                        src="/assets/about-gym.jpg"
+                        src="/assets/about-gym.png"
                         alt="Inside the PowerHouse Fitness training floor"
                         label="Gym Photo"
                         className="lp-about-image"

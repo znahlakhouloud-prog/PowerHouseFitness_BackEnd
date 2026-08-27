@@ -5,11 +5,11 @@ import { X, ImageOff } from "lucide-react";
 import Reveal from "./Reveal";
 
 const PHOTOS = [
-    { src: "/assets/gym-training.jpg", label: "Weight Training" },
+    { src: "/assets/gym-training.png", label: "Weight Training" },
     { src: "/assets/cardio.jpg", label: "Cardio Area" },
     { src: "/assets/equipment.jpg", label: "Machines" },
-    { src: "/assets/coaching.jpg", label: "Coaching" },
-    { src: "/assets/gym-interior.jpg", label: "Gym Interior" },
+    { src: "/assets/coaching.png", label: "Coaching" },
+    { src: "/assets/gym-interior.png", label: "Gym Interior" },
     { src: "/assets/free-weights.jpg", label: "Free Weights" }
 ];
 
